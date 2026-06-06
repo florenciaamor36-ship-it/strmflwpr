@@ -3,8 +3,8 @@ include ":app"
 def localProperties = new Properties()
 def localPropertiesFile = new File(settingsDir, "local.properties")
 if (localPropertiesFile.exists()) {
-    localPropertiesFile.withInputStream { (it) ->
-        localProperties.load(it)
+    localPropertiesFile.withInputStream { stream ->
+        localProperties.load(stream)
     }
 }
 
