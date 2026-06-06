@@ -1,123 +1,127 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../models/account_model.dart';
-import '../models/platform_model.dart';
+import '../utils/date_utils.dart';
 
 class AccountCard extends StatelessWidget {
   final AccountModel account;
-  final PlatformModel? platform;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const AccountCard({
     super.key,
     required this.account,
-    this.platform,
-    this.onTap,
+    required this.onTap,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final fmt = DateFormat('dd/MM/yyyy');
-    final color = platform != null
-        ? Color(int.parse(platform!.color.replaceFirst('#', '0xFF')))
-        : theme.colorScheme.primary;
-    final expired = account.isExpired;
-    final days = account.daysUntilExpiration;
+    final total = account.totalProfiles;
+    final sold = account.soldProfiles;
+    final available = account.availableProfiles;
+
+    // Color coding for availability
+    Color availabilityColor;
+    if (available == 0) {
+      availabilityColor = Colors.red;
+    } else if (available <= 1) {
+      availabilityColor = Colors.orange;
+    } else {
+      availabilityColor = Colors.green;
+    }
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                backgroundColor: color.withOpacity(0.15),
-                radius: 22,
-                child: Text(
-                  platform?.iconEmoji ?? '📺',
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      account.platformName,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      account.email,
-                      style: TextStyle(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontSize: 13,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          expired
-                              ? Icons.error_outline
-                              : days <= 7
-                                  ? Icons.warning_amber
-                                  : Icons.check_circle_outline,
-                          size: 14,
-                          color: expired
-                              ? Colors.red
-                              : days <= 7
-                                  ? Colors.orange
-                                  : Colors.green,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          expired
-                              ? 'Expirada'
-                              : 'Vence: ${fmt.format(account.expirationDate)}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: expired
-                                ? Colors.red
-                                : days <= 7
-                                    ? Colors.orange
-                                    : theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
+              Row(
+                children: [
+                  Chip(
+                    label: Text(account.platformName,
+                        style: const TextStyle(fontSize: 12)),
+                    visualDensity: VisualDensity.compact,
+                    avatar: const Icon(Icons.tv, size: 14),
+                  ),
+                  const Spacer(),
+                  if (onEdit != null || onDelete != null)
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'edit') onEdit?.call();
+                        if (value == 'delete') onDelete?.call();
+                      },
+                      itemBuilder: (_) => [
+                        if (onEdit != null)
+                          const PopupMenuItem(
+                              value: 'edit', child: Text('Editar')),
+                        if (onDelete != null)
+                          const PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Eliminar',
+                                  style: TextStyle(color: Colors.red))),
                       ],
+                      icon: const Icon(Icons.more_vert, size: 20),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(account.maskedEmail,
+                  style: theme.textTheme.bodyLarge
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+              if (account.accountExpiration != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                    'Cuenta vence: ${AppDateUtils.formatDate(account.accountExpiration!)}',
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: Colors.grey)),
+              ],
+              const SizedBox(height: 12),
+
+              // FIXED: Profile status summary
+              if (total > 0) ...[
+                Row(
+                  children: [
+                    // Progress bar
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: total > 0 ? sold / total : 0,
+                          minHeight: 6,
+                          backgroundColor: Colors.grey.withOpacity(0.2),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(availabilityColor),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      '$sold/$total vendidos · ',
+                      style: const TextStyle(
+                          fontSize: 12, color: Colors.grey),
+                    ),
+                    Text(
+                      '$available disponibles',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: availabilityColor,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '${account.totalProfiles}',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
-                  ),
-                  Text(
-                    'perfiles',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 8),
-              const Icon(Icons.chevron_right),
+              ] else ...[
+                Text('Sin perfiles',
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: Colors.grey)),
+              ],
             ],
           ),
         ),
