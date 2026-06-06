@@ -1,6 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/sale_model.dart';
 import '../models/profile_model.dart';
 import '../utils/constants.dart';
@@ -11,6 +13,7 @@ class NotificationService {
   static const String dailyCheckTask = 'dailyExpirationCheck';
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+  static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
   static Future<void> initialize() async {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -42,6 +45,14 @@ class NotificationService {
       importance: Importance.defaultImportance,
     );
 
+    const AndroidNotificationChannel adminChannel =
+        AndroidNotificationChannel(
+      'admin_notifications',
+      'Alertas Administrativas',
+      description: 'Notificaciones enviadas por el administrador',
+      importance: Importance.max,
+    );
+
     await _plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
@@ -51,6 +62,75 @@ class NotificationService {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(lowStockChannel);
+
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(adminChannel);
+
+    // Request FCM permissions
+    await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    // Setup FCM listeners
+    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+    FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
+
+    // Get and save token
+    _saveFcmToken();
+  }
+
+  static Future<void> _saveFcmToken() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final token = await _messaging.getToken();
+      if (token != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({
+          'fcmToken': token,
+          'lastTokenUpdate': FieldValue.serverTimestamp(),
+        });
+      }
+    }
+  }
+
+  static void _handleForegroundMessage(RemoteMessage message) {
+    _showAdminNotification(message);
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> _handleBackgroundMessage(RemoteMessage message) async {
+    // Handled by system if data contains 'notification' key
+  }
+
+  static Future<void> _showAdminNotification(RemoteMessage message) async {
+    final notification = message.notification;
+    if (notification != null) {
+      await _plugin.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            'admin_notifications',
+            'Alertas Administrativas',
+            importance: Importance.max,
+            priority: Priority.high,
+            icon: '@mipmap/ic_launcher',
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+      );
+    }
   }
 
   static void _onNotificationTap(NotificationResponse response) {
@@ -131,9 +211,6 @@ class NotificationService {
       final firestore = FirebaseFirestore.instance;
 
       // Get all active sales
-      final now = DateTime.now();
-      final upcoming = now.add(const Duration(days: 7));
-
       final salesSnap = await firestore
           .collection(AppConstants.salesCollection)
           .where('status', isEqualTo: 'active')
