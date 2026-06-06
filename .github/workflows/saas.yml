@@ -1,0 +1,11 @@
+name: SaaS
+on: workflow_dispatch
+jobs: 
+  patch:
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v4
+      - run: |
+          sed -i '715i\  <link rel="stylesheet" href="admin.css">' index.html
+          sed -i '/<\/body>/i <script src="admin.js"></script>' index.html
+          git config user.name Z && git config user.email Z && git add . && git commit -m S && git push
