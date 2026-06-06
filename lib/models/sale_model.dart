@@ -29,35 +29,42 @@ class SaleModel {
   final DateTime? whatsappSentAt;
   final String notes;
   final DateTime createdAt;
+  
+  // Compatibility
+  final bool whatsappTemplateSent;
+  final DateTime? saleDate;
 
   SaleModel({
     required this.id,
     required this.userId,
     required this.platformId,
     required this.platformName,
-    required this.platformEmoji,
+    this.platformEmoji = '📺',
     required this.accountId,
-    required this.accountEmail,
-    required this.accountPassword,
+    this.accountEmail = '',
+    this.accountPassword = '',
     required this.profileId,
-    required this.profileName,
-    required this.profilePin,
-    required this.clientId,
+    this.profileName = '',
+    this.profilePin = '',
+    this.clientId = '',
     required this.clientName,
     required this.clientPhone,
     required this.price,
-    required this.startDate,
+    DateTime? startDate,
     required this.expirationDate,
     required this.status,
-    required this.reminderDays,
-    required this.remindersSent,
-    required this.renewalCount,
+    this.reminderDays = const [7, 3, 1],
+    this.remindersSent = const [],
+    this.renewalCount = 0,
     this.lastRenewalDate,
-    required this.clientToken,
+    this.clientToken = '',
     this.whatsappSentAt,
-    required this.notes,
-    required this.createdAt,
-  });
+    this.notes = '',
+    DateTime? createdAt,
+    this.whatsappTemplateSent = false,
+    this.saleDate,
+  }) : this.startDate = startDate ?? saleDate ?? DateTime.now(),
+       this.createdAt = createdAt ?? DateTime.now();
 
   bool get isActive => status == SaleStatus.active;
   bool get isExpired => status == SaleStatus.expired;
@@ -89,7 +96,7 @@ class SaleModel {
       clientName: data['clientName'] as String? ?? '',
       clientPhone: data['clientPhone'] as String? ?? '',
       price: (data['price'] as num?)?.toDouble() ?? 0.0,
-      startDate: (data['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      startDate: (data['startDate'] as Timestamp?)?.toDate(),
       expirationDate: (data['expirationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       status: _statusFromString(data['status'] as String?),
       reminderDays: List<int>.from(data['reminderDays'] as List? ?? [1, 3, 7]),
@@ -99,7 +106,9 @@ class SaleModel {
       clientToken: data['clientToken'] as String? ?? '',
       whatsappSentAt: (data['whatsappSentAt'] as Timestamp?)?.toDate(),
       notes: data['notes'] as String? ?? '',
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
+      whatsappTemplateSent: data['whatsappTemplateSent'] as bool? ?? false,
+      saleDate: (data['saleDate'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -138,6 +147,70 @@ class SaleModel {
       'whatsappSentAt': whatsappSentAt != null ? Timestamp.fromDate(whatsappSentAt!) : null,
       'notes': notes,
       'createdAt': Timestamp.fromDate(createdAt),
+      'whatsappTemplateSent': whatsappTemplateSent,
+      'saleDate': saleDate != null ? Timestamp.fromDate(saleDate!) : null,
     };
+  }
+
+  SaleModel copyWith({
+    String? id,
+    String? userId,
+    String? platformId,
+    String? platformName,
+    String? platformEmoji,
+    String? accountId,
+    String? accountEmail,
+    String? accountPassword,
+    String? profileId,
+    String? profileName,
+    String? profilePin,
+    String? clientId,
+    String? clientName,
+    String? clientPhone,
+    double? price,
+    DateTime? startDate,
+    DateTime? expirationDate,
+    SaleStatus? status,
+    List<int>? reminderDays,
+    List<int>? remindersSent,
+    int? renewalCount,
+    DateTime? lastRenewalDate,
+    String? clientToken,
+    DateTime? whatsappSentAt,
+    String? notes,
+    DateTime? createdAt,
+    bool? whatsappTemplateSent,
+    DateTime? saleDate,
+  }) {
+    return SaleModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      platformId: platformId ?? this.platformId,
+      platformName: platformName ?? this.platformName,
+      platformEmoji: platformEmoji ?? this.platformEmoji,
+      accountId: accountId ?? this.accountId,
+      accountEmail: accountEmail ?? this.accountEmail,
+      accountPassword: accountPassword ?? this.accountPassword,
+      profileId: profileId ?? this.profileId,
+      profileName: profileName ?? this.profileName,
+      profilePin: profilePin ?? this.profilePin,
+      clientId: clientId ?? this.clientId,
+      clientName: clientName ?? this.clientName,
+      clientPhone: clientPhone ?? this.clientPhone,
+      price: price ?? this.price,
+      startDate: startDate ?? this.startDate,
+      expirationDate: expirationDate ?? this.expirationDate,
+      status: status ?? this.status,
+      reminderDays: reminderDays ?? this.reminderDays,
+      remindersSent: remindersSent ?? this.remindersSent,
+      renewalCount: renewalCount ?? this.renewalCount,
+      lastRenewalDate: lastRenewalDate ?? this.lastRenewalDate,
+      clientToken: clientToken ?? this.clientToken,
+      whatsappSentAt: whatsappSentAt ?? this.whatsappSentAt,
+      notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      whatsappTemplateSent: whatsappTemplateSent ?? this.whatsappTemplateSent,
+      saleDate: saleDate ?? this.saleDate,
+    );
   }
 }
