@@ -1,0 +1,16 @@
+name: INJECT FINAL-V3
+on:
+  workflow_dispatch:
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sed -i 's|</body>|<script src="admin-gate.js"></script>\n</body>|f' index.html
+          git config user.name "Z"
+          git config user.email "z@z.com"
+          git commit -am "Gate"
+          git push
