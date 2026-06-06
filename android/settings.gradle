@@ -13,6 +13,9 @@ if (flutterSdkPath == null) {
     flutterSdkPath = System.getenv('FLUTTER_ROOT')
 }
 
-if (flutterSdkPath != null) {
-    apply from: "/packages/flutter_tools/gradle/app_plugin_loader.gradle"
+// Plan de respaldo extremo para GitHub Actions
+if (flutterSdkPath == null) {
+    flutterSdkPath = '/opt/hostedtoolcache/flutter/stable-3.16.9-x64/flutter'
 }
+
+apply from: "/packages/flutter_tools/gradle/app_plugin_loader.gradle"
