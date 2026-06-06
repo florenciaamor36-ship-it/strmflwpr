@@ -1,0 +1,19 @@
+name: RESCUE!FINAL
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  rescue:
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v4
+      - name: Clean
+        run: |
+          sed -i '/admin.css/d' index.html
+          sed -i '/admin.js/d' index.html
+          git config user.name "Rescue Bot"
+          git config user.email "rescue@zapia.com"
+          git add index.html
+          git commit -m "UI”RESTORED" || exit 0
+          git push
