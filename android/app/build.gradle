@@ -14,7 +14,7 @@ if (flutterRoot == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'com.google.gms:google-services'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace "com.strmflwpr.app"
@@ -35,6 +35,15 @@ android {
             minifyEnabled false
             shrinkResources false
         }
+    }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
