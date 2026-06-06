@@ -1,8 +1,8 @@
 plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    id "dev.flutter.flutter-gradle-plugin"
-    id "com.google.gms.google-services"
+    id com.android.application
+    id kotlin-android
+    id dev.flutter.flutter-gradle-plugin
+    id com.google.gms.google-services
 }
 
 def localProperties = new Properties()
@@ -14,11 +14,11 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.strmflwpr.app"
+    namespace com.strmflwpr.app
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.strmflwpr.app"
+        applicationId com.strmflwpr.app
         minSdk 21
         targetSdk 34
         versionCode (localProperties.getProperty('flutter.versionCode') ?: '1').toInteger()
