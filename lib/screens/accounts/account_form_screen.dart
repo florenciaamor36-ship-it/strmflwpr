@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../../models/platform_model.dart';
-import '../../models/account_model.dart';
 import '../../services/firestore_service.dart';
+import '../../models/account_model.dart';
+import '../../models/platform_model.dart';
 
 class AccountFormScreen extends StatefulWidget {
-  final PlatformModel platform;
-  final FirestoreService firestore;
-  final AccountModel? existingAccount;
+  final String userId;
+  final String? platformId;
+  final String? platformName;
+  final AccountModel? account;
 
   const AccountFormScreen({
     super.key,
-    required this.platform,
-    required this.firestore,
-    this.existingAccount,
+    required this.userId,
+    this.platformId,
+    this.platformName,
+    this.account,
   });
 
   @override
@@ -22,82 +23,109 @@ class AccountFormScreen extends StatefulWidget {
 
 class _AccountFormScreenState extends State<AccountFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
-  final _notesCtrl = TextEditingController();
-  DateTime _purchaseDate = DateTime.now();
-  DateTime _expirationDate = DateTime.now().add(const Duration(days: 30));
-  int _totalProfiles = 5;
-  bool _loading = false;
-  bool _obscurePass = true;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _costController = TextEditingController();
+  final FirestoreService _service = FirestoreService();
+
+  PlatformModel? _selectedPlatform;
+  List<PlatformModel> _platforms = [];
+  bool _isLoading = false;
+  bool _obscurePassword = true;
+  DateTime? _accountExpiration;
 
   @override
   void initState() {
     super.initState();
-    _totalProfiles = widget.platform.defaultProfileCount;
-    if (widget.existingAccount != null) {
-      final a = widget.existingAccount!;
-      _emailCtrl.text = a.email;
-      _passCtrl.text = a.password;
-      _notesCtrl.text = a.notes;
-      _purchaseDate = a.purchaseDate;
-      _expirationDate = a.expirationDate;
-      _totalProfiles = a.totalProfiles;
+    final a = widget.account;
+    if (a != null) {
+      _emailController.text = a.email;
+      _passwordController.text = a.password;
+      _costController.text = a.purchaseCost.toStringAsFixed(0);
+      _accountExpiration = a.accountExpiration;
     }
+    _loadPlatforms();
+  }
+
+  Future<void> _loadPlatforms() async {
+    _service.platformsStream(widget.userId).listen((platforms) {
+      if (mounted) {
+        setState(() {
+          _platforms = platforms;
+          if (widget.platformId != null && _selectedPlatform == null) {
+            try {
+              _selectedPlatform = platforms
+                  .firstWhere((p) => p.id == widget.platformId);
+            } catch (_) {}
+          }
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
-    _emailCtrl.dispose();
-    _passCtrl.dispose();
-    _notesCtrl.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _costController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickDate({required bool isPurchase}) async {
-    final picked = await showDatePicker(
+  Future<void> _pickDate() async {
+    final date = await showDatePicker(
       context: context,
-      initialDate: isPurchase ? _purchaseDate : _expirationDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      initialDate: _accountExpiration ?? DateTime.now().add(const Duration(days: 365)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 1825)),
     );
-    if (picked != null) {
-      setState(() {
-        if (isPurchase) {
-          _purchaseDate = picked;
-        } else {
-          _expirationDate = picked;
-        }
-      });
-    }
+    if (date != null) setState(() => _accountExpiration = date);
   }
 
-  Future<void> _save() async {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _loading = true);
+    if (_selectedPlatform == null && widget.account == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Seleccioná una plataforma')),
+      );
+      return;
+    }
 
+    setState(() => _isLoading = true);
     try {
+      final platform = _selectedPlatform ??
+          PlatformModel(
+            id: widget.account?.platformId ?? '',
+            userId: widget.userId,
+            name: widget.account?.platformName ?? '',
+            emoji: '📺',
+            color: '#6C63FF',
+            maxProfiles: 5,
+            defaultPrice: 0,
+            isActive: true,
+            createdAt: DateTime.now(),
+          );
+
       final account = AccountModel(
-        id: widget.existingAccount?.id ?? '',
-        userId: widget.firestore.userId,
-        platformId: widget.platform.id,
-        platformName: widget.platform.name,
-        email: _emailCtrl.text.trim(),
-        password: _passCtrl.text,
-        purchaseDate: _purchaseDate,
-        expirationDate: _expirationDate,
-        totalProfiles: _totalProfiles,
-        notes: _notesCtrl.text.trim(),
-        createdAt: widget.existingAccount?.createdAt ?? DateTime.now(),
+        id: widget.account?.id ?? '',
+        userId: widget.userId,
+        platformId: platform.id,
+        platformName: platform.name,
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        accountExpiration: _accountExpiration,
+        purchaseCost:
+            double.tryParse(_costController.text.replaceAll(',', '.')) ?? 0,
+        isActive: true,
+        createdAt: widget.account?.createdAt ?? DateTime.now(),
       );
 
-      if (widget.existingAccount != null) {
-        await widget.firestore.updateAccount(account);
+      if (widget.account != null) {
+        await _service.updateAccount(account);
       } else {
-        await widget.firestore.addAccount(account);
+        await _service.addAccount(account);
       }
 
-      if (mounted) Navigator.pop(context);
+      if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -105,136 +133,104 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
         );
       }
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final fmt = DateFormat('dd/MM/yyyy');
-    final isEdit = widget.existingAccount != null;
+    final isEdit = widget.account != null;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isEdit ? 'Editar cuenta' : 'Nueva cuenta'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text(isEdit ? 'Editar cuenta' : 'Nueva cuenta')),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(24),
           children: [
-            // Platform chip
-            Chip(
-              avatar: Text(widget.platform.iconEmoji),
-              label: Text(widget.platform.name),
-              backgroundColor: Color(int.parse(
-                      widget.platform.color.replaceFirst('#', '0xFF')))
-                  .withOpacity(0.15),
-            ),
-            const SizedBox(height: 16),
-            // Email
+            if (!isEdit) ...[
+              DropdownButtonFormField<PlatformModel>(
+                value: _selectedPlatform,
+                decoration: const InputDecoration(
+                    labelText: 'Plataforma',
+                    prefixIcon: Icon(Icons.tv_outlined)),
+                items: _platforms
+                    .map((p) => DropdownMenuItem(
+                          value: p,
+                          child: Row(
+                            children: [
+                              Text(p.emoji),
+                              const SizedBox(width: 8),
+                              Text(p.name),
+                            ],
+                          ),
+                        ))
+                    .toList(),
+                onChanged: (p) => setState(() => _selectedPlatform = p),
+                validator: (v) =>
+                    v == null ? 'Seleccioná una plataforma' : null,
+              ),
+              const SizedBox(height: 16),
+            ],
             TextFormField(
-              controller: _emailCtrl,
+              controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 labelText: 'Email de la cuenta',
                 prefixIcon: Icon(Icons.email_outlined),
-                border: OutlineInputBorder(),
               ),
               validator: (v) =>
-                  v == null || v.isEmpty ? 'Campo requerido' : null,
+                  v == null || v.isEmpty ? 'El email es requerido' : null,
             ),
             const SizedBox(height: 16),
-            // Password
             TextFormField(
-              controller: _passCtrl,
-              obscureText: _obscurePass,
+              controller: _passwordController,
+              obscureText: _obscurePassword,
               decoration: InputDecoration(
                 labelText: 'Contraseña',
                 prefixIcon: const Icon(Icons.lock_outlined),
-                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  icon: Icon(_obscurePass
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined),
+                  icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility),
                   onPressed: () =>
-                      setState(() => _obscurePass = !_obscurePass),
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
               validator: (v) =>
-                  v == null || v.isEmpty ? 'Campo requerido' : null,
+                  v == null || v.isEmpty ? 'La contraseña es requerida' : null,
             ),
             const SizedBox(height: 16),
-            // Profile count
-            Row(
-              children: [
-                const Text('Cantidad de perfiles:'),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline),
-                  onPressed: _totalProfiles > 1
-                      ? () => setState(() => _totalProfiles--)
-                      : null,
-                ),
-                Text(
-                  '$_totalProfiles',
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline),
-                  onPressed: () => setState(() => _totalProfiles++),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Purchase date
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_today_outlined),
-              title: const Text('Fecha de compra'),
-              subtitle: Text(fmt.format(_purchaseDate)),
-              onTap: () => _pickDate(isPurchase: true),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-            const Divider(),
-            // Expiration date
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.event_busy_outlined),
-              title: const Text('Fecha de vencimiento'),
-              subtitle: Text(fmt.format(_expirationDate)),
-              onTap: () => _pickDate(isPurchase: false),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-            const Divider(),
-            const SizedBox(height: 8),
-            // Notes
             TextFormField(
-              controller: _notesCtrl,
-              maxLines: 3,
+              controller: _costController,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               decoration: const InputDecoration(
-                labelText: 'Notas (opcional)',
-                prefixIcon: Icon(Icons.notes_outlined),
-                border: OutlineInputBorder(),
+                labelText: 'Costo de compra',
+                prefixIcon: Icon(Icons.shopping_cart_outlined),
               ),
             ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _loading ? null : _save,
-              style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16)),
-              child: _loading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+            const SizedBox(height: 16),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.calendar_today),
+              title: Text(_accountExpiration == null
+                  ? 'Vencimiento de cuenta (opcional)'
+                  : 'Vence: ${_accountExpiration!.day}/${_accountExpiration!.month}/${_accountExpiration!.year}'),
+              trailing: _accountExpiration != null
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () =>
+                          setState(() => _accountExpiration = null),
                     )
-                  : Text(isEdit ? 'Guardar cambios' : 'Agregar cuenta',
-                      style: const TextStyle(fontSize: 16)),
+                  : null,
+              onTap: _pickDate,
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: _isLoading ? null : _submit,
+              child: _isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : Text(isEdit ? 'Guardar cambios' : 'Crear cuenta'),
             ),
           ],
         ),
