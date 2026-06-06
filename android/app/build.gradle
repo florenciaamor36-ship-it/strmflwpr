@@ -1,3 +1,10 @@
+plugins {
+    id com.android.application
+    id kotlin-android
+    id dev.flutter.flutter-gradle-plugin
+    id com.google.gms.google-services
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -5,24 +12,20 @@ if (localPropertiesFile.exists()) {
         localProperties.load(net)
     }
 }
-def flutterRoot = localProperties.getProperty('flutter.sdk') ?: System.getenv('FLUTTER_ROOT')
-
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'com.google.gms.google-services'
 
 android {
-    namespace "com.strmflwpr.app"
+    namespace com.strmflwpr.app
     compileSdk 34
+
     defaultConfig {
-        applicationId "com.strmflwpr.app"
+        applicationId com.strmflwpr.app
         minSdk 21
         targetSdk 34
         versionCode (localProperties.getProperty('flutter.versionCode') ?: '1').toInteger()
         versionName (localProperties.getProperty('flutter.versionName') ?: '1.0')
         multiDexEnabled true
     }
+
     buildTypes {
         release {
             signingConfig signingConfigs.debug
@@ -31,6 +34,7 @@ android {
         }
     }
 }
+
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.7.0')
     implementation 'com.google.firebase:firebase-analytics'
