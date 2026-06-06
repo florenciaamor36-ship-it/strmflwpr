@@ -1,231 +1,353 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../services/auth_service.dart';
-import 'user_manual_screen.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/theme_provider.dart';
+import '../../providers/settings_provider.dart';
+import '../../services/firestore_service.dart';
+import '../../services/export_service.dart';
+import '../../models/sale_model.dart';
+import '../platforms/platforms_screen.dart';
+import '../accounts/accounts_screen.dart';
+import '../profiles/profiles_screen.dart';
+import 'template_editor_screen.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  Widget build(BuildContext context) {
+    final auth = context.read<AuthProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
+    final settings = context.watch<SettingsProvider>();
+    final userId = auth.userId ?? '';
+    final service = FirestoreService();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Configuración')),
+      body: ListView(
+        children: [
+          // Profile section
+          _SectionHeader('Mi cuenta'),
+          ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              child: Text(
+                auth.user?.displayName?.isNotEmpty == true
+                    ? auth.user!.displayName![0].toUpperCase()
+                    : '?',
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            title: Text(auth.user?.displayName ?? 'Usuario'),
+            subtitle: Text(auth.user?.email ?? ''),
+          ),
+
+          // Business name
+          ListTile(
+            leading: const Icon(Icons.business_outlined),
+            title: const Text('Nombre del negocio'),
+            subtitle: Text(settings.businessName),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _editTextField(
+              context,
+              title: 'Nombre del negocio',
+              initialValue: settings.businessName,
+              onSave: (v) => settings.setBusinessName(v),
+            ),
+          ),
+
+          // Divider
+          const Divider(),
+          _SectionHeader('Gestión'),
+
+          ListTile(
+            leading: const Icon(Icons.tv_outlined),
+            title: const Text('Plataformas'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (_) => PlatformsScreen(userId: userId)),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.manage_accounts_outlined),
+            title: const Text('Cuentas'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (_) => AccountsScreen(userId: userId)),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.person_outline),
+            title: const Text('Perfiles'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (_) => ProfilesScreen(userId: userId)),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.message_outlined),
+            title: const Text('Plantillas de WhatsApp'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (_) => TemplateEditorScreen(userId: userId)),
+            ),
+          ),
+
+          const Divider(),
+          _SectionHeader('Preferencias'),
+
+          // Country code
+          ListTile(
+            leading: const Icon(Icons.phone_outlined),
+            title: const Text('Código de país por defecto'),
+            subtitle: Text('+${settings.defaultCountryCode}'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _editTextField(
+              context,
+              title: 'Código de país',
+              initialValue: settings.defaultCountryCode,
+              hintText: 'ej: 54',
+              onSave: (v) => settings.setCountryCode(v),
+              keyboardType: TextInputType.number,
+            ),
+          ),
+
+          // Currency
+          ListTile(
+            leading: const Icon(Icons.attach_money),
+            title: const Text('Símbolo de moneda'),
+            subtitle: Text(settings.currencySymbol),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _showCurrencyPicker(context, settings),
+          ),
+
+          // Reminder days
+          ListTile(
+            leading: const Icon(Icons.notifications_outlined),
+            title: const Text('Días de recordatorio'),
+            subtitle: Text(settings.defaultReminderDays.join(', ') + ' días'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _showReminderDaysPicker(context, settings),
+          ),
+
+          // Theme
+          ListTile(
+            leading: const Icon(Icons.palette_outlined),
+            title: const Text('Tema'),
+            trailing: DropdownButton<ThemeMode>(
+              value: themeProvider.themeMode,
+              underline: const SizedBox(),
+              items: const [
+                DropdownMenuItem(
+                    value: ThemeMode.system, child: Text('Sistema')),
+                DropdownMenuItem(
+                    value: ThemeMode.light, child: Text('Claro')),
+                DropdownMenuItem(
+                    value: ThemeMode.dark, child: Text('Oscuro')),
+              ],
+              onChanged: (mode) {
+                if (mode != null) themeProvider.setThemeMode(mode);
+              },
+            ),
+          ),
+
+          const Divider(),
+          _SectionHeader('Exportar'),
+
+          ListTile(
+            leading: const Icon(Icons.download_outlined),
+            title: const Text('Exportar ventas a CSV'),
+            onTap: () async {
+              try {
+                final stream = service.salesStream(userId);
+                final sales = await stream.first;
+                final path =
+                    await ExportService.exportSalesToCsv(sales);
+                await ExportService.shareFile(path);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al exportar: $e')),
+                  );
+                }
+              }
+            },
+          ),
+
+          const Divider(),
+          _SectionHeader('Cuenta'),
+
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text('Cerrar sesión',
+                style: TextStyle(color: Colors.red)),
+            onTap: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('Cerrar sesión'),
+                  content:
+                      const Text('¿Seguro que querés cerrar sesión?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('Cancelar'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('Salir',
+                          style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
+                ),
+              );
+              if (confirm == true) {
+                await auth.signOut();
+              }
+            },
+          ),
+          const SizedBox(height: 32),
+          Center(
+            child: Text('strmflwpr v2.0.0',
+                style: const TextStyle(color: Colors.grey, fontSize: 12)),
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _editTextField(
+    BuildContext context, {
+    required String title,
+    required String initialValue,
+    required Function(String) onSave,
+    String? hintText,
+    TextInputType keyboardType = TextInputType.text,
+  }) async {
+    final controller = TextEditingController(text: initialValue);
+    await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(hintText: hintText),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final value = controller.text.trim();
+              if (value.isNotEmpty) onSave(value);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('Guardar'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+  }
+
+  void _showCurrencyPicker(BuildContext context, SettingsProvider settings) {
+    const currencies = ['ARS', 'USD', 'EUR', 'BRL', 'CLP', 'COP', 'MXN'];
+    showDialog(
+      context: context,
+      builder: (_) => SimpleDialog(
+        title: const Text('Moneda'),
+        children: currencies
+            .map((c) => SimpleDialogOption(
+                  onPressed: () {
+                    settings.setCurrencySymbol(c);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(c,
+                      style: TextStyle(
+                          fontWeight: c == settings.currencySymbol
+                              ? FontWeight.bold
+                              : FontWeight.normal)),
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  void _showReminderDaysPicker(
+      BuildContext context, SettingsProvider settings) {
+    final selected = List<int>.from(settings.defaultReminderDays);
+    const options = [1, 2, 3, 5, 7, 10, 14, 30];
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setStateDialog) => AlertDialog(
+          title: const Text('Días de recordatorio'),
+          content: Wrap(
+            spacing: 8,
+            children: options
+                .map((day) => FilterChip(
+                      label: Text('$day día${day > 1 ? "s" : ""}'),
+                      selected: selected.contains(day),
+                      onSelected: (v) {
+                        setStateDialog(() {
+                          if (v) {
+                            selected.add(day);
+                          } else {
+                            selected.remove(day);
+                          }
+                          selected.sort();
+                        });
+                      },
+                    ))
+                .toList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                settings.setReminderDays(selected);
+                Navigator.of(ctx).pop();
+              },
+              child: const Text('Guardar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
-  String _defaultReminderDays = '7,3,1';
-  bool _darkMode = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPrefs();
-  }
-
-  Future<void> _loadPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _defaultReminderDays =
-          prefs.getString('default_reminder_days') ?? '7,3,1';
-      _darkMode = prefs.getBool('dark_mode') ?? false;
-    });
-  }
-
-  Future<void> _savePrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('default_reminder_days', _defaultReminderDays);
-    await prefs.setBool('dark_mode', _darkMode);
-  }
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  const _SectionHeader(this.title);
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthService>(context, listen: false);
-    final user = auth.currentUser;
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Configuración'),
-        centerTitle: true,
-      ),
-      body: ListView(
-        children: [
-          // User info section
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-            child: Text(
-              'CUENTA',
-              style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  letterSpacing: 1.5),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: theme.colorScheme.primaryContainer,
-                child: Icon(Icons.person,
-                    color: theme.colorScheme.onPrimaryContainer),
-              ),
-              title: Text(
-                user?.email ?? 'Usuario',
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(user?.uid?.substring(0, 8) ?? '' + '...'),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Reminders section
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-            child: Text(
-              'RECORDATORIOS',
-              style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  letterSpacing: 1.5),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Días de recordatorio por defecto',
-                    style: theme.textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Se aplica a nuevos perfiles vendidos',
-                    style: TextStyle(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontSize: 12),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    initialValue: _defaultReminderDays,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: '7,3,1',
-                      helperText:
-                          'Separados por coma: notificar 7, 3 y 1 día antes',
-                    ),
-                    onChanged: (v) {
-                      _defaultReminderDays = v;
-                      _savePrefs();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // App section
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-            child: Text(
-              'APLICACIÓN',
-              style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  letterSpacing: 1.5),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.dark_mode_outlined),
-                  title: const Text('Modo oscuro'),
-                  subtitle: const Text('Seguir configuración del sistema'),
-                  trailing: Switch(
-                    value: _darkMode,
-                    onChanged: (v) {
-                      setState(() => _darkMode = v);
-                      _savePrefs();
-                    },
-                  ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  leading: const Icon(Icons.help_outline),
-                  title: const Text('Manual de Usuario'),
-                  subtitle: const Text('Guía sobre cómo usar strmflwpr'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const UserManualScreen()),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          // About section
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-            child: Text(
-              'ACERCA DE',
-              style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  letterSpacing: 1.5),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Column(
-              children: [
-                const ListTile(
-                  leading: Icon(Icons.info_outline),
-                  title: Text('strmflwpr'),
-                  subtitle: Text('v3.0.0 — Gestor Pro de cuentas streaming'),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  leading: const Icon(Icons.code_outlined),
-                  title: const Text('Desarrollado para Florencia'),
-                  subtitle: const Text('Hecho con ❤️'),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-          // Sign out
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: OutlinedButton.icon(
-              onPressed: () async {
-                final confirm = await showDialog<bool>(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text('Cerrar sesión'),
-                    content: const Text('¿Estás seguro que querés cerrar sesión?'),
-                    actions: [
-                      TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Cancelar')),
-                      FilledButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Cerrar sesión')),
-                    ],
-                  ),
-                );
-                if (confirm == true) {
-                  await auth.signOut();
-                }
-              },
-              icon: const Icon(Icons.logout),
-              label: const Text('Cerrar sesión'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: theme.colorScheme.error,
-                side: BorderSide(color: theme.colorScheme.error),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-            ),
-          ),
-          const SizedBox(height: 32),
-        ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      child: Text(
+        title.toUpperCase(),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
   }
