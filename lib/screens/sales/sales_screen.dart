@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
-import '../../services/auth_service.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../services/firestore_service.dart';
-import '../../services/whatsapp_service.dart';
 import '../../models/sale_model.dart';
+import '../../widgets/sale_card.dart';
+import 'sale_form_screen.dart';
+import 'sale_detail_screen.dart';
 
 class SalesScreen extends StatefulWidget {
   const SalesScreen({super.key});
@@ -13,196 +15,188 @@ class SalesScreen extends StatefulWidget {
   State<SalesScreen> createState() => _SalesScreenState();
 }
 
-class _SalesScreenState extends State<SalesScreen> {
-  SaleStatus? _filterStatus;
+class _SalesScreenState extends State<SalesScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final FirestoreService _service = FirestoreService();
+  String _searchQuery = '';
+  final _searchController = TextEditingController();
 
-  Color _expirationColor(SaleModel sale) {
-    if (sale.isExpired) return Colors.red;
-    final days = sale.daysUntilExpiration;
-    if (days <= 7) return Colors.red;
-    if (days <= 30) return Colors.orange;
-    return Colors.green;
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthService>(context, listen: false);
-    final uid = auth.currentUserId ?? '';
-    final firestore = FirestoreService(userId: uid);
-    final fmt = DateFormat('dd/MM/yyyy');
-    final theme = Theme.of(context);
+    final userId = context.read<AuthProvider>().userId ?? '';
+    final settings = context.read<SettingsProvider>();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ventas'),
-        centerTitle: true,
-        actions: [
-          PopupMenuButton<SaleStatus?>(
-            icon: const Icon(Icons.filter_list),
-            onSelected: (v) => setState(() => _filterStatus = v),
-            itemBuilder: (_) => [
-              const PopupMenuItem(value: null, child: Text('Todas')),
-              const PopupMenuItem(
-                  value: SaleStatus.active, child: Text('Activas')),
-              const PopupMenuItem(
-                  value: SaleStatus.expired, child: Text('Expiradas')),
-              const PopupMenuItem(
-                  value: SaleStatus.renewed, child: Text('Renovadas')),
-            ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Activas'),
+            Tab(text: 'Vencidas'),
+            Tab(text: 'Todas'),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Buscar por cliente, plataforma...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        },
+                      )
+                    : null,
+              ),
+              onChanged: (v) => setState(() => _searchQuery = v),
+            ),
+          ),
+          Expanded(
+            child: StreamBuilder<List<SaleModel>>(
+              stream: _service.salesStream(userId),
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final all = snap.data ?? [];
+                final filtered = _filter(all);
+                final active = filtered
+                    .where((s) => s.status == SaleStatus.active)
+                    .toList();
+                final expired = filtered
+                    .where((s) => s.status == SaleStatus.expired)
+                    .toList();
+
+                return TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _SaleList(
+                      sales: active,
+                      service: _service,
+                      settings: settings,
+                      emptyMessage: 'No hay ventas activas',
+                    ),
+                    _SaleList(
+                      sales: expired,
+                      service: _service,
+                      settings: settings,
+                      emptyMessage: 'No hay ventas vencidas',
+                    ),
+                    _SaleList(
+                      sales: filtered,
+                      service: _service,
+                      settings: settings,
+                      emptyMessage: 'No hay ventas',
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ],
       ),
-      body: StreamBuilder<List<SaleModel>>(
-        stream: firestore.salesStream(),
-        builder: (context, snap) {
-          if (snap.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          var sales = snap.data ?? [];
-          if (_filterStatus != null) {
-            sales = sales.where((s) => s.status == _filterStatus).toList();
-          }
-
-          if (sales.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.sell_outlined,
-                      size: 64, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  Text('No hay ventas registradas',
-                      style: theme.textTheme.titleMedium),
-                  const Text(
-                      'Las ventas aparecen cuando vendés un perfil'),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: sales.length,
-            itemBuilder: (ctx, i) {
-              final sale = sales[i];
-              final color = _expirationColor(sale);
-              final days = sale.daysUntilExpiration;
-
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  sale.platformName,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  sale.clientName,
-                                  style: TextStyle(
-                                      color: theme.colorScheme.onSurfaceVariant),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: color.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              sale.isExpired
-                                  ? 'VENCIDA'
-                                  : days == 0
-                                      ? 'HOY'
-                                      : '${days}d',
-                              style: TextStyle(
-                                color: color,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_today_outlined,
-                              size: 14,
-                              color: theme.colorScheme.onSurfaceVariant),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Vence: ${fmt.format(sale.expirationDate)}',
-                            style: TextStyle(
-                                color: color, fontWeight: FontWeight.w500),
-                          ),
-                          const Spacer(),
-                          Text(
-                            '\$${sale.price.toStringAsFixed(2)}',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      if (sale.clientPhone.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            OutlinedButton.icon(
-                              onPressed: () async {
-                                final wa = WhatsAppService();
-                                await wa.sendSaleReminder(sale);
-                              },
-                              icon: const Text('💬',
-                                  style: TextStyle(fontSize: 14)),
-                              label: const Text('Recordatorio WhatsApp'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF25D366),
-                                side: const BorderSide(
-                                    color: Color(0xFF25D366)),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            if (sale.status == SaleStatus.active)
-                              OutlinedButton(
-                                onPressed: () async {
-                                  final updated = sale.copyWith(
-                                      status: SaleStatus.renewed);
-                                  await firestore.updateSale(updated);
-                                },
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 6),
-                                ),
-                                child: const Text('Renovar'),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (_) => SaleFormScreen(userId: userId)),
+        ),
+        child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  List<SaleModel> _filter(List<SaleModel> sales) {
+    if (_searchQuery.isEmpty) return sales;
+    final q = _searchQuery.toLowerCase();
+    return sales.where((s) {
+      return s.clientName.toLowerCase().contains(q) ||
+          s.platformName.toLowerCase().contains(q) ||
+          s.profileName.toLowerCase().contains(q) ||
+          s.clientPhone.contains(q);
+    }).toList();
+  }
+}
+
+class _SaleList extends StatelessWidget {
+  final List<SaleModel> sales;
+  final FirestoreService service;
+  final SettingsProvider settings;
+  final String emptyMessage;
+
+  const _SaleList({
+    required this.sales,
+    required this.service,
+    required this.settings,
+    required this.emptyMessage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (sales.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.receipt_long, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            Text(emptyMessage,
+                style: const TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w500)),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      itemCount: sales.length,
+      itemBuilder: (context, index) {
+        final sale = sales[index];
+        return SaleCard(
+          sale: sale,
+          currencySymbol: settings.currencySymbol,
+          countryCode: settings.defaultCountryCode,
+          businessName: settings.businessName,
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (_) => SaleDetailScreen(saleId: sale.id)),
+          ),
+          onMarkExpired: () async {
+            await service.markSaleExpired(sale.id, sale.profileId);
+          },
+          onDelete: () async {
+            await service.deleteSale(sale.id, sale.profileId);
+          },
+          onRenew: (newDate, price) async {
+            await service.renewSale(
+                sale.id, sale.profileId, newDate, price);
+          },
+        );
+      },
     );
   }
 }
