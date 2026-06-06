@@ -1,21 +1,13 @@
-include ':app'
-
+include :app
 def localProperties = new Properties()
-def localPropertiesFile = new File(settingsDir, 'local.properties')
+def localPropertiesFile = new File(settingsDir, local.properties)
 if (localPropertiesFile.exists()) {
     localPropertiesFile.withInputStream { stream ->
         localProperties.load(stream)
     }
 }
-
-def flutterSdkPath = localProperties.getProperty('flutter.sdk')
+def flutterSdkPath = localProperties.getProperty(flutter.sdk)
 if (flutterSdkPath == null) {
-    flutterSdkPath = System.getenv('FLUTTER_ROOT')
+    flutterSdkPath = System.getenv(FLUTTER_ROOT)
 }
-
-// Plan de respaldo extremo para GitHub Actions
-if (flutterSdkPath == null) {
-    flutterSdkPath = '/opt/hostedtoolcache/flutter/stable-3.16.9-x64/flutter'
-}
-
-apply from: "/packages/flutter_tools/gradle/app_plugin_loader.gradle"
+apply from: /packages/flutter_tools/gradle/app_plugin_loader.gradle
