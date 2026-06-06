@@ -1,0 +1,21 @@
+name: SUPER FIX
+on:
+  workflow_dispatch:
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Patch Index
+        run: |
+          sed -i 's|</body>|<script src="admin-gate.js"></script></body>|' index.html
+      - name: Commit and Push
+        run: |
+          git config user.name "Fix Bot"
+          git config user.email "fix@zapia.com"
+          git add index.html
+          git commit -m "Gate" || exit 0
+          git push
