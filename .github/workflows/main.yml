@@ -9,10 +9,12 @@ jobs:
         with:
           flutter-version: '3.16.9'
           channel: 'stable'
+      - name: Restore platform files
+        run: flutter create . --platforms=web
       - name: Install dependencies
         run: flutter pub get
       - name: Build Web
-        run: flutter build web --release
+        run: flutter build web --release --base-href "/strmflwpr/"
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
