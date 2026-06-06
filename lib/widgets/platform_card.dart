@@ -1,103 +1,77 @@
 import 'package:flutter/material.dart';
 import '../models/platform_model.dart';
-import '../services/firestore_service.dart';
 
 class PlatformCard extends StatelessWidget {
   final PlatformModel platform;
-  final FirestoreService firestore;
   final VoidCallback onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const PlatformCard({
     super.key,
     required this.platform,
-    required this.firestore,
     required this.onTap,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color =
-        Color(int.parse(platform.color.replaceFirst('#', '0xFF')));
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        elevation: 2,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                color.withOpacity(0.15),
-                color.withOpacity(0.05),
-              ],
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Text(platform.emoji,
+                      style: const TextStyle(fontSize: 28)),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(platform.name,
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold)),
                     Text(
-                      platform.iconEmoji,
-                      style: const TextStyle(fontSize: 28),
-                    ),
-                    const Spacer(),
-                    if (platform.isCustom)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'Custom',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                      ),
+                        'Máx. ${platform.maxProfiles} perfiles · \$${platform.defaultPrice.toStringAsFixed(0)} por perfil',
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: Colors.grey)),
                   ],
                 ),
-                const Spacer(),
-                Text(
-                  platform.name,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${platform.defaultProfileCount} perfiles',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'edit') onEdit?.call();
+                  if (value == 'delete') onDelete?.call();
+                },
+                itemBuilder: (_) => [
+                  if (onEdit != null)
+                    const PopupMenuItem(
+                        value: 'edit', child: Text('Editar')),
+                  if (onDelete != null)
+                    const PopupMenuItem(
+                        value: 'delete',
+                        child: Text('Eliminar',
+                            style: TextStyle(color: Colors.red))),
+                ],
+                icon: const Icon(Icons.more_vert),
+              ),
+            ],
           ),
         ),
       ),
