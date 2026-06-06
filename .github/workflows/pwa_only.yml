@@ -12,6 +12,8 @@ jobs:
           channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
+      - name: Configure Web
+        run: flutter create . --platforms web
       - name: Build Web
         run: flutter build web --release --base-href '/'
       - name: Deploy to Firebase Hosting
