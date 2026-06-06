@@ -1,0 +1,17 @@
+name: Emergency Clean UI
+on: workflow_dispatch
+permissions: 
+  contents: write
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v4
+      - name: Remove Admin Injections
+        run: |
+          sed -i '/admin.css/d' index.html
+          sed -i '/admin.js/d' index.html
+          git config user.name "Zapia Fix"
+          git config user.email "fix@zapia.com"
+          git commŠ×¦ -am "Emergency UI Restoration" || exit 0
+          git push
