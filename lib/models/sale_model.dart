@@ -63,8 +63,10 @@ class SaleModel {
     DateTime? createdAt,
     this.whatsappTemplateSent = false,
     this.saleDate,
+    String? phone, // Compatibility
   }) : this.startDate = startDate ?? saleDate ?? DateTime.now(),
-       this.createdAt = createdAt ?? DateTime.now();
+       this.createdAt = createdAt ?? DateTime.now(),
+       this.clientPhone = phone ?? clientPhone;
 
   bool get isActive => status == SaleStatus.active;
   bool get isExpired => status == SaleStatus.expired;
