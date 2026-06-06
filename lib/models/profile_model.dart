@@ -28,6 +28,11 @@ class ProfileModel {
   final DateTime? expirationDate;
   final List<int> reminderDays;
   final DateTime createdAt;
+  
+  // Compatibility aliases
+  final double price;
+  final String clientName;
+  final String clientPhone;
 
   ProfileModel({
     required this.id,
@@ -44,7 +49,13 @@ class ProfileModel {
     this.expirationDate,
     this.reminderDays = const [],
     required this.createdAt,
+    this.price = 0.0,
+    this.clientName = '',
+    this.clientPhone = '',
   });
+
+  String get profileName => name;
+  String get profilePin => pin;
 
   bool get isAvailable => status == ProfileStatus.available;
   bool get isSold => status == ProfileStatus.sold;
@@ -58,7 +69,7 @@ class ProfileModel {
       platformId: data['platformId'] as String? ?? '',
       platformName: data['platformName'] as String? ?? '',
       name: data['name'] as String? ?? data['profileName'] as String? ?? '',
-      pin: data['pin'] as String? ?? '',
+      pin: data['pin'] as String? ?? data['profilePin'] as String? ?? '',
       status: _statusFromString(data['status'] as String?),
       currentSaleId: data['currentSaleId'] as String?,
       currentClientName: data['currentClientName'] as String?,
@@ -66,6 +77,9 @@ class ProfileModel {
       expirationDate: (data['expirationDate'] as Timestamp?)?.toDate(),
       reminderDays: List<int>.from(data['reminderDays'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      price: (data['price'] as num?)?.toDouble() ?? 0.0,
+      clientName: data['clientName'] as String? ?? '',
+      clientPhone: data['clientPhone'] as String? ?? '',
     );
   }
 
@@ -97,6 +111,9 @@ class ProfileModel {
       'expirationDate': expirationDate != null ? Timestamp.fromDate(expirationDate!) : null,
       'reminderDays': reminderDays,
       'createdAt': Timestamp.fromDate(createdAt),
+      'price': price,
+      'clientName': clientName,
+      'clientPhone': clientPhone,
     };
   }
 
@@ -115,6 +132,9 @@ class ProfileModel {
     DateTime? expirationDate,
     List<int>? reminderDays,
     DateTime? createdAt,
+    double? price,
+    String? clientName,
+    String? clientPhone,
   }) {
     return ProfileModel(
       id: id ?? this.id,
@@ -131,6 +151,9 @@ class ProfileModel {
       expirationDate: expirationDate ?? this.expirationDate,
       reminderDays: reminderDays ?? this.reminderDays,
       createdAt: createdAt ?? this.createdAt,
+      price: price ?? this.price,
+      clientName: clientName ?? this.clientName,
+      clientPhone: clientPhone ?? this.clientPhone,
     );
   }
 }
