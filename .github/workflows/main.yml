@@ -17,19 +17,20 @@ jobs:
         run: |
           rm -rf android
           flutter create . --platforms=android
-      - name: Re-apply Firebase
+      - name: Re-apply Firebase & Multidex
         run: |
-          # The google-services.json should be in android/app/ but since we deleted it,
-          # we assume it's committed in the root or we recover it if it was in android/app/
-          # Wait, if we deleted android/, we lost it. 
-          # Let's hope it's in the repo root or we need to put it back.
-          # Actually, I have the credentials in context. I can recreate it.
+          # Recrear google-services.json
           echo '{ "project_info": { "project_number": "576163951145", "project_id": "strmflwpr-33e74", "storage_bucket": "strmflwpr-33e74.firebasestorage.app" }, "client": [ { "client_info": { "mobilesdk_app_id": "1:576163951145:android:b8c5a08d6b906919616238", "android_client_info": { "package_name": "com.strmflwpr.app" } }, "api_key": [ { "current_key": "AIzaSyC3BnZ33CruBYHeXnjyqjGKfT2-__DUxBo" } ], "services": { "appinvite_service": { "other_platform_oauth_client": [] }, "ads_service": { "other_platform_oauth_client": [] } } } ], "configuration_version": "1" }' > android/app/google-services.json
-      - name: Inject Plugins
-        run: |
-          # Add google-services plugin to build.gradle files
+          
+          # Ajustar build.gradle raíz
           sed -i "/dependencies {/a \ \ \ \ \ \ \ \ classpath 'com.google.gms:google-services:4.4.0'" android/build.gradle
+          
+          # Ajustar app/build.gradle: multidex y minSdk 21
+          sed -i "s/minSdkVersion.*/minSdkVersion 21/" android/app/build.gradle
+          sed -i "s/targetSdkVersion.*/targetSdkVersion 34/" android/app/build.gradle
+          sed -i "/defaultConfig {/a \ \ \ \ \ \ \ \ multiDexEnabled true" android/app/build.gradle
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
+          
       - name: Install dependencies
         run: flutter pub get
       - name: Build APK
