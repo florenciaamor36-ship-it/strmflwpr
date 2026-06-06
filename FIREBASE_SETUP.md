@@ -1,160 +1,130 @@
-# 🔥 Configuración de Firebase para strmflwpr
+# Firebase Setup Guide
 
-Seguí estos pasos para conectar la app a tu propio proyecto de Firebase.
+## 1. Create Firebase Project
 
----
+1. Go to [console.firebase.google.com](https://console.firebase.google.com)
+2. Create new project: `strmflwpr` (or your preferred name)
+3. Disable Google Analytics (optional)
 
-## Paso 1 — Crear un proyecto en Firebase
+## 2. Enable Authentication
 
-1. Ir a [https://console.firebase.google.com](https://console.firebase.google.com)
-2. Hacer clic en **"Agregar proyecto"**
-3. Nombre del proyecto: `strmflwpr` (o el que prefieras)
-4. Desactivar Google Analytics (opcional, no es necesario)
-5. Hacer clic en **"Crear proyecto"**
+1. Firebase Console → Authentication → Get started
+2. Sign-in method → Email/Password → Enable → Save
 
----
+## 3. Enable Firestore
 
-## Paso 2 — Agregar la app Android
+1. Firebase Console → Firestore Database → Create database
+2. Start in **production mode**
+3. Choose your region (e.g. `southamerica-east1` for Argentina)
 
-1. En la consola de Firebase, hacer clic en el ícono de Android **( 🤖 )**
-2. Completar:
-   - **Package name:** `com.strmflwpr.app`
-   - **App nickname:** strmflwpr (opcional)
-   - **SHA-1:** dejar vacío por ahora
-3. Hacer clic en **"Registrar app"**
-4. **Descargar `google-services.json`**
-5. Colocar el archivo en: `android/app/google-services.json`
+## 4. Add Android App
 
-   ```
-   strmflwpr/
-   └── android/
-       └── app/
-           └── google-services.json  ← acá
-   ```
+1. Firebase Console → Project settings → Add app → Android
+2. Package name: `com.strmflwpr.app`
+3. Download `google-services.json`
+4. Place it at: `android/app/google-services.json`
 
-6. Hacer clic en **"Siguiente"** hasta terminar
+## 5. Configure firebase_options.dart
 
----
+Run FlutterFire CLI to auto-generate:
+```bash
+# Install FlutterFire CLI
+dart pub global activate flutterfire_cli
 
-## Paso 3 — Habilitar Authentication
-
-1. En la consola de Firebase, ir a **Authentication** (menú izquierdo)
-2. Hacer clic en **"Comenzar"**
-3. En la pestaña **"Métodos de inicio de sesión"**
-4. Hacer clic en **Email/Contraseña**
-5. Activar el primer toggle (Email/Contraseña)
-6. Hacer clic en **"Guardar"**
-
----
-
-## Paso 4 — Crear la base de datos Firestore
-
-1. En la consola, ir a **Firestore Database**
-2. Hacer clic en **"Crear base de datos"**
-3. Seleccionar **"Iniciar en modo de prueba"** (válido 30 días)
-   > ⚠️ Para producción, configurar reglas de seguridad apropiadas
-4. Elegir la ubicación más cercana (ej. `southamerica-east1` para Argentina)
-5. Hacer clic en **"Listo"**
-
-### Reglas de seguridad recomendadas para producción
-
-En Firestore → Reglas, reemplazar con:
-
+# Configure (from your Flutter project root)
+flutterfire configure --project=YOUR_PROJECT_ID
 ```
+
+This will update `lib/firebase_options.dart` with your real credentials.
+
+**OR** manually edit `lib/firebase_options.dart` and replace all `YOUR_*` placeholders with values from Firebase Console → Project settings → Your apps.
+
+## 6. Firestore Security Rules
+
+Firebase Console → Firestore → Rules:
+
+```javascript
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Each user can only access their own data
-    match /users/{userId}/{document=**} {
+    // Users can only read/write their own data
+    match /platforms/{doc} {
+      allow read, write: if request.auth != null 
+        && (resource == null || resource.data.userId == request.auth.uid)
+        && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+    match /accounts/{doc} {
+      allow read, write: if request.auth != null 
+        && (resource == null || resource.data.userId == request.auth.uid)
+        && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+    match /profiles/{doc} {
+      allow read, write: if request.auth != null 
+        && (resource == null || resource.data.userId == request.auth.uid)
+        && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+    match /sales/{doc} {
+      allow read, write: if request.auth != null 
+        && (resource == null || resource.data.userId == request.auth.uid)
+        && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+    match /clients/{doc} {
+      allow read, write: if request.auth != null 
+        && (resource == null || resource.data.userId == request.auth.uid)
+        && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+    match /templates/{doc} {
+      allow read, write: if request.auth != null 
+        && (resource == null || resource.data.userId == request.auth.uid)
+        && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+    match /renewals/{doc} {
+      allow read, write: if request.auth != null 
+        && (resource == null || resource.data.userId == request.auth.uid)
+        && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+    match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
 ```
 
----
+## 7. Firestore Indexes
 
-## Paso 5 — Actualizar `firebase_options.dart`
+Create these composite indexes (Firebase will also prompt you in debug mode):
 
-Abrir `lib/firebase_options.dart` y reemplazar los valores placeholder con los reales.
+| Collection | Fields | Order |
+|---|---|---|
+| `sales` | `userId` ASC, `expirationDate` ASC | - |
+| `sales` | `userId` ASC, `status` ASC, `expirationDate` ASC | - |
+| `sales` | `userId` ASC, `clientId` ASC, `createdAt` DESC | - |
+| `sales` | `userId` ASC, `createdAt` ASC | - |
+| `platforms` | `userId` ASC, `isActive` ASC, `name` ASC | - |
+| `accounts` | `userId` ASC, `platformId` ASC | - |
+| `profiles` | `userId` ASC, `accountId` ASC | - |
+| `profiles` | `userId` ASC, `platformId` ASC, `status` ASC | - |
+| `renewals` | `saleId` ASC, `renewedAt` DESC | - |
 
-Para obtener los valores:
-1. En la consola de Firebase, ir a ⚙️ **Configuración del proyecto**
-2. En la sección **"Tus apps"**, seleccionar la app Android
-3. Copiar los valores del JSON de configuración
-
-Los valores que necesitás:
-- `apiKey` → clave de API
-- `appId` → ID de la app (formato: `1:XXXX:android:XXXX`)
-- `messagingSenderId` → ID del remitente
-- `projectId` → ID del proyecto
-
-### Alternativa: usar FlutterFire CLI (recomendado)
+## 8. Build & Run
 
 ```bash
-# Instalar la CLI
-dart pub global activate flutterfire_cli
-
-# Configurar automáticamente
-flutterfire configure
+flutter pub get
+flutter run
 ```
 
-Esto actualiza `firebase_options.dart` automáticamente.
-
----
-
-## Paso 6 — Compilar y probar
-
+For APK:
 ```bash
-# Instalar dependencias
-flutter pub get
-
-# Compilar APK de debug (para pruebas)
-flutter run
-
-# Compilar APK de release
 flutter build apk --release
 ```
 
----
+## 9. Optional: Google Services JSON for CI/CD
 
-## 📋 Checklist final
+If using GitHub Actions, add `google-services.json` content as a repository secret:
+- Secret name: `GOOGLE_SERVICES_JSON`
+- Add a build step to write the file before building
 
-- [ ] Proyecto de Firebase creado
-- [ ] App Android registrada con package `com.strmflwpr.app`
-- [ ] `google-services.json` descargado y colocado en `android/app/`
-- [ ] Authentication habilitado (Email/Contraseña)
-- [ ] Firestore Database creado
-- [ ] `lib/firebase_options.dart` actualizado con valores reales
-- [ ] `flutter pub get` ejecutado
-- [ ] App compilada y funcionando
-
----
-
-## 🆘 Problemas comunes
-
-### "FirebaseException: [core/no-app]"
-→ Falta configurar Firebase. Verificar que `google-services.json` esté en `android/app/`.
-
-### "Permission denied" en Firestore
-→ La base de datos está en modo producción sin reglas. Ir a Firestore → Reglas y configurar acceso.
-
-### "The email address is already in use"
-→ Ya existe un usuario con ese email. Intentar con otro email o usar "Olvidé mi contraseña".
-
-### La app no compila con el APK de GitHub Actions
-→ Verificar que `google-services.json` esté incluido. Por seguridad, podés agregarlo como GitHub Secret.
-
----
-
-## 🔐 Seguridad en producción
-
-1. **No subir `google-services.json` a GitHub** si el repo es público
-   - Agregar a `.gitignore`
-   - Usar GitHub Secrets para el CI/CD
-
-2. **Configurar reglas de Firestore** para proteger los datos
-
-3. **Habilitar App Check** en Firebase para validar que las requests vienen de la app real
-
-4. **Configurar SHA-1** en Firebase para Android production builds
+```yaml
+- name: Write google-services.json
+  run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
+```
