@@ -1,217 +1,135 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum SaleStatus { active, expired, renewed }
+enum ProfileStatus { 
+  available, sold, reserved, disabled;
+  
+  String get displayName {
+    switch (this) {
+      case ProfileStatus.sold: return 'Vendido';
+      case ProfileStatus.reserved: return 'Reservado';
+      case ProfileStatus.disabled: return 'Desactivado';
+      default: return 'Disponible';
+    }
+  }
+}
 
-class SaleModel {
+class ProfileModel {
   final String id;
   final String userId;
+  final String accountId;
   final String platformId;
   final String platformName;
-  final String platformEmoji;
-  final String accountId;
-  final String accountEmail;
-  final String accountPassword;
-  final String profileId;
-  final String profileName; // FIXED: was missing in v1
-  final String profilePin;
-  final String clientId; // reference to ClientModel
-  final String clientName;
-  final String clientPhone;
-  final double price;
-  final DateTime startDate;
-  final DateTime expirationDate;
-  final SaleStatus status;
-  final List<int> reminderDays; // [1, 3, 7] days before expiration
-  final List<int> remindersSent; // which days already had reminder sent
-  final int renewalCount;
-  final DateTime? lastRenewalDate;
-  final String clientToken; // unique token for client page link
-  final DateTime? whatsappSentAt; // when the last WhatsApp was sent
-  final String notes;
+  final String name;
+  final String pin;
+  final ProfileStatus status;
+  final String? currentSaleId;
+  final String? currentClientName;
+  final DateTime? saleDate;
+  final DateTime? expirationDate;
+  final List<int> reminderDays;
   final DateTime createdAt;
 
-  SaleModel({
+  ProfileModel({
     required this.id,
     required this.userId,
+    required this.accountId,
     required this.platformId,
     required this.platformName,
-    required this.platformEmoji,
-    required this.accountId,
-    required this.accountEmail,
-    required this.accountPassword,
-    required this.profileId,
-    required this.profileName,
-    required this.profilePin,
-    required this.clientId,
-    required this.clientName,
-    required this.clientPhone,
-    required this.price,
-    required this.startDate,
-    required this.expirationDate,
+    required this.name,
+    required this.pin,
     required this.status,
-    required this.reminderDays,
-    required this.remindersSent,
-    required this.renewalCount,
-    this.lastRenewalDate,
-    required this.clientToken,
-    this.whatsappSentAt,
-    required this.notes,
+    this.currentSaleId,
+    this.currentClientName,
+    this.saleDate,
+    this.expirationDate,
+    this.reminderDays = const [],
     required this.createdAt,
   });
 
-  bool get isActive => status == SaleStatus.active;
-  bool get isExpired => status == SaleStatus.expired;
+  bool get isAvailable => status == ProfileStatus.available;
+  bool get isSold => status == ProfileStatus.sold;
 
-  int get daysRemaining {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final exp = DateTime(expirationDate.year, expirationDate.month, expirationDate.day);
-    return exp.difference(today).inDays;
-  }
-
-  String get clientPageUrl => 'strmflwpr://client/$clientToken';
-
-  factory SaleModel.fromFirestore(DocumentSnapshot doc) {
+  factory ProfileModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return SaleModel(
+    return ProfileModel(
       id: doc.id,
       userId: data['userId'] as String? ?? '',
+      accountId: data['accountId'] as String? ?? '',
       platformId: data['platformId'] as String? ?? '',
       platformName: data['platformName'] as String? ?? '',
-      platformEmoji: data['platformEmoji'] as String? ?? '📺',
-      accountId: data['accountId'] as String? ?? '',
-      accountEmail: data['accountEmail'] as String? ?? '',
-      accountPassword: data['accountPassword'] as String? ?? '',
-      profileId: data['profileId'] as String? ?? '',
-      profileName: data['profileName'] as String? ?? '',
-      profilePin: data['profilePin'] as String? ?? '',
-      clientId: data['clientId'] as String? ?? '',
-      clientName: data['clientName'] as String? ?? '',
-      clientPhone: data['clientPhone'] as String? ?? '',
-      price: (data['price'] as num?)?.toDouble() ?? 0.0,
-      startDate: (data['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      expirationDate:
-          (data['expirationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      name: data['name'] as String? ?? data['profileName'] as String? ?? '',
+      pin: data['pin'] as String? ?? '',
       status: _statusFromString(data['status'] as String?),
-      reminderDays: List<int>.from(data['reminderDays'] as List? ?? [1, 3, 7]),
-      remindersSent: List<int>.from(data['remindersSent'] as List? ?? []),
-      renewalCount: (data['renewalCount'] as num?)?.toInt() ?? 0,
-      lastRenewalDate: (data['lastRenewalDate'] as Timestamp?)?.toDate(),
-      clientToken: data['clientToken'] as String? ?? '',
-      whatsappSentAt: (data['whatsappSentAt'] as Timestamp?)?.toDate(),
-      notes: data['notes'] as String? ?? '',
+      currentSaleId: data['currentSaleId'] as String?,
+      currentClientName: data['currentClientName'] as String?,
+      saleDate: (data['saleDate'] as Timestamp?)?.toDate(),
+      expirationDate: (data['expirationDate'] as Timestamp?)?.toDate(),
+      reminderDays: List<int>.from(data['reminderDays'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
-  static SaleStatus _statusFromString(String? s) {
+  static ProfileStatus _statusFromString(String? s) {
     switch (s) {
-      case 'expired':
-        return SaleStatus.expired;
-      case 'renewed':
-        return SaleStatus.renewed;
-      default:
-        return SaleStatus.active;
+      case 'sold': return ProfileStatus.sold;
+      case 'reserved': return ProfileStatus.reserved;
+      case 'disabled': return ProfileStatus.disabled;
+      default: return ProfileStatus.available;
     }
   }
 
-  static String statusToString(SaleStatus status) {
-    switch (status) {
-      case SaleStatus.expired:
-        return 'expired';
-      case SaleStatus.renewed:
-        return 'renewed';
-      default:
-        return 'active';
-    }
+  static String statusToString(ProfileStatus status) {
+    return status.name;
   }
 
   Map<String, dynamic> toFirestore() {
     return {
       'userId': userId,
+      'accountId': accountId,
       'platformId': platformId,
       'platformName': platformName,
-      'platformEmoji': platformEmoji,
-      'accountId': accountId,
-      'accountEmail': accountEmail,
-      'accountPassword': accountPassword,
-      'profileId': profileId,
-      'profileName': profileName,
-      'profilePin': profilePin,
-      'clientId': clientId,
-      'clientName': clientName,
-      'clientPhone': clientPhone,
-      'price': price,
-      'startDate': Timestamp.fromDate(startDate),
-      'expirationDate': Timestamp.fromDate(expirationDate),
+      'name': name,
+      'pin': pin,
       'status': statusToString(status),
+      'currentSaleId': currentSaleId,
+      'currentClientName': currentClientName,
+      'saleDate': saleDate != null ? Timestamp.fromDate(saleDate!) : null,
+      'expirationDate': expirationDate != null ? Timestamp.fromDate(expirationDate!) : null,
       'reminderDays': reminderDays,
-      'remindersSent': remindersSent,
-      'renewalCount': renewalCount,
-      'lastRenewalDate':
-          lastRenewalDate != null ? Timestamp.fromDate(lastRenewalDate!) : null,
-      'clientToken': clientToken,
-      'whatsappSentAt':
-          whatsappSentAt != null ? Timestamp.fromDate(whatsappSentAt!) : null,
-      'notes': notes,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
 
-  SaleModel copyWith({
+  ProfileModel copyWith({
     String? id,
     String? userId,
+    String? accountId,
     String? platformId,
     String? platformName,
-    String? platformEmoji,
-    String? accountId,
-    String? accountEmail,
-    String? accountPassword,
-    String? profileId,
-    String? profileName,
-    String? profilePin,
-    String? clientId,
-    String? clientName,
-    String? clientPhone,
-    double? price,
-    DateTime? startDate,
+    String? name,
+    String? pin,
+    ProfileStatus? status,
+    String? currentSaleId,
+    String? currentClientName,
+    DateTime? saleDate,
     DateTime? expirationDate,
-    SaleStatus? status,
     List<int>? reminderDays,
-    List<int>? remindersSent,
-    int? renewalCount,
-    DateTime? lastRenewalDate,
-    String? clientToken,
-    DateTime? whatsappSentAt,
-    String? notes,
     DateTime? createdAt,
   }) {
-    return SaleModel(
+    return ProfileModel(
       id: id ?? this.id,
       userId: userId ?? this.userId,
+      accountId: accountId ?? this.accountId,
       platformId: platformId ?? this.platformId,
       platformName: platformName ?? this.platformName,
-      platformEmoji: platformEmoji ?? this.platformEmoji,
-      accountId: accountId ?? this.accountId,
-      accountEmail: accountEmail ?? this.accountEmail,
-      accountPassword: accountPassword ?? this.accountPassword,
-      profileId: profileId ?? this.profileId,
-      profileName: profileName ?? this.profileName,
-      profilePin: profilePin ?? this.profilePin,
-      clientId: clientId ?? this.clientId,
-      clientName: clientName ?? this.clientName,
-      clientPhone: clientPhone ?? this.clientPhone,
-      price: price ?? this.price,
-      startDate: startDate ?? this.startDate,
-      expirationDate: expirationDate ?? this.expirationDate,
+      name: name ?? this.name,
+      pin: pin ?? this.pin,
       status: status ?? this.status,
+      currentSaleId: currentSaleId ?? this.currentSaleId,
+      currentClientName: currentClientName ?? this.currentClientName,
+      saleDate: saleDate ?? this.saleDate,
+      expirationDate: expirationDate ?? this.expirationDate,
       reminderDays: reminderDays ?? this.reminderDays,
-      remindersSent: remindersSent ?? this.remindersSent,
-      renewalCount: renewalCount ?? this.renewalCount,
-      lastRenewalDate: lastRenewalDate ?? this.lastRenewalDate,
-      clientToken: clientToken ?? this.clientToken,
-      whatsappSentAt: whatsappSentAt ?? this.whatsappSentAt,
-      notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
     );
   }
