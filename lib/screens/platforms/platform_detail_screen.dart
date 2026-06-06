@@ -1,135 +1,116 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../models/platform_model.dart';
-import '../../models/account_model.dart';
 import '../../services/firestore_service.dart';
+import '../../models/account_model.dart';
+import '../../widgets/account_card.dart';
 import '../accounts/account_form_screen.dart';
 import '../accounts/account_detail_screen.dart';
 
 class PlatformDetailScreen extends StatelessWidget {
   final PlatformModel platform;
-  final FirestoreService firestore;
+  final String userId;
 
-  const PlatformDetailScreen({
-    super.key,
-    required this.platform,
-    required this.firestore,
-  });
+  const PlatformDetailScreen(
+      {super.key, required this.platform, required this.userId});
 
   @override
   Widget build(BuildContext context) {
+    final service = FirestoreService();
     final theme = Theme.of(context);
-    final platformColor =
-        Color(int.parse(platform.color.replaceFirst('#', '0xFF')));
-    final fmt = DateFormat('dd/MM/yyyy');
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${platform.iconEmoji} ${platform.name}'),
-        centerTitle: true,
-        backgroundColor: platformColor.withOpacity(0.1),
-      ),
+      appBar: AppBar(title: Text(platform.name)),
       body: StreamBuilder<List<AccountModel>>(
-        stream: firestore.accountsByPlatformStream(platform.id),
+        stream: service.accountsByPlatformStream(userId, platform.id),
         builder: (context, snap) {
-          final accounts = snap.data ?? [];
-
-          if (accounts.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(platform.iconEmoji,
-                      style: const TextStyle(fontSize: 64)),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No hay cuentas de ${platform.name}',
-                    style: theme.textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Agregá tu primera cuenta con el botón +',
-                    style: TextStyle(
-                        color: theme.colorScheme.onSurfaceVariant),
-                  ),
-                ],
-              ),
-            );
+          if (snap.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: accounts.length,
-            itemBuilder: (ctx, i) {
-              final acc = accounts[i];
-              final expired = acc.isExpired;
-              final days = acc.daysUntilExpiration;
+          final accounts = snap.data ?? [];
 
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: platformColor.withOpacity(0.15),
-                    child: Text(
-                      platform.iconEmoji,
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  title: Text(
-                    acc.email,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // Platform info card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
                     children: [
-                      Text(
-                          'Vence: ${fmt.format(acc.expirationDate)}'),
-                      Text(
-                        expired
-                            ? '⚠️ Expirada'
-                            : days <= 7
-                                ? '⏰ Vence en $days días'
-                                : '✅ ${acc.totalProfiles} perfiles',
-                        style: TextStyle(
-                          color: expired
-                              ? Colors.red
-                              : days <= 7
-                                  ? Colors.orange
-                                  : Colors.green,
-                          fontSize: 12,
+                      Text(platform.emoji,
+                          style: const TextStyle(fontSize: 48)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(platform.name,
+                                style: theme.textTheme.headlineSmall
+                                    ?.copyWith(fontWeight: FontWeight.bold)),
+                            Text(
+                                '${accounts.length} cuenta(s) · max ${platform.maxProfiles} perfiles',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurface
+                                        .withOpacity(0.6))),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AccountDetailScreen(
-                        account: acc,
-                        platform: platform,
-                        firestore: firestore,
-                      ),
-                    ),
-                  ),
                 ),
-              );
-            },
+              ),
+              const SizedBox(height: 16),
+              Text('Cuentas',
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              if (accounts.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: Text('No hay cuentas para esta plataforma'),
+                  ),
+                )
+              else
+                ...accounts.map((account) => StreamBuilder(
+                      stream: service.profilesByAccountStream(
+                          userId, account.id),
+                      builder: (context, profileSnap) {
+                        final profiles = profileSnap.data ?? [];
+                        final sold = profiles
+                            .where((p) =>
+                                p.status.name == 'sold')
+                            .length;
+                        final available = profiles
+                            .where((p) =>
+                                p.status.name == 'available')
+                            .length;
+                        account.totalProfiles = profiles.length;
+                        account.soldProfiles = sold;
+                        account.availableProfiles = available;
+                        return AccountCard(
+                          account: account,
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (_) => AccountDetailScreen(
+                                    account: account,
+                                    userId: userId)),
+                          ),
+                        );
+                      },
+                    )),
+            ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.push(
-          context,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => AccountFormScreen(
-              platform: platform,
-              firestore: firestore,
-            ),
-          ),
+              builder: (_) =>
+                  AccountFormScreen(userId: userId, platformId: platform.id, platformName: platform.name)),
         ),
-        icon: const Icon(Icons.add),
-        label: const Text('Agregar cuenta'),
+        child: const Icon(Icons.add),
       ),
     );
   }
