@@ -1,130 +1,114 @@
 import 'package:url_launcher/url_launcher.dart';
-import 'package:intl/intl.dart';
-import '../models/profile_model.dart';
 import '../models/sale_model.dart';
+import '../models/template_model.dart';
+import '../utils/constants.dart';
+import '../utils/date_utils.dart';
+import '../utils/phone_utils.dart';
 
 class WhatsAppService {
-  static final WhatsAppService _instance = WhatsAppService._internal();
-  factory WhatsAppService() => _instance;
-  WhatsAppService._internal();
+  final String defaultCountryCode;
+  final String businessName;
+  final String currencySymbol;
 
-  final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
+  WhatsAppService({
+    required this.defaultCountryCode,
+    required this.businessName,
+    required this.currencySymbol,
+  });
 
-  /// Generate a welcome/sale message template
-  String generateSaleMessage({
-    required String platformName,
-    required String profileName,
-    required String clientName,
-    required String email,
-    required String password,
-    required String pin,
-    required DateTime expirationDate,
-    String? extraNotes,
-  }) {
-    final expStr = _dateFormat.format(expirationDate);
-    final buffer = StringBuffer();
-    buffer.writeln('¡Hola $clientName! 👋');
-    buffer.writeln();
-    buffer.writeln('Tu perfil de *$platformName* está listo ✅');
-    buffer.writeln();
-    buffer.writeln('📋 *Datos de acceso:*');
-    buffer.writeln('• Perfil: $profileName');
-    if (email.isNotEmpty) buffer.writeln('• Email: $email');
-    if (password.isNotEmpty) buffer.writeln('• Contraseña: $password');
-    if (pin.isNotEmpty) buffer.writeln('• PIN: $pin');
-    buffer.writeln();
-    buffer.writeln('📅 *Vencimiento:* $expStr');
-    buffer.writeln();
-    if (extraNotes != null && extraNotes.isNotEmpty) {
-      buffer.writeln('📝 $extraNotes');
-      buffer.writeln();
-    }
-    buffer.writeln('Ante cualquier consulta, no dudes en escribirme 😊');
-    return buffer.toString();
+  /// Build variables map from a sale for template rendering
+  Map<String, String> _buildVariables(SaleModel sale) {
+    return {
+      'clientName': sale.clientName,
+      'platformName': sale.platformName,
+      'profileName': sale.profileName,
+      'email': sale.accountEmail,
+      'password': sale.accountPassword,
+      'pin': sale.profilePin,
+      'expirationDate': AppDateUtils.formatDate(sale.expirationDate),
+      'daysRemaining': sale.daysRemaining.toString(),
+      'price': '$currencySymbol ${sale.price.toStringAsFixed(0)}',
+      'businessName': businessName,
+      'clientLink': sale.clientPageUrl,
+    };
   }
 
-  /// Generate a renewal reminder message
-  String generateReminderMessage({
-    required String platformName,
-    required String profileName,
-    required String clientName,
-    required String clientPhone,
-    required DateTime expirationDate,
-    required int daysRemaining,
-  }) {
-    final expStr = _dateFormat.format(expirationDate);
-    final buffer = StringBuffer();
-    buffer.writeln('¡Hola $clientName! 👋');
-    buffer.writeln();
+  /// Send a welcome / sale confirmation message
+  Future<bool> sendWelcomeMessage(SaleModel sale,
+      {TemplateModel? customTemplate}) async {
+    final variables = _buildVariables(sale);
+    String message;
 
-    if (daysRemaining == 0) {
-      buffer.writeln('⚠️ Tu perfil de *$platformName* vence *HOY*.');
-    } else if (daysRemaining == 1) {
-      buffer.writeln('⚠️ Tu perfil de *$platformName* vence *mañana*.');
+    if (customTemplate != null) {
+      message = customTemplate.render(variables);
     } else {
-      buffer.writeln(
-          '⏰ Tu perfil de *$platformName* vence en *$daysRemaining días* ($expStr).');
+      message = _renderDefault(AppConstants.defaultWelcomeTemplate, variables);
     }
 
-    buffer.writeln();
-    buffer.writeln('• Perfil: $profileName');
-    buffer.writeln('• Fecha de vencimiento: $expStr');
-    buffer.writeln();
-    buffer.writeln('¿Deseas renovar? Avisame para coordinarlo 😊');
-    return buffer.toString();
+    return _openWhatsApp(sale.clientPhone, message);
   }
 
-  /// Generate a message from a ProfileModel
-  String generateSaleMessageFromProfile({
-    required ProfileModel profile,
-    required String accountEmail,
-    required String accountPassword,
-  }) {
-    return generateSaleMessage(
-      platformName: profile.platformName,
-      profileName: profile.profileName,
-      clientName: profile.clientName.isNotEmpty ? profile.clientName : 'Cliente',
-      email: accountEmail,
-      password: accountPassword,
-      pin: profile.profilePin,
-      expirationDate: profile.expirationDate ?? DateTime.now(),
-    );
+  /// Send a reminder message
+  Future<bool> sendReminderMessage(SaleModel sale,
+      {TemplateModel? customTemplate}) async {
+    final variables = _buildVariables(sale);
+    String message;
+
+    if (customTemplate != null) {
+      message = customTemplate.render(variables);
+    } else {
+      message = _renderDefault(AppConstants.defaultReminderTemplate, variables);
+    }
+
+    return _openWhatsApp(sale.clientPhone, message);
   }
 
-  /// Generate a reminder from a SaleModel
-  String generateReminderFromSale(SaleModel sale) {
-    return generateReminderMessage(
-      platformName: sale.platformName,
-      profileName: '',
-      clientName: sale.clientName,
-      clientPhone: sale.clientPhone,
-      expirationDate: sale.expirationDate,
-      daysRemaining: sale.daysUntilExpiration,
-    );
+  /// Send an expired message
+  Future<bool> sendExpiredMessage(SaleModel sale,
+      {TemplateModel? customTemplate}) async {
+    final variables = _buildVariables(sale);
+    String message;
+
+    if (customTemplate != null) {
+      message = customTemplate.render(variables);
+    } else {
+      message = _renderDefault(AppConstants.defaultExpiredTemplate, variables);
+    }
+
+    return _openWhatsApp(sale.clientPhone, message);
   }
 
-  /// Launch WhatsApp with a pre-filled message
-  Future<bool> sendWhatsAppMessage({
-    required String phone,
-    required String message,
-  }) async {
-    // Clean phone number - remove spaces, dashes, +, etc.
-    final cleanPhone = phone.replaceAll(RegExp(r'[\s\-\(\)\+]'), '');
-    final encodedMessage = Uri.encodeComponent(message);
-    final url = 'https://wa.me/$cleanPhone?text=$encodedMessage';
+  /// Send a custom message
+  Future<bool> sendCustomMessage(String phone, String message) async {
+    return _openWhatsApp(phone, message);
+  }
+
+  String _renderDefault(String template, Map<String, String> variables) {
+    String result = template;
+    variables.forEach((key, value) {
+      result = result.replaceAll('{$key}', value);
+    });
+    return result;
+  }
+
+  Future<bool> _openWhatsApp(String phone, String message) async {
+    final number =
+        PhoneUtils.toWhatsAppNumber(phone, defaultCountryCode);
+    final encoded = Uri.encodeComponent(message);
+
+    // Try wa.me deep link first (works for all versions)
+    final waUrl = Uri.parse('https://wa.me/$number?text=$encoded');
+    // Fallback: WhatsApp intent
+    final intentUrl =
+        Uri.parse('whatsapp://send?phone=$number&text=$encoded');
 
     try {
-      final uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (await canLaunchUrl(intentUrl)) {
+        await launchUrl(intentUrl, mode: LaunchMode.externalApplication);
         return true;
-      } else {
-        // Fallback to whatsapp:// scheme
-        final waUri = Uri.parse('whatsapp://send?phone=$cleanPhone&text=$encodedMessage');
-        if (await canLaunchUrl(waUri)) {
-          await launchUrl(waUri, mode: LaunchMode.externalApplication);
-          return true;
-        }
+      } else if (await canLaunchUrl(waUrl)) {
+        await launchUrl(waUrl, mode: LaunchMode.externalApplication);
+        return true;
       }
       return false;
     } catch (e) {
@@ -132,12 +116,19 @@ class WhatsAppService {
     }
   }
 
-  /// Launch WhatsApp with a SaleModel reminder
-  Future<bool> sendSaleReminder(SaleModel sale) async {
-    final message = generateReminderFromSale(sale);
-    return sendWhatsAppMessage(
-      phone: sale.clientPhone,
-      message: message,
-    );
+  /// Preview a template with sample data
+  static String previewTemplate(String template) {
+    return template
+        .replaceAll('{clientName}', 'Juan Pérez')
+        .replaceAll('{platformName}', 'Netflix')
+        .replaceAll('{profileName}', 'Perfil 1')
+        .replaceAll('{email}', 'cuenta@ejemplo.com')
+        .replaceAll('{password}', '**contraseña**')
+        .replaceAll('{pin}', '1234')
+        .replaceAll('{expirationDate}', '31/12/2024')
+        .replaceAll('{daysRemaining}', '30')
+        .replaceAll('{price}', 'ARS 2500')
+        .replaceAll('{businessName}', 'Mi Negocio')
+        .replaceAll('{clientLink}', 'strmflwpr://client/abc123');
   }
 }
