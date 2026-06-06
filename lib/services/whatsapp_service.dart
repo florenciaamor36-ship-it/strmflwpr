@@ -22,12 +22,21 @@ class WhatsAppService {
     await _launchWhatsApp(sale.clientPhone, message);
   }
 
-  String generateSaleMessage({required String clientName, required String platformName, required DateTime expirationDate, String? businessName}) {
-    return "Hola $clientName, gracias por tu compra de $platformName. Vence el ${expirationDate.day}/${expirationDate.month}.";
+  String generateSaleMessage({
+    required String platformName,
+    required String profileName,
+    required String clientName,
+    required String email,
+    required String password,
+    required String pin,
+    required DateTime expirationDate,
+    String? businessName,
+  }) {
+    return "Hola $clientName, gracias por tu compra de $platformName. Tus datos son:\nEmail: $email\nPassword: $password\nPerfil: $profileName\nPIN: $pin\nVence: ${expirationDate.day}/${expirationDate.month}.";
   }
 
-  Future<void> sendWhatsAppMessage({required String phoneNumber, required String message}) async {
-    await _launchWhatsApp(phoneNumber, message);
+  Future<void> sendWhatsAppMessage({required String phone, required String message}) async {
+    await _launchWhatsApp(phone, message);
   }
 
   Future<void> _launchWhatsApp(String phone, String message) async {
