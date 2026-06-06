@@ -12,61 +12,52 @@ class SaleModel {
   final String accountEmail;
   final String accountPassword;
   final String profileId;
-  final String profileName;
+  final String profileName; // FIXED: was missing in v1
   final String profilePin;
-  final String clientId;
+  final String clientId; // reference to ClientModel
   final String clientName;
   final String clientPhone;
   final double price;
   final DateTime startDate;
   final DateTime expirationDate;
   final SaleStatus status;
-  final List<int> reminderDays;
-  final List<int> remindersSent;
+  final List<int> reminderDays; // [1, 3, 7] days before expiration
+  final List<int> remindersSent; // which days already had reminder sent
   final int renewalCount;
   final DateTime? lastRenewalDate;
-  final String clientToken;
-  final DateTime? whatsappSentAt;
+  final String clientToken; // unique token for client page link
+  final DateTime? whatsappSentAt; // when the last WhatsApp was sent
   final String notes;
   final DateTime createdAt;
-  
-  // Compatibility
-  final bool whatsappTemplateSent;
-  final DateTime? saleDate;
 
   SaleModel({
     required this.id,
     required this.userId,
     required this.platformId,
     required this.platformName,
-    this.platformEmoji = '📺',
+    required this.platformEmoji,
     required this.accountId,
-    this.accountEmail = '',
-    this.accountPassword = '',
+    required this.accountEmail,
+    required this.accountPassword,
     required this.profileId,
-    this.profileName = '',
-    this.profilePin = '',
-    this.clientId = '',
+    required this.profileName,
+    required this.profilePin,
+    required this.clientId,
     required this.clientName,
     required this.clientPhone,
     required this.price,
-    DateTime? startDate,
+    required this.startDate,
     required this.expirationDate,
     required this.status,
-    this.reminderDays = const [7, 3, 1],
-    this.remindersSent = const [],
-    this.renewalCount = 0,
+    required this.reminderDays,
+    required this.remindersSent,
+    required this.renewalCount,
     this.lastRenewalDate,
-    this.clientToken = '',
+    required this.clientToken,
     this.whatsappSentAt,
-    this.notes = '',
-    DateTime? createdAt,
-    this.whatsappTemplateSent = false,
-    this.saleDate,
-    String? phone, // Compatibility
-  }) : this.startDate = startDate ?? saleDate ?? DateTime.now(),
-       this.createdAt = createdAt ?? DateTime.now(),
-       this.clientPhone = phone ?? clientPhone;
+    required this.notes,
+    required this.createdAt,
+  });
 
   bool get isActive => status == SaleStatus.active;
   bool get isExpired => status == SaleStatus.expired;
@@ -77,8 +68,8 @@ class SaleModel {
     final exp = DateTime(expirationDate.year, expirationDate.month, expirationDate.day);
     return exp.difference(today).inDays;
   }
-  
-  int get daysUntilExpiration => daysRemaining;
+
+  String get clientPageUrl => 'strmflwpr://client/$clientToken';
 
   factory SaleModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -98,8 +89,9 @@ class SaleModel {
       clientName: data['clientName'] as String? ?? '',
       clientPhone: data['clientPhone'] as String? ?? '',
       price: (data['price'] as num?)?.toDouble() ?? 0.0,
-      startDate: (data['startDate'] as Timestamp?)?.toDate(),
-      expirationDate: (data['expirationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      startDate: (data['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      expirationDate:
+          (data['expirationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       status: _statusFromString(data['status'] as String?),
       reminderDays: List<int>.from(data['reminderDays'] as List? ?? [1, 3, 7]),
       remindersSent: List<int>.from(data['remindersSent'] as List? ?? []),
@@ -108,17 +100,29 @@ class SaleModel {
       clientToken: data['clientToken'] as String? ?? '',
       whatsappSentAt: (data['whatsappSentAt'] as Timestamp?)?.toDate(),
       notes: data['notes'] as String? ?? '',
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
-      whatsappTemplateSent: data['whatsappTemplateSent'] as bool? ?? false,
-      saleDate: (data['saleDate'] as Timestamp?)?.toDate(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
   static SaleStatus _statusFromString(String? s) {
     switch (s) {
-      case 'expired': return SaleStatus.expired;
-      case 'renewed': return SaleStatus.renewed;
-      default: return SaleStatus.active;
+      case 'expired':
+        return SaleStatus.expired;
+      case 'renewed':
+        return SaleStatus.renewed;
+      default:
+        return SaleStatus.active;
+    }
+  }
+
+  static String statusToString(SaleStatus status) {
+    switch (status) {
+      case SaleStatus.expired:
+        return 'expired';
+      case SaleStatus.renewed:
+        return 'renewed';
+      default:
+        return 'active';
     }
   }
 
@@ -140,17 +144,17 @@ class SaleModel {
       'price': price,
       'startDate': Timestamp.fromDate(startDate),
       'expirationDate': Timestamp.fromDate(expirationDate),
-      'status': status.name,
+      'status': statusToString(status),
       'reminderDays': reminderDays,
       'remindersSent': remindersSent,
       'renewalCount': renewalCount,
-      'lastRenewalDate': lastRenewalDate != null ? Timestamp.fromDate(lastRenewalDate!) : null,
+      'lastRenewalDate':
+          lastRenewalDate != null ? Timestamp.fromDate(lastRenewalDate!) : null,
       'clientToken': clientToken,
-      'whatsappSentAt': whatsappSentAt != null ? Timestamp.fromDate(whatsappSentAt!) : null,
+      'whatsappSentAt':
+          whatsappSentAt != null ? Timestamp.fromDate(whatsappSentAt!) : null,
       'notes': notes,
       'createdAt': Timestamp.fromDate(createdAt),
-      'whatsappTemplateSent': whatsappTemplateSent,
-      'saleDate': saleDate != null ? Timestamp.fromDate(saleDate!) : null,
     };
   }
 
@@ -181,8 +185,6 @@ class SaleModel {
     DateTime? whatsappSentAt,
     String? notes,
     DateTime? createdAt,
-    bool? whatsappTemplateSent,
-    DateTime? saleDate,
   }) {
     return SaleModel(
       id: id ?? this.id,
@@ -211,8 +213,6 @@ class SaleModel {
       whatsappSentAt: whatsappSentAt ?? this.whatsappSentAt,
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
-      whatsappTemplateSent: whatsappTemplateSent ?? this.whatsappTemplateSent,
-      saleDate: saleDate ?? this.saleDate,
     );
   }
 }
