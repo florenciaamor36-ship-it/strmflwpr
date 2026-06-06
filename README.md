@@ -1,162 +1,143 @@
-# 📺 strmflwpr
+# strmflwpr v2.0
 
-**Gestor de cuentas streaming para revendedores**
+**Streaming account manager for resellers** — built with Flutter + Firebase.
 
-strmflwpr es una app Android (Flutter) que te permite gestionar tus cuentas de plataformas de streaming (Netflix, Disney+, HBO, Spotify, etc.) y los perfiles que vendés individualmente a tus clientes.
-
----
-
-## ✨ Características
-
-- 🔐 **Multi-usuario** — Login con email y contraseña (Firebase Auth)
-- 📺 **Gestión de plataformas** — Netflix, Disney+, HBO Max, Spotify y más. También podés agregar plataformas personalizadas
-- 👤 **Gestión de perfiles** — Cada cuenta tiene N perfiles que podés vender individualmente
-- 💰 **Registro de ventas** — Seguimiento de ventas con fechas de vencimiento por perfil
-- 🔔 **Recordatorios configurables** — Notificaciones X días antes del vencimiento
-- 💬 **Integración con WhatsApp** — Genera mensajes pre-llenados y los envía con un tap
-- 📊 **Dashboard** — Estadísticas de cuentas, ventas activas y vencimientos próximos
-- 🌙 **Dark mode** — Soporte para tema oscuro
+> Gestionate cuentas de streaming y perfiles como un pro. Registro de clientes, ventas, renovaciones, stock y estadísticas.
 
 ---
 
-## 🚀 Setup rápido
+## ✨ Features
 
-### 1. Requisitos previos
+### Core
+- 🔐 Firebase Authentication (email/password)
+- 📱 Real-time Firestore streams (no stale data)
+- 🌙 Dark/light/system theme
 
-- Flutter 3.16.x o superior
-- Android Studio o VS Code con el plugin de Flutter
-- Cuenta en Firebase (gratuita)
+### Inventory Management
+- 🎬 **Platforms**: Netflix, Disney+, Spotify, etc. with custom emoji & pricing
+- 📦 **Accounts**: master accounts with purchase cost tracking
+- 👤 **Profiles**: per-account profiles with PIN, availability tracking
+- 📊 **Stock view**: real-time available/sold/reserved counts per platform
 
-### 2. Clonar el repositorio
+### Sales
+- 💰 **Quick Sale (Venta Rápida)**: 3-step wizard for fast sales in under 5 taps
+- 📋 **Sales management**: active, expired, all — with search
+- 🔄 **Renewals**: one-tap renewal with date picker + renewal history
+- ✅ **Confirmation dialogs** before all destructive actions
+- 📱 **QR code** per sale with share button
 
-```bash
-git clone https://github.com/florenciaamor36-ship-it/strmflwpr.git
-cd strmflwpr
-```
+### Clients
+- 👥 **Client profiles**: name, phone, email, notes, tags
+- 🔍 **Search**: by name or phone
+- 💵 **Total spent** tracking
+- 📜 **Purchase history** per client
 
-### 3. Configurar Firebase
+### WhatsApp Integration
+- 📨 **Templates**: welcome, reminder, expired — customizable per platform
+- 🔗 **Client page link**: unique `strmflwpr://client/{token}` deep link per sale
+- 🗓 **Automated reminders**: via Workmanager background scheduler
 
-**⚠️ Paso obligatorio — la app no funciona sin Firebase**
+### Financial Dashboard
+- 📈 **Line chart**: monthly revenue last 6 months (fl_chart)
+- 🥧 **Pie chart**: revenue by platform
+- 💡 **Stats**: total revenue, this month, avg price, best platform
+- 📤 **CSV export** of all sales
 
-Ver instrucciones detalladas en [FIREBASE_SETUP.md](FIREBASE_SETUP.md).
+---
 
-En resumen:
-1. Crear proyecto en [Firebase Console](https://console.firebase.google.com)
-2. Habilitar Authentication (email/contraseña)
-3. Habilitar Firestore Database
-4. Descargar `google-services.json` y colocarlo en `android/app/`
-5. Actualizar `lib/firebase_options.dart` con tus valores reales
+## 🚀 Setup
 
-### 4. Instalar dependencias
+### 1. Firebase
+See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for full setup instructions.
 
+### 2. Install dependencies
 ```bash
 flutter pub get
 ```
 
-### 5. Ejecutar en desarrollo
-
+### 3. Run
 ```bash
 flutter run
 ```
 
 ---
 
-## 📱 Descargar el APK
-
-### Opción A — GitHub Actions (recomendado)
-
-Cada vez que se hace un push a `main`, GitHub Actions compila el APK automáticamente.
-
-1. Ve a **Actions** en este repositorio
-2. Hacé clic en el último workflow completado (✅)
-3. En la sección **Artifacts**, descargá `strmflwpr-apk`
-
-### Opción B — Compilar manualmente
-
-```bash
-flutter build apk --release
-# El APK estará en: build/app/outputs/flutter-apk/app-release.apk
-```
-
-### Instalar el APK en Android
-
-1. Transferir el APK al teléfono
-2. En el teléfono: **Ajustes → Seguridad → Instalar apps desconocidas** → Permitir
-3. Abrir el APK desde el gestor de archivos
-
----
-
-## 🏗️ Estructura del proyecto
+## 🏗️ Architecture
 
 ```
 lib/
-├── main.dart                    # Punto de entrada
-├── firebase_options.dart        # Config de Firebase (debes completar)
-├── models/                      # Modelos de datos
-│   ├── platform_model.dart      # Plataformas streaming
-│   ├── account_model.dart       # Cuentas
-│   ├── profile_model.dart       # Perfiles
-│   └── sale_model.dart          # Ventas
-├── services/
-│   ├── auth_service.dart        # Firebase Auth
-│   ├── firestore_service.dart   # Firestore CRUD
-│   ├── notification_service.dart # Notificaciones locales
-│   └── whatsapp_service.dart    # Generación de mensajes WhatsApp
-├── screens/                     # Pantallas
-│   ├── auth/                    # Login / Registro
-│   ├── home/                    # Dashboard
-│   ├── platforms/               # Plataformas
-│   ├── accounts/                # Cuentas
-│   ├── profiles/                # Perfiles
-│   ├── sales/                   # Ventas
-│   └── settings/                # Configuración
-└── widgets/                     # Componentes reutilizables
+├── main.dart           # Firebase init, Workmanager, providers
+├── firebase_options.dart
+├── app/                # MaterialApp, routing, theme
+├── models/             # Data models with Firestore serialization
+├── services/           # Firebase, WhatsApp, notifications, export
+├── providers/          # Auth, Theme, Settings (ChangeNotifier)
+├── screens/            # Feature screens
+└── widgets/            # Reusable UI components
 ```
 
 ---
 
-## 🔧 Tech Stack
+## 📦 Key Dependencies
 
-| Tecnología | Uso |
+| Package | Use |
 |---|---|
-| Flutter 3.16+ | Framework UI |
-| Dart 3.x | Lenguaje |
-| Firebase Auth | Autenticación |
-| Cloud Firestore | Base de datos |
-| flutter_local_notifications | Recordatorios |
-| url_launcher | WhatsApp |
-| provider | State management |
-| google_fonts | Tipografía |
+| `firebase_auth` | Authentication |
+| `cloud_firestore` | Real-time database |
+| `flutter_local_notifications` | Local push notifications |
+| `workmanager` | Background daily expiration check |
+| `fl_chart` | Revenue charts |
+| `qr_flutter` | QR code generation |
+| `share_plus` | System share sheet |
+| `url_launcher` | WhatsApp deep links |
+| `shared_preferences` | User settings persistence |
 
 ---
 
-## 📋 Plataformas incluidas por defecto
+## 🔧 Firestore Security Rules
 
-| Plataforma | Emoji | Perfiles |
-|---|---|---|
-| Netflix | 🎬 | 5 |
-| Disney+ | 🏰 | 4 |
-| HBO Max | 👑 | 5 |
-| Amazon Prime | 📦 | 3 |
-| Spotify | 🎵 | 6 |
-| YouTube Premium | ▶️ | 6 |
-| Paramount+ | ⭐ | 3 |
-| Apple TV+ | 🍎 | 6 |
-| Star+ | ⭐ | 4 |
-| Crunchyroll | 🎌 | 4 |
-| Canva Pro | 🎨 | 5 |
-| Microsoft 365 | 💼 | 5 |
-
-Podés agregar plataformas personalizadas desde la app.
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{collection}/{document} {
+      allow read, write: if request.auth != null 
+        && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null;
+    }
+  }
+}
+```
 
 ---
 
-## 🤝 Contribuir
+## 📱 Build APK
 
-Pull requests bienvenidos. Para cambios grandes, abrir primero un issue.
+GitHub Actions automatically builds an APK on every push to `main`. Download from the Actions tab.
+
+Manual:
+```bash
+flutter build apk --release
+```
 
 ---
 
-## 📄 Licencia
+## v2.0 Changelog
 
-MIT
+- ✅ FutureBuilder → StreamBuilder everywhere (real-time updates)
+- ✅ `profileName` added to SaleModel
+- ✅ Workmanager daily background scheduler for notifications
+- ✅ Phone number validation with country code detection
+- ✅ Account cards show available/sold profile count
+- ✅ Confirmation dialogs before all destructive actions
+- ✅ Client management (ClientModel + CRUD screens)
+- ✅ Financial dashboard with fl_chart charts
+- ✅ Renewals system with history
+- ✅ Customizable WhatsApp templates per platform
+- ✅ Inventory/stock view
+- ✅ Client page unique token + QR code
+- ✅ Quick Sale 3-step wizard
+- ✅ CSV export
+- ✅ Low stock alerts (banner + notifications)
+- ✅ Dark/light/system theme toggle
+- ✅ Currency symbol setting
