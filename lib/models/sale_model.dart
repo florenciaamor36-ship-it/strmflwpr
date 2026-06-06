@@ -1,136 +1,143 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum ProfileStatus { 
-  available, sold, reserved, disabled;
-  
-  String get displayName {
-    switch (this) {
-      case ProfileStatus.sold: return 'Vendido';
-      case ProfileStatus.reserved: return 'Reservado';
-      case ProfileStatus.disabled: return 'Desactivado';
-      default: return 'Disponible';
-    }
-  }
-}
+enum SaleStatus { active, expired, renewed }
 
-class ProfileModel {
+class SaleModel {
   final String id;
   final String userId;
-  final String accountId;
   final String platformId;
   final String platformName;
-  final String name;
-  final String pin;
-  final ProfileStatus status;
-  final String? currentSaleId;
-  final String? currentClientName;
-  final DateTime? saleDate;
-  final DateTime? expirationDate;
+  final String platformEmoji;
+  final String accountId;
+  final String accountEmail;
+  final String accountPassword;
+  final String profileId;
+  final String profileName;
+  final String profilePin;
+  final String clientId;
+  final String clientName;
+  final String clientPhone;
+  final double price;
+  final DateTime startDate;
+  final DateTime expirationDate;
+  final SaleStatus status;
   final List<int> reminderDays;
+  final List<int> remindersSent;
+  final int renewalCount;
+  final DateTime? lastRenewalDate;
+  final String clientToken;
+  final DateTime? whatsappSentAt;
+  final String notes;
   final DateTime createdAt;
 
-  ProfileModel({
+  SaleModel({
     required this.id,
     required this.userId,
-    required this.accountId,
     required this.platformId,
     required this.platformName,
-    required this.name,
-    required this.pin,
+    required this.platformEmoji,
+    required this.accountId,
+    required this.accountEmail,
+    required this.accountPassword,
+    required this.profileId,
+    required this.profileName,
+    required this.profilePin,
+    required this.clientId,
+    required this.clientName,
+    required this.clientPhone,
+    required this.price,
+    required this.startDate,
+    required this.expirationDate,
     required this.status,
-    this.currentSaleId,
-    this.currentClientName,
-    this.saleDate,
-    this.expirationDate,
-    this.reminderDays = const [],
+    required this.reminderDays,
+    required this.remindersSent,
+    required this.renewalCount,
+    this.lastRenewalDate,
+    required this.clientToken,
+    this.whatsappSentAt,
+    required this.notes,
     required this.createdAt,
   });
 
-  bool get isAvailable => status == ProfileStatus.available;
-  bool get isSold => status == ProfileStatus.sold;
+  bool get isActive => status == SaleStatus.active;
+  bool get isExpired => status == SaleStatus.expired;
 
-  factory ProfileModel.fromFirestore(DocumentSnapshot doc) {
+  int get daysRemaining {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final exp = DateTime(expirationDate.year, expirationDate.month, expirationDate.day);
+    return exp.difference(today).inDays;
+  }
+  
+  int get daysUntilExpiration => daysRemaining;
+
+  factory SaleModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return ProfileModel(
+    return SaleModel(
       id: doc.id,
       userId: data['userId'] as String? ?? '',
-      accountId: data['accountId'] as String? ?? '',
       platformId: data['platformId'] as String? ?? '',
       platformName: data['platformName'] as String? ?? '',
-      name: data['name'] as String? ?? data['profileName'] as String? ?? '',
-      pin: data['pin'] as String? ?? '',
+      platformEmoji: data['platformEmoji'] as String? ?? '📺',
+      accountId: data['accountId'] as String? ?? '',
+      accountEmail: data['accountEmail'] as String? ?? '',
+      accountPassword: data['accountPassword'] as String? ?? '',
+      profileId: data['profileId'] as String? ?? '',
+      profileName: data['profileName'] as String? ?? '',
+      profilePin: data['profilePin'] as String? ?? '',
+      clientId: data['clientId'] as String? ?? '',
+      clientName: data['clientName'] as String? ?? '',
+      clientPhone: data['clientPhone'] as String? ?? '',
+      price: (data['price'] as num?)?.toDouble() ?? 0.0,
+      startDate: (data['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      expirationDate: (data['expirationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       status: _statusFromString(data['status'] as String?),
-      currentSaleId: data['currentSaleId'] as String?,
-      currentClientName: data['currentClientName'] as String?,
-      saleDate: (data['saleDate'] as Timestamp?)?.toDate(),
-      expirationDate: (data['expirationDate'] as Timestamp?)?.toDate(),
-      reminderDays: List<int>.from(data['reminderDays'] ?? []),
+      reminderDays: List<int>.from(data['reminderDays'] as List? ?? [1, 3, 7]),
+      remindersSent: List<int>.from(data['remindersSent'] as List? ?? []),
+      renewalCount: (data['renewalCount'] as num?)?.toInt() ?? 0,
+      lastRenewalDate: (data['lastRenewalDate'] as Timestamp?)?.toDate(),
+      clientToken: data['clientToken'] as String? ?? '',
+      whatsappSentAt: (data['whatsappSentAt'] as Timestamp?)?.toDate(),
+      notes: data['notes'] as String? ?? '',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
-  static ProfileStatus _statusFromString(String? s) {
+  static SaleStatus _statusFromString(String? s) {
     switch (s) {
-      case 'sold': return ProfileStatus.sold;
-      case 'reserved': return ProfileStatus.reserved;
-      case 'disabled': return ProfileStatus.disabled;
-      default: return ProfileStatus.available;
+      case 'expired': return SaleStatus.expired;
+      case 'renewed': return SaleStatus.renewed;
+      default: return SaleStatus.active;
     }
-  }
-
-  static String statusToString(ProfileStatus status) {
-    return status.name;
   }
 
   Map<String, dynamic> toFirestore() {
     return {
       'userId': userId,
-      'accountId': accountId,
       'platformId': platformId,
       'platformName': platformName,
-      'name': name,
-      'pin': pin,
-      'status': statusToString(status),
-      'currentSaleId': currentSaleId,
-      'currentClientName': currentClientName,
-      'saleDate': saleDate != null ? Timestamp.fromDate(saleDate!) : null,
-      'expirationDate': expirationDate != null ? Timestamp.fromDate(expirationDate!) : null,
+      'platformEmoji': platformEmoji,
+      'accountId': accountId,
+      'accountEmail': accountEmail,
+      'accountPassword': accountPassword,
+      'profileId': profileId,
+      'profileName': profileName,
+      'profilePin': profilePin,
+      'clientId': clientId,
+      'clientName': clientName,
+      'clientPhone': clientPhone,
+      'price': price,
+      'startDate': Timestamp.fromDate(startDate),
+      'expirationDate': Timestamp.fromDate(expirationDate),
+      'status': status.name,
       'reminderDays': reminderDays,
+      'remindersSent': remindersSent,
+      'renewalCount': renewalCount,
+      'lastRenewalDate': lastRenewalDate != null ? Timestamp.fromDate(lastRenewalDate!) : null,
+      'clientToken': clientToken,
+      'whatsappSentAt': whatsappSentAt != null ? Timestamp.fromDate(whatsappSentAt!) : null,
+      'notes': notes,
       'createdAt': Timestamp.fromDate(createdAt),
     };
-  }
-
-  ProfileModel copyWith({
-    String? id,
-    String? userId,
-    String? accountId,
-    String? platformId,
-    String? platformName,
-    String? name,
-    String? pin,
-    ProfileStatus? status,
-    String? currentSaleId,
-    String? currentClientName,
-    DateTime? saleDate,
-    DateTime? expirationDate,
-    List<int>? reminderDays,
-    DateTime? createdAt,
-  }) {
-    return ProfileModel(
-      id: id ?? this.id,
-      userId: userId ?? this.userId,
-      accountId: accountId ?? this.accountId,
-      platformId: platformId ?? this.platformId,
-      platformName: platformName ?? this.platformName,
-      name: name ?? this.name,
-      pin: pin ?? this.pin,
-      status: status ?? this.status,
-      currentSaleId: currentSaleId ?? this.currentSaleId,
-      currentClientName: currentClientName ?? this.currentClientName,
-      saleDate: saleDate ?? this.saleDate,
-      expirationDate: expirationDate ?? this.expirationDate,
-      reminderDays: reminderDays ?? this.reminderDays,
-      createdAt: createdAt ?? this.createdAt,
-    );
   }
 }
