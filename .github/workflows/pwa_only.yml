@@ -19,8 +19,10 @@ jobs:
           channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
+      - name: Configure Web
+        run: flutter create . --platforms web
       - name: Build Web
-        run: flutter build web --release --base-href '/strmflwpr/' --web-renderer canvaskit
+        run: flutter build web --release --base-href '/strmflwpr/'
       - name: Upload Artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
