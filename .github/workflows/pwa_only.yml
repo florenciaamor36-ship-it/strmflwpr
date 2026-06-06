@@ -1,4 +1,4 @@
-name: PWA ONLY DEPLOY
+name: HTML ONLY DEPLOY (Plan B)
 on:
   push:
     branches: [ main ]
@@ -14,19 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-      - name: Install dependencies
-        run: flutter pub get
-      - name: Configure Web
-        run: flutter create . --platforms web
-      - name: Build Web
-        run: flutter build web --release --base-href '/strmflwpr/'
+      - name: Prepare HTML for Deployment
+        run: |
+          mkdir -p public
+          cp 'index (8).html' public/index.html
       - name: Upload Artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build/web
+          path: public
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
