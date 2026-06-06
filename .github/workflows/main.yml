@@ -13,12 +13,14 @@ jobs:
         with:
           flutter-version: '3.16.9'
           channel: 'stable'
+      - name: Create local.properties
+        run: |
+          echo "flutter.sdk=" > android/local.properties
+          echo "sdk.dir=" >> android/local.properties
       - name: Install dependencies
         run: flutter pub get
       - name: Build APK
-        run: |
-          echo "flutter.sdk=" > android/local.properties
-          flutter build apk --release
+        run: flutter build apk --release
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
