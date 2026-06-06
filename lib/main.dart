@@ -1,76 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:workmanager/workmanager.dart';
 import 'firebase_options.dart';
-import 'services/auth_service.dart';
+import 'app/app.dart';
+import 'providers/auth_provider.dart';
+import 'providers/theme_provider.dart';
+import 'providers/settings_provider.dart';
 import 'services/notification_service.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/home/home_screen.dart';
+
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    switch (task) {
+      case NotificationService.dailyCheckTask:
+        await NotificationService.runBackgroundExpirationCheck();
+        break;
+    }
+    return Future.value(true);
+  });
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await NotificationService().initialize();
-  runApp(const StrmflwprApp());
-}
 
-class StrmflwprApp extends StatelessWidget {
-  const StrmflwprApp({super.key});
+  await NotificationService.initialize();
 
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
+  await Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
+  await Workmanager().registerPeriodicTask(
+    NotificationService.dailyCheckTask,
+    NotificationService.dailyCheckTask,
+    frequency: const Duration(hours: 24),
+    initialDelay: const Duration(minutes: 1),
+    constraints: Constraints(networkType: NetworkType.connected),
+  );
+
+  runApp(
+    MultiProvider(
       providers: [
-        Provider<AuthService>(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
-      child: MaterialApp(
-        title: 'strmflwpr',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF6750A4),
-            brightness: Brightness.light,
-          ),
-          textTheme: GoogleFonts.interTextTheme(),
-        ),
-        darkTheme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF6750A4),
-            brightness: Brightness.dark,
-          ),
-          textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
-        ),
-        themeMode: ThemeMode.system,
-        home: const AuthGate(),
-      ),
-    );
-  }
-}
-
-class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    return StreamBuilder(
-      stream: authService.authStateChanges,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-        if (snapshot.hasData && snapshot.data != null) {
-          return const HomeScreen();
-        }
-        return const LoginScreen();
-      },
-    );
-  }
+      child: const StrmflwprApp(),
+    ),
+  );
 }
