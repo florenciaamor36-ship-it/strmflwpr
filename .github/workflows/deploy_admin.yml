@@ -1,0 +1,37 @@
+name: Deploy Admin Panel
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'admin_panel/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Admin Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      
+      - name: Get dependencies
+        run: |
+          cd admin_panel
+          flutter pub get
+      
+      - name: Build Web
+        run: |
+          cd admin_panel
+          flutter build web --release
+      
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: strmflwpr-admin-web
+          path: admin_panel/build/web
+          retention-days: 7
