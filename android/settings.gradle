@@ -1,4 +1,5 @@
 include ":app"
+
 def localProperties = new Properties()
 def localPropertiesFile = new File(settingsDir, "local.properties")
 if (localPropertiesFile.exists()) {
@@ -6,8 +7,10 @@ if (localPropertiesFile.exists()) {
         localProperties.load(stream)
     }
 }
+
 def flutterSdkPath = localProperties.getProperty("flutter.sdk")
 if (flutterSdkPath == null) {
     flutterSdkPath = System.getenv("FLUTTER_ROOT")
 }
-apply from: "/packages/flutter_tools/gradle/app_plugin_loader.gradle"
+
+apply from: "$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"
