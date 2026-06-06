@@ -5,8 +5,8 @@ class PlatformModel {
   final String userId;
   final String name;
   final String emoji;
-  final String color;
-  final int maxProfiles;
+  final String color; // hex color string
+  final int maxProfiles; // max profiles per account
   final double defaultPrice;
   final bool isActive;
   final DateTime createdAt;
@@ -22,8 +22,6 @@ class PlatformModel {
     required this.isActive,
     required this.createdAt,
   });
-
-  String get iconEmoji => emoji;
 
   factory PlatformModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -51,5 +49,29 @@ class PlatformModel {
       'isActive': isActive,
       'createdAt': Timestamp.fromDate(createdAt),
     };
+  }
+
+  PlatformModel copyWith({
+    String? id,
+    String? userId,
+    String? name,
+    String? emoji,
+    String? color,
+    int? maxProfiles,
+    double? defaultPrice,
+    bool? isActive,
+    DateTime? createdAt,
+  }) {
+    return PlatformModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      name: name ?? this.name,
+      emoji: emoji ?? this.emoji,
+      color: color ?? this.color,
+      maxProfiles: maxProfiles ?? this.maxProfiles,
+      defaultPrice: defaultPrice ?? this.defaultPrice,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+    );
   }
 }
