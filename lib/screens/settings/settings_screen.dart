@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/auth_service.dart';
+import 'user_manual_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -13,7 +14,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   String _defaultReminderDays = '7,3,1';
   bool _darkMode = false;
-  bool _loading = false;
 
   @override
   void initState() {
@@ -148,6 +148,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                 ),
+                const Divider(height: 0),
+                ListTile(
+                  leading: const Icon(Icons.help_outline),
+                  title: const Text('Manual de Usuario'),
+                  subtitle: const Text('Guía sobre cómo usar strmflwpr'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const UserManualScreen()),
+                  ),
+                ),
               ],
             ),
           ),
@@ -166,17 +176,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Column(
               children: [
-                ListTile(
-                  leading: const Icon(Icons.info_outline),
-                  title: const Text('strmflwpr'),
-                  subtitle: const Text('v1.0.0 — Gestor de cuentas streaming'),
+                const ListTile(
+                  leading: Icon(Icons.info_outline),
+                  title: Text('strmflwpr'),
+                  subtitle: Text('v3.0.0 — Gestor Pro de cuentas streaming'),
                 ),
                 const Divider(height: 0),
                 ListTile(
                   leading: const Icon(Icons.code_outlined),
-                  title: const Text('Código fuente'),
-                  subtitle: const Text('github.com/florenciaamor36-ship-it/strmflwpr'),
-                  trailing: const Icon(Icons.open_in_new, size: 16),
+                  title: const Text('Desarrollado para Florencia'),
+                  subtitle: const Text('Hecho con ❤️'),
                 ),
               ],
             ),
