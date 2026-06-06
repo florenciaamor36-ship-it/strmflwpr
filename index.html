@@ -984,7 +984,6 @@
           </div>
 
           <hr>
-          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;"><button id="btnIrToken" class="btn btn-primary" style="flex:1;"><i class="fas fa-key"></i> Ir a Token</button><button id="btnCerrarSesion" class="btn btn-danger" style="flex:1;"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button></div>
           <div class="tip" style="margin-top:1rem;"><i class="fas fa-info-circle"></i> <strong>¿Cómo funciona?</strong><br>• Al registrarte, tenés <strong>3 días de prueba GRATIS</strong> con todo desbloqueado.<br>• Después, necesitás un <strong>token de acceso</strong> que podés comprar en Ajustes.<br>• Cada token te da <strong>30 días adicionales</strong> de uso.<br>• <strong>¡Tus datos NO se pierden!</strong> Al expirar el token o la prueba, solo se bloquea la edición. Al ingresar un nuevo token, recuperás el acceso completo.</div>
         </div>
       </div>
@@ -1006,16 +1005,6 @@
       <!-- AJUSTES -->
       <div id="tab-ajustes" class="tab-panel">
         <div class="card">
-          <div class="card-title neon-text" style="margin-top:0;"><i class="fas fa-shield-alt"></i> Token de Acceso</div>
-          <div id="estadoPrueba" style="background:rgba(245,175,25,0.15); padding:0.8rem; border-radius:0.9rem; font-size:0.7rem; margin-bottom:0.8rem; border-left:4px solid #f5af19; display:none;"></div>
-          <div class="tip" style="margin-bottom:0.8rem;">💡 Tenés 3 días de prueba gratis. Después ingresá un token para 30 días más. El token se oculta al escribirlo por seguridad.<br><strong>✅ Tus datos NO se pierden al expirar el token o la prueba.</strong></div>
-          <div class="input-group"><label>Token de Cliente</label>
-            <div style="display:flex; gap:0.3rem;"><input type="password" id="tokenAcceso" placeholder="SF-XXXX-XXXX-XXXX" style="flex:1;" autocomplete="off"><button id="btnValidarToken" class="btn btn-primary" style="width:auto; margin-top:0;"><i class="fas fa-check-circle"></i> Validar</button></div>
-          </div>
-          <div class="input-group"><button id="btnWhatsAppToken" class="btn btn-success" style="width:100%; background:#25D366; margin-top:0.5rem;"><i class="fab fa-whatsapp"></i> Comprar token por WhatsApp</button></div>
-          <div id="tokenEstado" style="margin:0.5rem 0;"></div>
-          <div id="tokenInfo" style="font-size:0.65rem; opacity:0.8; display:none;"></div>
-          <hr>
           <div class="card-title neon-text"><i class="fas fa-sliders-h"></i> Configuración</div>
           <div class="switch-group"><span>Tema claro</span><label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label></div>
           <div class="switch-group"><span>Modo kiosco</span><label class="switch"><input type="checkbox" id="kioscoToggle"><span class="slider"></span></label></div>
@@ -2617,7 +2606,6 @@
       abrirWhatsApp(WHATSAPP_TOKEN_NUMBER, "Hola, quiero comprar un token para StreamFlow Pro. ¿Me ayudas?");
     });
     
-    document.getElementById("btnIrToken")?.addEventListener("click", () => cambiarTab("ajustes"));
     document.getElementById("btnCerrarSesion")?.addEventListener("click", async () => {
       await auth.signOut();
     });
