@@ -7,11 +7,14 @@ class AccountModel {
   final String platformName;
   final String email;
   final String password;
-  final DateTime purchaseDate;
-  final DateTime expirationDate;
-  final int totalProfiles;
-  final String notes;
+  final DateTime? accountExpiration; // when the master account expires
+  final double purchaseCost; // what we paid for it
+  final bool isActive;
   final DateTime createdAt;
+  // Computed fields (populated by service layer)
+  int totalProfiles;
+  int soldProfiles;
+  int availableProfiles;
 
   AccountModel({
     required this.id,
@@ -20,26 +23,28 @@ class AccountModel {
     required this.platformName,
     required this.email,
     required this.password,
-    required this.purchaseDate,
-    required this.expirationDate,
-    required this.totalProfiles,
-    this.notes = '',
+    this.accountExpiration,
+    required this.purchaseCost,
+    required this.isActive,
     required this.createdAt,
+    this.totalProfiles = 0,
+    this.soldProfiles = 0,
+    this.availableProfiles = 0,
   });
 
   factory AccountModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return AccountModel(
       id: doc.id,
-      userId: data['userId'] ?? '',
-      platformId: data['platformId'] ?? '',
-      platformName: data['platformName'] ?? '',
-      email: data['email'] ?? '',
-      password: data['password'] ?? '',
-      purchaseDate: (data['purchaseDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      expirationDate: (data['expirationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      totalProfiles: data['totalProfiles'] ?? 1,
-      notes: data['notes'] ?? '',
+      userId: data['userId'] as String? ?? '',
+      platformId: data['platformId'] as String? ?? '',
+      platformName: data['platformName'] as String? ?? '',
+      email: data['email'] as String? ?? '',
+      password: data['password'] as String? ?? '',
+      accountExpiration:
+          (data['accountExpiration'] as Timestamp?)?.toDate(),
+      purchaseCost: (data['purchaseCost'] as num?)?.toDouble() ?? 0.0,
+      isActive: data['isActive'] as bool? ?? true,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -51,18 +56,25 @@ class AccountModel {
       'platformName': platformName,
       'email': email,
       'password': password,
-      'purchaseDate': Timestamp.fromDate(purchaseDate),
-      'expirationDate': Timestamp.fromDate(expirationDate),
-      'totalProfiles': totalProfiles,
-      'notes': notes,
+      'accountExpiration': accountExpiration != null
+          ? Timestamp.fromDate(accountExpiration!)
+          : null,
+      'purchaseCost': purchaseCost,
+      'isActive': isActive,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
 
-  bool get isExpired => expirationDate.isBefore(DateTime.now());
-
-  int get daysUntilExpiration =>
-      expirationDate.difference(DateTime.now()).inDays;
+  String get maskedEmail {
+    if (email.isEmpty) return '';
+    final parts = email.split('@');
+    if (parts.length < 2) return email;
+    final user = parts[0];
+    final masked = user.length > 3
+        ? '${user.substring(0, 3)}***'
+        : '${user[0]}***';
+    return '$masked@${parts[1]}';
+  }
 
   AccountModel copyWith({
     String? id,
@@ -71,11 +83,13 @@ class AccountModel {
     String? platformName,
     String? email,
     String? password,
-    DateTime? purchaseDate,
-    DateTime? expirationDate,
-    int? totalProfiles,
-    String? notes,
+    DateTime? accountExpiration,
+    double? purchaseCost,
+    bool? isActive,
     DateTime? createdAt,
+    int? totalProfiles,
+    int? soldProfiles,
+    int? availableProfiles,
   }) {
     return AccountModel(
       id: id ?? this.id,
@@ -84,11 +98,13 @@ class AccountModel {
       platformName: platformName ?? this.platformName,
       email: email ?? this.email,
       password: password ?? this.password,
-      purchaseDate: purchaseDate ?? this.purchaseDate,
-      expirationDate: expirationDate ?? this.expirationDate,
-      totalProfiles: totalProfiles ?? this.totalProfiles,
-      notes: notes ?? this.notes,
+      accountExpiration: accountExpiration ?? this.accountExpiration,
+      purchaseCost: purchaseCost ?? this.purchaseCost,
+      isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
+      totalProfiles: totalProfiles ?? this.totalProfiles,
+      soldProfiles: soldProfiles ?? this.soldProfiles,
+      availableProfiles: availableProfiles ?? this.availableProfiles,
     );
   }
 }
