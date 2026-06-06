@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
@@ -9,64 +11,57 @@ class AuthService {
 
   String? get currentUserId => _auth.currentUser?.uid;
 
-  Future<UserCredential?> signIn({
+  Future<UserCredential> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
-    try {
-      return await _auth.signInWithEmailAndPassword(
-        email: email.trim(),
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
-    }
+    return await _auth.signInWithEmailAndPassword(
+      email: email.trim(),
+      password: password,
+    );
   }
 
-  Future<UserCredential?> signUp({
+  Future<UserCredential> createUserWithEmailAndPassword({
     required String email,
     required String password,
+    required String displayName,
   }) async {
-    try {
-      return await _auth.createUserWithEmailAndPassword(
-        email: email.trim(),
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
-    }
+    final credential = await _auth.createUserWithEmailAndPassword(
+      email: email.trim(),
+      password: password,
+    );
+
+    await credential.user?.updateDisplayName(displayName);
+
+    // Create user profile document
+    await _firestore
+        .collection('users')
+        .doc(credential.user!.uid)
+        .set({
+      'displayName': displayName,
+      'email': email.trim(),
+      'createdAt': FieldValue.serverTimestamp(),
+      'businessName': displayName,
+    });
+
+    return credential;
   }
 
   Future<void> signOut() async {
     await _auth.signOut();
   }
 
-  Future<void> resetPassword(String email) async {
-    try {
-      await _auth.sendPasswordResetEmail(email: email.trim());
-    } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
-    }
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _auth.sendPasswordResetEmail(email: email.trim());
   }
 
-  String _handleAuthException(FirebaseAuthException e) {
-    switch (e.code) {
-      case 'user-not-found':
-        return 'No existe una cuenta con este email.';
-      case 'wrong-password':
-        return 'Contraseña incorrecta.';
-      case 'email-already-in-use':
-        return 'Este email ya está registrado.';
-      case 'weak-password':
-        return 'La contraseña debe tener al menos 6 caracteres.';
-      case 'invalid-email':
-        return 'El formato del email no es válido.';
-      case 'user-disabled':
-        return 'Esta cuenta ha sido deshabilitada.';
-      case 'too-many-requests':
-        return 'Demasiados intentos. Intenta más tarde.';
-      default:
-        return 'Error de autenticación: ${e.message}';
+  Future<void> updateDisplayName(String displayName) async {
+    await _auth.currentUser?.updateDisplayName(displayName);
+    if (currentUserId != null) {
+      await _firestore
+          .collection('users')
+          .doc(currentUserId)
+          .update({'displayName': displayName});
     }
   }
 }
