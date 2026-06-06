@@ -15,6 +15,8 @@ import '../sales/sale_detail_screen.dart';
 import '../platforms/platforms_screen.dart';
 import '../accounts/accounts_screen.dart';
 import '../inventory/inventory_screen.dart';
+import '../inventory/bulk_load_screen.dart';
+import '../inventory/price_list_screen.dart';
 
 class DashboardTab extends StatefulWidget {
   const DashboardTab({super.key});
@@ -34,7 +36,7 @@ class _DashboardTabState extends State<DashboardTab> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('strmflwpr'),
+        title: const Text('strmflwpr Pro'),
         actions: [
           IconButton(
             icon: const Icon(Icons.inventory_2_outlined),
@@ -139,7 +141,13 @@ class _DashboardTabState extends State<DashboardTab> {
                         style: theme.textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 12),
-                    Row(
+                    GridView.count(
+                      crossAxisCount: 3,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 0.9,
                       children: [
                         _QuickAction(
                           icon: Icons.tv,
@@ -150,7 +158,31 @@ class _DashboardTabState extends State<DashboardTab> {
                                     PlatformsScreen(userId: userId)),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        _QuickAction(
+                          icon: Icons.inventory_2,
+                          label: 'Stock',
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    InventoryScreen(userId: userId)),
+                          ),
+                        ),
+                        _QuickAction(
+                          icon: Icons.upload_file,
+                          label: 'Carga Masiva',
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (_) => const BulkLoadScreen()),
+                          ),
+                        ),
+                        _QuickAction(
+                          icon: Icons.attach_money,
+                          label: 'Lista Precios',
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (_) => const PriceListScreen()),
+                          ),
+                        ),
                         _QuickAction(
                           icon: Icons.manage_accounts,
                           label: 'Cuentas',
@@ -160,14 +192,12 @@ class _DashboardTabState extends State<DashboardTab> {
                                     AccountsScreen(userId: userId)),
                           ),
                         ),
-                        const SizedBox(width: 12),
                         _QuickAction(
-                          icon: Icons.inventory_2,
-                          label: 'Stock',
+                          icon: Icons.help_outline,
+                          label: 'Manual',
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
-                                builder: (_) =>
-                                    InventoryScreen(userId: userId)),
+                                builder: (_) => const UserManualScreen()),
                           ),
                         ),
                       ],
@@ -246,26 +276,25 @@ class _QuickAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: theme.colorScheme.primary),
-              const SizedBox(height: 4),
-              Text(label,
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(fontWeight: FontWeight.w600),
-                  textAlign: TextAlign.center),
-            ],
-          ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: theme.colorScheme.primary),
+            const SizedBox(height: 4),
+            Text(label,
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
+                textAlign: TextAlign.center),
+          ],
         ),
       ),
     );
