@@ -1,4 +1,4 @@
-// ============================================
+    // ============================================
     // STREAMFLOW PRO - VERSIÓN COMPLETA CORREGIDA
     // Firebase Compat (sin import maps)
     // ============================================
@@ -68,7 +68,7 @@
     let pendingVentaId = null;
     let unsubscribeFirestore = null;
     let filtroTimeout = null;
-    let appDesbloqueada = true;
+    let appDesbloqueada = false;
     let diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
     let planEstado = "demo";
     let versionLocal = 0;
@@ -135,7 +135,7 @@
       venc.setHours(0, 0, 0, 0);
       const diff = Math.round((venc - hoy) / 86400000);
       if(diff < 0) return "vencido";
-      if(diff <= DIAS_PROXIMO) return "proximo";
+      if(diff <= DIAS_PROXIMO && diff >= 0) return "proximo";
       return "activo";
     }
     
@@ -206,6 +206,7 @@
     
     // ============ SINCRONIZACIÓN CON FIRESTORE ============
     async function guardarPerfiles() {
+      if(planEstado === "bloqueado") { toast("❌ App bloqueada. Renová tu suscripción para guardar cambios."); return; }
       if(!currentUser) return;
       showLoader("Guardando en la nube...");
       try {
@@ -347,9 +348,10 @@
         actualizarPanelMiCuenta();
       } catch(e) {
         console.error("Error al verificar suscripción:", e);
-        appDesbloqueada = true;
-        planEstado = "demo";
+        appDesbloqueada = false;
+        planEstado = "bloqueado";
         actualizarBadgePlan();
+        aplicarBloqueoApp();
       }
     }
     
@@ -446,11 +448,11 @@
           const msg = document.createElement("div");
           msg.id = "bloqueoAppMsg";
           msg.className = "bloqueo-app-msg";
-          msg.innerHTML = '<i class="fas fa-lock"></i><strong>App bloqueada</strong><br>Tu período de prueba ha expirado o tu token ha vencido.<br>Ingresá un token en Ajustes para continuar.<br><small>⚠️ Tus datos NO se perderán al ingresar un nuevo token.</small>';
+          msg.innerHTML = '<i class="fas fa-lock"></i><strong>App bloqueada</strong><br>Tu período de prueba ha expirado o tu token ha vencido.<br>Ingresá un token en Ajustes o Mi Cuenta para continuar.<br><small>⚠️ Tus datos NO se perderán al ingresar un nuevo token.</small>';
           const mainContent = document.getElementById("mainContent");
           if(mainContent) mainContent.insertBefore(msg, mainContent.firstChild);
         }
-        if(kioscoMode) {
+        if(planEstado === "bloqueado") {
           toast("Modo bloqueado: solo lectura. Ingresá un token para editar.");
         }
       } else {
@@ -459,7 +461,20 @@
     }
     
     // ============ CRUD DE PERFILES ============
+    function checkAppLock() {
+      if(planEstado === "bloqueado") {
+        toast("❌ App bloqueada. Renová tu suscripción para realizar esta acción.");
+        return false;
+      }
+      if(!appDesbloqueada) {
+        toast("⚠️ Verificando suscripción... Por favor esperá un momento.");
+        return false;
+      }
+      return true;
+    }
+
     async function venderPerfil(id, datos) {
+      if(!checkAppLock()) return;
       const p = perfiles.find(p => p.id === id);
       if(!p) return;
       
@@ -502,6 +517,7 @@
     }
     
     async function renovarPerfil(id) {
+      if(!checkAppLock()) return;
       const p = perfiles.find(p => p.id === id);
       if(p) {
         let base = p.fechaVencimiento ? parseFecha(p.fechaVencimiento) : new Date();
@@ -516,6 +532,7 @@
     }
     
     async function marcarLibre(id) {
+      if(!checkAppLock()) return;
       const p = perfiles.find(p => p.id === id);
       if(p && confirm("¿Marcar este perfil como libre?")) {
         p.estado = "libre";
@@ -531,10 +548,7 @@
     }
     
     async function eliminarPerfil(id) {
-      if(kioscoMode) {
-        toast("Modo kiosco: no se puede eliminar");
-        return;
-      }
+      if(!checkAppLock()) return;
       if(confirm("¿Eliminar este perfil permanentemente?")) {
         perfiles = perfiles.filter(p => p.id !== id);
         await guardarPerfiles();
@@ -545,6 +559,7 @@
     }
     
     async function duplicarPerfil(id) {
+      if(!checkAppLock()) return;
       const orig = perfiles.find(p => p.id === id);
       if(orig) {
         const nombre = prompt("Nombre del nuevo perfil:", orig.perfilNombre + " (copia)");
@@ -568,7 +583,7 @@
     }
     
     function editarPerfil(id) {
-      if(kioscoMode) {
+      if(planEstado === "bloqueado") {
         toast("Modo kiosco: no se puede editar");
         return;
       }
@@ -608,6 +623,7 @@
     }
     
     async function guardarPerfilEditado() {
+      if(!checkAppLock()) return;
       const id = editandoId;
       let plataforma = document.getElementById("platIndividual").value;
       if(plataforma === "Otros") {
@@ -662,6 +678,7 @@
     }
     
     async function guardarPerfilIndividual() {
+      if(!checkAppLock()) return;
       let plataforma = document.getElementById("platIndividual").value;
       if(plataforma === "Otros") {
         plataforma = document.getElementById("otraPlatIndividual").value.trim();
@@ -1170,6 +1187,7 @@
     }
     
     async function resetearVentas() {
+      if(!checkAppLock()) return;
       if(confirm("¿Reiniciar todas las ventas? Los perfiles volverán a estado libre.")) {
         perfiles.forEach(p => {
           p.fechaVenta = null;
@@ -1202,6 +1220,7 @@
     }
     
     async function borrarTodosLosPerfiles() {
+      if(!checkAppLock()) return;
       if(confirm("⚠️ ¿BORRAR TODOS LOS PERFILES? Esta acción no se puede deshacer.")) {
         const confirmar = prompt("Escribí CONFIRMAR para borrar todo");
         if(confirmar === "CONFIRMAR") {
@@ -1251,6 +1270,7 @@
     }
     
     async function cargarMasiva() {
+      if(!checkAppLock()) return;
       const texto = document.getElementById("batchTexto").value;
       if(!texto.trim()) {
         toast("No hay datos para cargar");
@@ -1817,18 +1837,6 @@
     auth.onAuthStateChanged(async (user) => {
       if(user) {
         currentUser = user;
-    // PREMIUM: Admin Pro Branding for Florencia
-    if (user && user.email === "florenciaamor36@gmail.com") {
-      const pPlan = document.getElementById('perfilPlan');
-      if(pPlan) pPlan.innerHTML = '<i class="fas fa-shield-alt" style="color:#f5af19"></i> ADMIN PRO';
-      const pBadge = document.getElementById('perfilPlanBadge');
-      if(pBadge) { 
-        pBadge.innerText = "DUEÑA"; 
-        pBadge.style.background = "linear-gradient(145deg, #f5af19, #f12711)"; 
-        pBadge.style.color = "white";
-      }
-    }
-    
         document.getElementById("loginWrapper").style.display = "none";
         document.getElementById("appContainer").style.display = "flex";
         document.body.style.overflow = "hidden";
@@ -1851,29 +1859,3 @@
         if(unsubscribeFirestore) unsubscribeFirestore();
       }
     });
-
-    function initZapiaChat(){
-      const bubble = document.getElementById('zapiaBubble');
-      const win = document.getElementById('zapiaWindow');
-      if(!bubble) return;
-      bubble.onclick = () => { win.style.display='flex'; bubble.style.display='none'; };
-      document.getElementById('closeZapia').onclick = () => { win.style.display='none'; bubble.style.display='flex'; };
-      const inp = document.getElementById('zapiaInp');
-      const body = document.getElementById('zapiaChat');
-      const send = () => {
-        const t = inp.value.trim(); if(!t) return;
-        const m = (txt, cl) => { const d=document.createElement('div'); d.className='zapia-msg '+cl; d.innerText=txt; body.appendChild(d); body.scrollTop=body.scrollHeight; };
-        m(t, 'user'); inp.value='';
-        setTimeout(() => {
-          let r = "Hola! Soy Zapia. Flor te puede ayudar por WhatsApp si necesitas algo puntual.";
-          const l = t.toLowerCase();
-          if(l.includes("pago") || l.includes("prex")) r = "Podés pagar por Prex al alias: ultralinkpagos.ar";
-          else if(l.includes("hola")) r = "¡Hola! ¿En qué te puedo ayudar hoy?";
-          m(r, 'bot');
-        }, 800);
-      };
-      document.getElementById('zapiaSendBtn').onclick = send;
-      inp.onkeypress = (e) => { if(e.key==='Enter') send(); };
-    }
-    setTimeout(initZapiaChat, 2000);
-    
