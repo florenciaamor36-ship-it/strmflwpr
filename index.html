@@ -1605,4 +1605,81 @@
             perfilNombre: nombre.trim(), 
             estado: "libre", 
             fechaVenta: null, 
-   
+            precioVenta: null, 
+            whatsappCliente: "" 
+          };
+          perfiles.push(copia);
+          await guardarPerfiles();
+          localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+          actualizarTodo();
+          toast("Perfil duplicado");
+        }
+      }
+    }
+    
+    function editarPerfil(id) {
+      if(planEstado === "bloqueado") {
+        toast("Modo kiosco: no se puede editar");
+        return;
+      }
+      const p = perfiles.find(p => p.id === id);
+      if(!p) return;
+      editandoId = id;
+      
+      const conocidas = ["Netflix", "Netflix indiv", "Disney", "HBO Max", "Prime video", "Paramount", "Crunchyroll", "Spoty", "YouTube"];
+      if(!conocidas.includes(p.plataforma)) {
+        document.getElementById("platIndividual").value = "Otros";
+        document.getElementById("otraPlatIndividualDiv").style.display = "block";
+        document.getElementById("otraPlatIndividual").value = p.plataforma;
+      } else {
+        document.getElementById("platIndividual").value = p.plataforma;
+        document.getElementById("otraPlatIndividualDiv").style.display = "none";
+      }
+      document.getElementById("cuentaIdIndividual").value = p.cuentaId || "";
+      document.getElementById("nombrePerfilIndividual").value = p.perfilNombre || "";
+      document.getElementById("pinIndividual").value = p.pin || "";
+      document.getElementById("mailIndividual").value = p.mail || "";
+      document.getElementById("passIndividual").value = p.password || "";
+      document.getElementById("fechaIndividual").value = p.fechaVencimiento || "";
+      document.getElementById("precioIndividual").value = p.precio || "";
+      document.getElementById("proveedorIndividual").value = p.proveedor || "";
+      document.getElementById("whatsappIndividual").value = p.whatsappProveedor || "";
+      document.getElementById("obsIndividual").value = p.observaciones || "";
+      
+      document.querySelectorAll(".carga-tab").forEach(b => b.classList.remove("active"));
+      document.querySelector(".carga-tab[data-mod='individual']").classList.add("active");
+      document.getElementById("modo-completa").style.display = "none";
+      document.getElementById("modo-individual").style.display = "block";
+      document.getElementById("modo-masiva").style.display = "none";
+      document.getElementById("btnCancelarEdicion").style.display = "inline-block";
+      document.getElementById("btnGuardarIndividual").textContent = "Guardar cambios";
+      
+      cambiarTab("carga");
+    }
+    
+    async function guardarPerfilEditado() {
+      if(!checkAppLock()) return;
+      const id = editandoId;
+      let plataforma = document.getElementById("platIndividual").value;
+      if(plataforma === "Otros") {
+        plataforma = document.getElementById("otraPlatIndividual").value.trim();
+        if(!plataforma) {
+          toast("Escribí el nombre de la plataforma");
+          return;
+        }
+      }
+      const index = perfiles.findIndex(p => p.id === id);
+      if(index !== -1) {
+        perfiles[index] = {
+          ...perfiles[index],
+          plataforma: plataforma,
+          cuentaId: document.getElementById("cuentaIdIndividual").value,
+          perfilNombre: document.getElementById("nombrePerfilIndividual").value,
+          mail: document.getElementById("mailIndividual").value,
+          password: document.getElementById("passIndividual").value,
+          pin: document.getElementById("pinIndividual").value,
+          fechaVencimiento: document.getElementById("fechaIndividual").value || null,
+          proveedor: document.getElementById("proveedorIndividual").value,
+          whatsappProveedor: document.getElementById("whatsappIndividual").value,
+          observaciones: document.getElementById("obsIndividual").value,
+          precio: document.getEleme
