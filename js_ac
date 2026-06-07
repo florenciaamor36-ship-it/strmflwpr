@@ -1,0 +1,87 @@
+       seccion.style.display = "block";
+          found++;
+        } else {
+          seccion.style.display = "none";
+        }
+      });
+      const resultsDiv = document.getElementById("manualSearchResults");
+      if(query) {
+        resultsDiv.style.display = "block";
+        resultsDiv.innerHTML = `🔍 ${found} resultado(s) para "<strong>${escapeHtml(query)}</strong>"`;
+      } else {
+        resultsDiv.style.display = "none";
+      }
+    });
+    
+    // ============ INICIALIZACIÓN ============
+    cargarConfigLocal();
+    
+    const emailGuardado = localStorage.getItem("recordarEmail");
+    if(emailGuardado) {
+      document.getElementById("loginEmail").value = emailGuardado;
+      document.getElementById("rememberMeCheckbox").checked = true;
+    }
+    
+    auth.onAuthStateChanged(async (user) => {
+      if(user) {
+        currentUser = user;
+    // PREMIUM: Admin Pro Branding for Florencia
+    if (user && user.email === "florenciaamor36@gmail.com") {
+      const pPlan = document.getElementById('perfilPlan');
+      if(pPlan) pPlan.innerHTML = '<i class="fas fa-shield-alt" style="color:#f5af19"></i> ADMIN PRO';
+      const pBadge = document.getElementById('perfilPlanBadge');
+      if(pBadge) { 
+        pBadge.innerText = "DUEÑA"; 
+        pBadge.style.background = "linear-gradient(145deg, #f5af19, #f12711)"; 
+        pBadge.style.color = "white";
+      }
+    }
+    
+        document.getElementById("loginWrapper").style.display = "none";
+        document.getElementById("appContainer").style.display = "flex";
+        document.body.style.overflow = "hidden";
+        document.body.style.height = "100vh";
+        document.body.style.position = "fixed";
+        document.body.style.width = "100%";
+        await verificarSuscripcion(user.uid);
+        await cargarPerfiles();
+        iniciarListenerFirestore(user.uid);
+        toast("Bienvenido " + user.email);
+        if(notificationsEnabled) mostrarAvisoVencimientos();
+      } else {
+        currentUser = null;
+        document.getElementById("loginWrapper").style.display = "flex";
+        document.getElementById("appContainer").style.display = "none";
+        document.body.style.overflow = "";
+        document.body.style.height = "";
+        document.body.style.position = "";
+        document.body.style.width = "";
+        if(unsubscribeFirestore) unsubscribeFirestore();
+      }
+    });
+
+    function initZapiaChat(){
+      const bubble = document.getElementById('zapiaBubble');
+      const win = document.getElementById('zapiaWindow');
+      if(!bubble) return;
+      bubble.onclick = () => { win.style.display='flex'; bubble.style.display='none'; };
+      document.getElementById('closeZapia').onclick = () => { win.style.display='none'; bubble.style.display='flex'; };
+      const inp = document.getElementById('zapiaInp');
+      const body = document.getElementById('zapiaChat');
+      const send = () => {
+        const t = inp.value.trim(); if(!t) return;
+        const m = (txt, cl) => { const d=document.createElement('div'); d.className='zapia-msg '+cl; d.innerText=txt; body.appendChild(d); body.scrollTop=body.scrollHeight; };
+        m(t, 'user'); inp.value='';
+        setTimeout(() => {
+          let r = "Hola! Soy Zapia. Flor te puede ayudar por WhatsApp si necesitas algo puntual.";
+          const l = t.toLowerCase();
+          if(l.includes("pago") || l.includes("prex")) r = "Podés pagar por Prex al alias: ultralinkpagos.ar";
+          else if(l.includes("hola")) r = "¡Hola! ¿En qué te puedo ayudar hoy?";
+          m(r, 'bot');
+        }, 800);
+      };
+      document.getElementById('zapiaSendBtn').onclick = send;
+      inp.onkeypress = (e) => { if(e.key==='Enter') send(); };
+    }
+    setTimeout(initZapiaChat, 2000);
+    
