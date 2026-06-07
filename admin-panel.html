@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFlow Pro | Admin Console</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <style>
+        :root { --primary: #f5af19; --secondary: #f12711; --dark: #0f0c29; --card-bg: rgba(255, 255, 255, 0.05); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: var(--dark); 
+            background-image: linear-gradient(180deg, #0f0c29 0%, #1a1a3e 100%);
+            color: #fff; min-height: 100vh; padding: 20px; 
+        }
+        .container { max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .neon-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800; }
+        .card { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: 800; color: var(--primary); }
+        .stat-label { font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
+        th { text-align: left; padding: 12px; opacity: 0.5; font-weight: 400; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 0.75rem; }
+        .btn-primary { background: linear-gradient(145deg, var(--primary), var(--secondary)); color: white; }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; }
+        .badge-activo { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .badge-bloqueado { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .badge-demo { background: rgba(245, 175, 25, 0.2); color: #fbbf24; }
+        .search-bar { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 10px; width: 100%; color: white; margin-bottom: 20px; }
+        #loginGate { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    </style>
+</head>
+<body>
+    <div id="loginGate">
+        <h1 class="neon-text" style="font-size:3rem; margin-bottom:10px;">FLOR'S CONSOLE</h1>
+        <p style="opacity:0.6; margin-bottom:30px;">StreamFlow Pro SaaS Management</p>
+        <button class="btn btn-primary" onclick="login()" style="padding:15px 40px; font-size:1.1rem;">ENTRAR COMO ADMINISTRADORA</button>
+    </div>
+
+    <div class="container" id="adminApp" style="display:none;">
+        <div class="header">
+            <h1 class="neon-text">STREAMFLOW <span style="color:white; font-weight:300;">ADMIN</span></h1>
+            <button class="btn btn-outline" onclick="firebase.auth().signOut()">CERRAR SESIÓN</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-number" id="count-total">0</div><div class="stat-label">Usuarios Totales</div></div>
+            <div class="stat-card"><div class="stat-number" id="count-activo" style="color:#34d399;">0</div><div class="stat-label">Suscripciones Activas</div></div>
+            <div class="stat-card"><div class="stat-number" id="count-demo" style="color:#fbbf24;">0</div><div class="stat-label">Usuarios en Demo</div></div>
+        </div>
+
+        <div class="card">
+            <input type="text" class="search-bar" placeholder="Buscar por email..." onkeyup="filterUsers(this.value)">
+            <table>
+                <thead>
+                    <tr><th>USUARIO</th><th>ESTADO</th><th>REGISTRO</th><th>ACCIONES</th></tr>
+                </thead>
+                <tbody id="usersList"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const config = { apiKey: "AIzaSyC3BnZ33CruBYHeXnjyqjGKfT2-__DUxBo", authDomain: "stream-flow-pro.firebaseapp.com", projectId: "stream-flow-pro" };
+        firebase.initializeApp(config);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        let allUsers = [];
+
+        function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+
+        auth.onAuthStateChanged(user => {
+            if (user && user.email === "florenciaamor36@gmail.com") {
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('adminApp').style.display = 'block';
+                fetchUsers();
+            } else if (user) { alert("Acceso Prohibido"); auth.signOut(); }
+        });
+
+        async function fetchUsers() {
+            const snap = await db.collection('usuarios').get();
+            allUsers = [];
+            snap.forEach(doc => allUsers.push({ id: doc.id, ...doc.data() }));
+            renderUsers(allUsers);
+            updateStats();
+        }
+
+        function renderUsers(users) {
+            const list = document.getElementById('usersList');
+            list.innerHTML = users.map(u => `
+                <tr>
+                    <td><b>${u.email}</b></td>
+                    <td><span class="badge badge-${u.estado || 'demo'}">${u.estado || 'demo'}</span></td>
+                    <td><small>${u.fechaRegistro ? new Date(u.fechaRegistro.toDate()).toLocaleDateString() : '-'}</small></td>
+                    <td style="display:flex; gap:5px;">
+                        <button class="btn btn-primary" onclick="upd('${u.id}', 'activo')">Activar</button>
+                        <button class="btn btn-outline" style="border-color:#ef4444; color:#ef4444" onclick="upd('${u.id}', 'bloqueado')">Bloquear</button>
+                        <button class="btn btn-outline" onclick="upd('${u.id}', 'demo')">Demo</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterUsers(val) {
+            const filtered = allUsers.filter(u => u.email.toLowerCase().includes(val.toLowerCase()));
+            renderUsers(filtered);
+        }
+
+        function updateStats() {
+            document.getElementById('count-total').innerText = allUsers.length;
+            document.getElementById('count-activo').innerText = allUsers.filter(u => u.estado === 'activo').length;
+            document.getElementById('count-demo').innerText = allUsers.filter(u => u.estado === 'demo' || !u.estado).length;
+        }
+
+        async function upd(id, st) {
+            await db.collection('usuarios').doc(id).update({ estado: st });
+            fetchUsers();
+        }
+    </script>
+</body>
+</html>
