@@ -309,44 +309,153 @@
         </div>
       </div>
 
+      
       <!-- AYUDA -->
       <div id="tab-ayuda" class="tab-panel">
-        <div class="card"><button id="btnVolverDeAyuda" class="btn btn-outline" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Volver a Ajustes</button>
-          <div class="card-title neon-text"><i class="fas fa-book-open"></i> Manual de Usuario</div>
-          <div class="manual-search"><input type="text" id="manualSearch" placeholder="Buscar en el manual..."><div id="manualSearchResults" style="display:none; margin-top:0.5rem; font-size:0.65rem;"></div></div>
-          <div class="quick-nav" id="manualQuickNav"><span class="quick-link" data-section="intro">Inicio</span><span class="quick-link" data-section="suscripcion">Pago</span><span class="quick-link" data-section="carga">Cargar</span><span class="quick-link" data-section="gestion">Gestión</span><span class="quick-link" data-section="ventas">Ventas</span><span class="quick-link" data-section="config">Config</span></div>
-          <div class="manual-section" id="manual-intro"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 1. Introducción</div><div class="manual-section-body"><p><strong>StreamFlow Pro</strong> es tu centro de control para administrar cuentas de streaming.</p><div class="tip">Al registrarte tenés 3 días de prueba gratis.</div></div></div>
-          <div class="manual-section" id="manual-suscripcion"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 2. Suscripción y Pago</div><div class="manual-section-body"><p>Para mantener tu app activa después de la prueba:</p><ul><li>Costo: <strong>$5.000 ARS por mes</strong>.</li><li>Planes con descuento:
-  <ul>
-    <li>3 meses: <strong>$13.500 ARS</strong> (10% OFF)</li>
-    <li>6 meses: <strong>$24.000 ARS</strong> (20% OFF)</li>
-    <li>12 meses: <strong>$42.000 ARS</strong> (30% OFF)</li>
-  </ul>
-</li><li>El pago se realiza mediante un <strong>Token de Acceso</strong>.</li><li>Podés solicitar tu token haciendo clic en el botón de Ayuda (WhatsApp) o en el botón verde de <strong>Mi Cuenta</strong>.</li><li>Una vez recibido, ingresalo en <strong>Mi Cuenta > Activar suscripción</strong>.</li><li><strong>Importante:</strong> Tus datos NUNCA se borran. Si la suscripción vence, la app entra en modo lectura hasta que ingreses un nuevo token.</li></ul></div></div>
-          <div class="manual-section" id="manual-carga"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 3. Carga y Automatización</div><div class="manual-section-body"><p>Hay tres modos de carga:</p><ul><li><strong>Cuenta Completa:</strong> Ingresás el mail y contraseña general, y la app crea automáticamente todos los perfiles según la plataforma (ej: 7 perfiles para Netflix).</li><li><strong>Individual:</strong> Para cargar perfiles sueltos.</li><li><strong>Masiva:</strong> Pegá una lista de cuentas y la app las procesará en lote.</li></ul></div></div>
-          <div class="manual-section" id="manual-gestion"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 4. Gestión y Recordatorios</div><div class="manual-section-body"><p>Cada perfil tiene un semáforo de estado:</p><ul><li><strong>Verde:</strong> Activo (más de 3 días).</li><li><strong>Amarillo:</strong> Próximo a vencer.</li><li><strong>Rojo:</strong> Vencido.</li></ul><p><strong>Recordatorios WhatsApp:</strong> Al hacer clic en el botón de WhatsApp de un perfil vencido o próximo, se genera un mensaje automático listo para enviar al cliente con los datos de renovación.</p></div></div>
-          <div class="manual-section" id="manual-ventas"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 5. Proceso de Venta y Renovación</div><div class="manual-section-body"><p><strong>Para vender:</strong> Hacé clic en "Vender" en un perfil libre. Ingresá el nombre del cliente y el precio. Se generará un mensaje de bienvenida con las reglas de uso y credenciales.</p><p><strong>Para renovar:</strong> Cuando un cliente te paga el mes siguiente, usá el botón "Renovar". La app extenderá la fecha de vencimiento 30 días automáticamente y registrará la ganancia en tus Stats.</p></div></div>
-          <div class="manual-section" id="manual-config"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 6. Configuración</div><div class="manual-section-body"><p>Podés cambiar tema, modo kiosco, días para "próximo", exportar/importar configuración.</p></div></div>
-        </div>
-      </div>
-
-      <!-- AJUSTES -->
-      <div id="tab-ajustes" class="tab-panel">
         <div class="card">
-          <div class="card-title neon-text"><i class="fas fa-sliders-h"></i> Configuración</div>
-          <div class="switch-group"><span>Tema claro</span><label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label></div>
-          <div class="switch-group"><span>Modo kiosco</span><label class="switch"><input type="checkbox" id="kioscoToggle"><span class="slider"></span></label></div>
-          <div class="switch-group"><span>Notificaciones de vencimiento</span><label class="switch"><input type="checkbox" id="notificationsToggle" checked><span class="slider"></span></label></div>
-          <div class="input-group"><label>Días para considerar "Próximo a vencer"</label><input type="number" id="diasProximoConfig" min="1" max="10" value="3"></div>
-          <div class="row"><button id="btnExportConfig" class="btn btn-outline"><i class="fas fa-download"></i> Exportar config</button><button id="btnImportConfig" class="btn btn-outline"><i class="fas fa-upload"></i> Importar config</button><button id="btnResetConfig" class="btn btn-outline"><i class="fas fa-undo-alt"></i> Resetear</button></div>
-          <input type="file" id="archivoConfig" accept=".json" style="display:none">
-          <hr>
-          <button id="btnAbrirManual" class="btn btn-outline" style="width:100%"><i class="fas fa-book-open"></i> Manual de Usuario</button>
-          <hr>
-          <button id="btnAcercaDe" class="btn btn-acerca" style="width:100%">Acerca de</button>
+          <button id="btnVolverDeAyuda" class="btn btn-outline" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Volver a Ajustes</button>
+          
+          <div class="card-title neon-text"><i class="fas fa-book-open"></i> Manual de Usuario</div>
+          
+          <div class="manual-search">
+            <input type="text" id="manualSearch" placeholder="Buscar en el manual...">
+            <div id="manualSearchResults" style="display:none; margin-top:0.5rem; font-size:0.65rem;"></div>
+          </div>
+          
+          <div class="quick-nav" id="manualQuickNav">
+            <span class="quick-link" data-section="intro">Inicio</span>
+            <span class="quick-link" data-section="features">Features</span>
+            <span class="quick-link" data-section="suscripcion">Pago</span>
+            <span class="quick-link" data-section="carga">Cargar</span>
+            <span class="quick-link" data-section="gestion">Gestión</span>
+            <span class="quick-link" data-section="ventas">Ventas</span>
+            <span class="quick-link" data-section="stats">Stats</span>
+            <span class="quick-link" data-section="faq">FAQ</span>
+          </div>
+
+          <!-- 1. INTRODUCCIÓN -->
+          <div class="manual-section" id="manual-intro">
+            <div class="manual-section-header"><i class="fas fa-chevron-right"></i> 1. Introducción</div>
+            <div class="manual-section-body">
+              <p><strong>StreamFlow Pro</strong> es la plataforma definitiva para revendedores de cuentas de streaming. Gestioná clientes, ventas, renovaciones y stock en tiempo real desde cualquier dispositivo.</p>
+              <div class="tip">Al registrarte obtenés <strong>3 días de prueba GRATIS</strong> con todas las funciones desbloqueadas.</div>
+            </div>
+          </div>
+
+          <!-- 2. CARACTERÍSTICAS PRINCIPALES -->
+          <div class="manual-section" id="manual-features">
+            <div class="manual-section-header"><i class="fas fa-chevron-right"></i> 2. Características Principales</div>
+            <div class="manual-section-body">
+              <ul>
+                <li><strong>Venta Rápida:</strong> Realizá ventas en segundos con nuestro asistente de 3 pasos.</li>
+                <li><strong>Multiplataforma:</strong> Soporte nativo para Netflix, Disney+, Spotify, HBO Max, Paramount+, YouTube y más.</li>
+                <li><strong>Plantillas:</strong> Mensajes de WhatsApp personalizados con credenciales y reglas de uso.</li>
+                <li><strong>Recordatorios:</strong> Notificaciones de vencimiento y alertas de bajo stock automáticas.</li>
+                <li><strong>Estadísticas:</strong> Gráficos de rendimiento mensual y por plataforma para controlar tu rentabilidad.</li>
+                <li><strong>Carga Masiva:</strong> Agregá cientos de cuentas en segundos procesando listas de texto.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 3. SUSCRIPCIÓN Y PAGO -->
+          <div class="manual-section" id="manual-suscripcion">
+            <div class="manual-section-header"><i class="fas fa-chevron-right"></i> 3. Suscripción y Pago</div>
+            <div class="manual-section-body">
+              <p>Mantené tu negocio activo eligiendo el plan que mejor se adapte a tus necesidades:</p>
+              <div class="pricing-table">
+                <div class="price-item"><strong>1 Mes:</strong> $5.000 ARS</div>
+                <div class="price-item"><strong>3 Meses:</strong> $13.500 ARS <span class="badge">10% OFF</span></div>
+                <div class="price-item"><strong>6 Meses:</strong> $24.000 ARS <span class="badge">20% OFF</span></div>
+                <div class="price-item"><strong>12 Meses:</strong> $42.000 ARS <span class="badge">30% OFF</span></div>
+              </div>
+              <p>Para activar un plan:</p>
+              <ol>
+                <li>Solicitá tu <strong>Token de Acceso</strong> vía WhatsApp desde la pestaña <strong>Mi Cuenta</strong>.</li>
+                <li>Una vez realizado el pago, recibirás un código (ej: SF-XXXX-XXXX).</li>
+                <li>Ingresalo en <strong>Mi Cuenta > Activar suscripción</strong>.</li>
+              </ol>
+              <div class="tip"><strong>Tus datos están seguros:</strong> Si tu suscripción expira, no perderás nada. La app entrará en modo lectura hasta que actives un nuevo token.</div>
+            </div>
+          </div>
+
+          <!-- 4. CARGA DE DATOS -->
+          <div class="manual-section" id="manual-carga">
+            <div class="manual-section-header"><i class="fas fa-chevron-right"></i> 4. Carga de Datos</div>
+            <div class="manual-section-body">
+              <p>Optimizá tu tiempo usando los diferentes modos de carga:</p>
+              <ul>
+                <li><strong>Cuenta Completa:</strong> Crea automáticamente todos los perfiles disponibles de una cuenta (ej: 7 perfiles para Disney+).</li>
+                <li><strong>Individual:</strong> Para cargar perfiles específicos o cuentas unipersonales.</li>
+                <li><strong>Masiva:</strong> Pegá tu lista de cuentas y la app se encargará del resto.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 5. GESTIÓN Y RECORDATORIOS -->
+          <div class="manual-section" id="manual-gestion">
+            <div class="manual-section-header"><i class="fas fa-chevron-right"></i> 5. Gestión y Recordatorios</div>
+            <div class="manual-section-body">
+              <p>Controlá el estado de tus perfiles con el sistema de colores:</p>
+              <ul>
+                <li><span style="color:#2ecc71">●</span> <strong>Verde:</strong> Activo (más de 3 días para el vencimiento).</li>
+                <li><span style="color:#f1c40f">●</span> <strong>Amarillo:</strong> Próximo a vencer.</li>
+                <li><span style="color:#e74c3c">●</span> <strong>Rojo:</strong> Vencido.</li>
+              </ul>
+              <p>Desde la lista de perfiles, podés enviar recordatorios de renovación por WhatsApp con un solo clic.</p>
+            </div>
+          </div>
+
+          <!-- 6. VENTAS Y RENOVACIONES -->
+          <div class="manual-section" id="manual-ventas">
+            <div class="manual-section-header"><i class="fas fa-chevron-right"></i> 6. Ventas y Renovaciones</div>
+            <div class="manual-section-body">
+              <p><strong>Venta:</strong> Al vender un perfil libre, la app genera automáticamente la plantilla con las credenciales y el enlace/QR para el cliente.</p>
+              <p><strong>Renovación:</strong> Con el botón "Renovar", extendés la vigencia 30 días y la venta se registra automáticamente en tus estadísticas de ingresos.</p>
+            </div>
+          </div>
+
+          <!-- 7. ESTADÍSTICAS -->
+          <div class="manual-section" id="manual-stats">
+            <div class="manual-section-header"><i class="fas fa-chevron-right"></i> 7. Estadísticas y Reportes</div>
+            <div class="manual-section-body">
+              <p>Analizá tu rentabilidad en tiempo real:</p>
+              <ul>
+                <li><strong>Gráficos de Ingresos:</strong> Evolución de tus ventas en los últimos 6 meses.</li>
+                <li><strong>Top Plataformas:</strong> Identificá cuáles son tus productos más rentables.</li>
+                <li><strong>Exportación CSV:</strong> Descargá todo tu historial de ventas para auditorías externas.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 8. FAQ (Preguntas Frecuentes) -->
+          <div class="manual-section" id="manual-faq">
+            <div class="manual-section-header"><i class="fas fa-question-circle"></i> Preguntas Frecuentes (FAQ)</div>
+            <div class="manual-section-body">
+              <div class="faq-item" style="margin-bottom: 15px;">
+                <strong style="color: #f5af19; display: block; margin-bottom: 5px;">📱 ¿Cómo instalo la app?</strong>
+                <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.9;">Es una PWA (Web App). En Chrome/Safari, seleccioná <strong>"Agregar a la pantalla de inicio"</strong> para tener el ícono y acceso rápido sin usar el navegador.</p>
+              </div>
+              <div class="faq-item" style="margin-bottom: 15px;">
+                <strong style="color: #f5af19; display: block; margin-bottom: 5px;">💳 ¿Qué medios de pago aceptan?</strong>
+                <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.9;">Aceptamos transferencias bancarias, Mercado Pago y criptomonedas (consultar vía WhatsApp).</p>
+              </div>
+              <div class="faq-item" style="margin-bottom: 15px;">
+                <strong style="color: #f5af19; display: block; margin-bottom: 5px;">🔐 ¿Mis datos están seguros?</strong>
+                <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.9;">Sí, utilizamos Firebase de Google con encriptación SSL. Solo vos tenés acceso a tus datos mediante tu cuenta de usuario.</p>
+              </div>
+              <div class="faq-item" style="margin-bottom: 15px;">
+                <strong style="color: #f5af19; display: block; margin-bottom: 5px;">💻 ¿Puedo usarla en varios dispositivos?</strong>
+                <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.9;">Sí, al estar basada en la nube, podés iniciar sesión en tu PC, tablet y celular simultáneamente. Los cambios se sincronizan al instante.</p>
+              </div>
+              <div class="faq-item" style="margin-bottom: 15px;">
+                <strong style="color: #f5af19; display: block; margin-bottom: 5px;">🔄 ¿Se borran mis datos si no pago?</strong>
+                <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.9;">No. Tus datos permanecen guardados indefinidamente. Si no renuevas el token, solo se restringe la edición de perfiles hasta que actives uno nuevo.</p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
-    </div>
 
     <div class="bottom-nav-bar">
       <button class="nav-btn active" data-nav="dashboard"><i class="fas fa-home"></i><span>Inicio</span></button>
