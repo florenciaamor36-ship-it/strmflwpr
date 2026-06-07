@@ -1,0 +1,15 @@
+name: Apply SaaS Patch
+on:
+  workflow_dispatch:
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Apply Patch
+        run: |
+          patch index.html saas.patch
+          git config --local user.email "florenciaamor36@gmail.com"
+          git config --local user.name "Zapia AI"
+          git commit -am "Apply SaaS Premium Patch"
+          git push
