@@ -1,0 +1,855 @@
+  try {
+            perfiles = JSON.parse(localBackup);
+            actualizarTodo();
+          } catch(e2) {}
+        }
+      } finally {
+        hideLoader();
+      }
+    }
+    
+    function iniciarListenerFirestore(uid) {
+      if(unsubscribeFirestore) unsubscribeFirestore();
+      if(!uid) return;
+      unsubscribeFirestore = db.collection("usuarios").doc(uid).onSnapshot((snap) => {
+        if(snap.exists && snap.data().perfiles) {
+          const serverData = snap.data().perfiles;
+          if(JSON.stringify(serverData) !== JSON.stringify(perfiles)) {
+            perfiles = serverData;
+            localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+            actualizarTodo();
+            toast("🔄 Datos actualizados desde la nube");
+          }
+        }
+      }, (error) => {
+        console.error("Error en listener:", error);
+      });
+    }
+    
+    function actualizarSyncStatus(estado) {
+      const btn = document.getElementById("syncStatus");
+      if(!btn) return;
+      if(estado === "sincronizado") {
+        btn.className = "sync-status sincronizado";
+        btn.title = "Sincronizado con la nube";
+      } else if(estado === "esperando") {
+        btn.className = "sync-status esperando";
+        btn.title = "Sincronizando...";
+      } else {
+        btn.className = "sync-status error";
+        btn.title = "Sin conexión - Modo local";
+      }
+    }
+    
+    // ============ SISTEMA DE SUSCRIPCIÓN Y TOKENS ============
+    async function verificarSuscripcion(uid) {
+      if(!uid) return;
+      try {
+        const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
+        const snap = await suscRef.get();
+        const ahora = new Date();
+        
+        if(!snap.exists) {
+          const fechaFinPrueba = new Date(ahora);
+          fechaFinPrueba.setDate(fechaFinPrueba.getDate() + DIAS_PRUEBA_GRATIS);
+          await suscRef.set({
+            fechaPrimerIngreso: ahora.toISOString(),
+            estado: "prueba",
+            fechaExpiracion: fechaFinPrueba.toISOString()
+          });
+          appDesbloqueada = true;
+          diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
+          planEstado = "demo";
+          actualizarBadgePlan();
+          actualizarSemaforo();
+          return;
+        }
+        
+        const data = snap.data();
+        const fechaExpiracion = new Date(data.fechaExpiracion);
+        
+        if(data.estado === "prueba") {
+          if(ahora < fechaExpiracion) {
+            appDesbloqueada = true;
+            diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
+            planEstado = "demo";
+          } else {
+            appDesbloqueada = false;
+            diasPruebaRestantes = 0;
+            planEstado = "bloqueado";
+          }
+        } else if(data.estado === "token") {
+          if(ahora < fechaExpiracion) {
+            appDesbloqueada = true;
+            diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
+            planEstado = "token";
+          } else {
+            appDesbloqueada = false;
+            diasPruebaRestantes = 0;
+            planEstado = "bloqueado";
+          }
+        }
+        
+        actualizarBadgePlan();
+        actualizarSemaforo();
+        aplicarBloqueoApp();
+        actualizarPanelMiCuenta();
+      } catch(e) {
+        console.error("Error al verificar suscripción:", e);
+        appDesbloqueada = true;
+        planEstado = "demo";
+        actualizarBadgePlan();
+      }
+    }
+    
+    async function validarToken(token, uid) {
+      if(!uid) return { valido: false, mensaje: "Usuario no autenticado" };
+      token = token.trim().toUpperCase();
+      if(!TOKENS_VALIDOS.has(token)) return { valido: false, mensaje: "❌ Token inválido" };
+      try {
+        const tokenRef = db.collection("tokens_usados").doc(token);
+        const snap = await tokenRef.get();
+        if(snap.exists && snap.data().usadoPor !== uid) {
+          return { valido: false, mensaje: "❌ Token ya usado por otra cuenta" };
+        }
+        const ahora = new Date();
+        const expiracion = new Date(ahora);
+        expiracion.setDate(expiracion.getDate() + DIAS_TOKEN);
+        await tokenRef.set({
+          token: token,
+          usadoPor: uid,
+          fechaActivacion: ahora.toISOString(),
+          fechaExpiracion: expiracion.toISOString()
+        });
+        const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
+        await suscRef.set({
+          estado: "token",
+          fechaExpiracion: expiracion.toISOString()
+        }, { merge: true });
+        appDesbloqueada = true;
+        diasPruebaRestantes = DIAS_TOKEN;
+        planEstado = "token";
+        actualizarBadgePlan();
+        actualizarSemaforo();
+        aplicarBloqueoApp();
+        actualizarPanelMiCuenta();
+        return { valido: true, mensaje: "✅ Token activado por 30 días" };
+      } catch(e) {
+        console.error(e);
+        return { valido: false, mensaje: "⚠️ Error al validar token" };
+      }
+    }
+    
+    function actualizarBadgePlan() {
+      const badge = document.getElementById("planBadge");
+      if(!badge) return;
+      if(planEstado === "token") {
+        badge.className = "plan-badge pro";
+        badge.innerHTML = '<i class="fas fa-crown"></i> PRO ' + diasPruebaRestantes + 'd';
+      } else if(planEstado === "bloqueado") {
+        badge.className = "plan-badge blocked";
+        badge.innerHTML = '<i class="fas fa-lock"></i> BLOQUEADO';
+      } else {
+        badge.className = "plan-badge demo";
+        badge.innerHTML = '<i class="fas fa-gift"></i> DEMO ' + diasPruebaRestantes + 'd';
+      }
+    }
+    
+    function actualizarSemaforo() {
+      const semaforoPerfil = document.getElementById("semaforoPerfil");
+      let color = "", texto = "", icono = "";
+      
+      if(planEstado === "bloqueado") {
+        color = "semaforo-rojo";
+        texto = "BLOQUEADO - Ingresá un token";
+        icono = '<i class="fas fa-ban"></i>';
+      } else if(planEstado === "token") {
+        color = "semaforo-verde";
+        texto = "PRO ACTIVO - " + diasPruebaRestantes + " días";
+        icono = '<i class="fas fa-check-circle"></i>';
+      } else {
+        if(diasPruebaRestantes <= 1) {
+          color = "semaforo-rojo";
+          texto = "DEMO - ÚLTIMO DÍA";
+          icono = '<i class="fas fa-exclamation-triangle"></i>';
+        } else if(diasPruebaRestantes === 2) {
+          color = "semaforo-amarillo";
+          texto = "DEMO - 2 DÍAS";
+          icono = '<i class="fas fa-clock"></i>';
+        } else {
+          color = "semaforo-verde";
+          texto = "DEMO - " + diasPruebaRestantes + " DÍAS";
+          icono = '<i class="fas fa-gift"></i>';
+        }
+      }
+      
+      if(semaforoPerfil) {
+        semaforoPerfil.innerHTML = '<div class="semaforo ' + color + '" style="display:inline-flex;">' + icono + ' Estado: ' + texto + '</div>';
+      }
+    }
+    
+    function aplicarBloqueoApp() {
+      const bloqueoMsg = document.getElementById("bloqueoAppMsg");
+      if(planEstado === "bloqueado") {
+        if(!bloqueoMsg) {
+          const msg = document.createElement("div");
+          msg.id = "bloqueoAppMsg";
+          msg.className = "bloqueo-app-msg";
+          msg.innerHTML = '<i class="fas fa-lock"></i><strong>App bloqueada</strong><br>Tu período de prueba ha expirado o tu token ha vencido.<br>Ingresá un token en Ajustes para continuar.<br><small>⚠️ Tus datos NO se perderán al ingresar un nuevo token.</small>';
+          const mainContent = document.getElementById("mainContent");
+          if(mainContent) mainContent.insertBefore(msg, mainContent.firstChild);
+        }
+        if(kioscoMode) {
+          toast("Modo bloqueado: solo lectura. Ingresá un token para editar.");
+        }
+      } else {
+        if(bloqueoMsg) bloqueoMsg.remove();
+      }
+    }
+    
+    // ============ CRUD DE PERFILES ============
+    async function venderPerfil(id, datos) {
+      const p = perfiles.find(p => p.id === id);
+      if(!p) return;
+      
+      // Actualizar el perfil con los datos editados en el modal
+      p.plataforma = datos.plataforma || p.plataforma;
+      p.cuentaId = datos.cuentaId || p.cuentaId;
+      p.perfilNombre = datos.perfilNombre || p.perfilNombre;
+      p.mail = datos.mail || p.mail;
+      p.password = datos.password || p.password;
+      p.pin = datos.pin || p.pin;
+      p.fechaVencimiento = datos.fechaVencimiento || p.fechaVencimiento;
+      p.proveedor = datos.proveedor || p.proveedor;
+      p.observaciones = datos.observaciones || p.observaciones;
+      
+      p.precioVenta = parseFloat(datos.precio);
+      p.whatsappCliente = datos.cliente || "";
+      p.fechaVenta = new Date().toISOString();
+      p.estado = "vendido";
+      
+      if(!p.fechaVencimiento) {
+        let nueva = new Date();
+        nueva.setDate(nueva.getDate() + 30);
+        p.fechaVencimiento = aInputDate(nueva);
+      }
+      p.estado = obtenerEstado(p.fechaVencimiento);
+      if(p.estado === "libre") p.estado = "vendido";
+      
+      await guardarPerfiles();
+      localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+      actualizarTodo();
+      
+      const mensaje = plantillaCliente(p, true);
+      if(datos.cliente && datos.cliente.trim() !== "") {
+        abrirWhatsApp(datos.cliente, mensaje);
+        toast("✅ Venta registrada. Redirigiendo a WhatsApp...");
+      } else {
+        toast("✅ Venta registrada. Plantilla copiada al portapapeles");
+        navigator.clipboard.writeText(mensaje);
+      }
+    }
+    
+    async function renovarPerfil(id) {
+      const p = perfiles.find(p => p.id === id);
+      if(p) {
+        let base = p.fechaVencimiento ? parseFecha(p.fechaVencimiento) : new Date();
+        base.setMonth(base.getMonth() + 1);
+        p.fechaVencimiento = aInputDate(base);
+        p.estado = obtenerEstado(p.fechaVencimiento);
+        await guardarPerfiles();
+        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+        actualizarTodo();
+        toast("Renovado hasta " + formatearFecha(p.fechaVencimiento));
+      }
+    }
+    
+    async function marcarLibre(id) {
+      const p = perfiles.find(p => p.id === id);
+      if(p && confirm("¿Marcar este perfil como libre?")) {
+        p.estado = "libre";
+        p.fechaVencimiento = null;
+        p.fechaVenta = null;
+        p.precioVenta = null;
+        p.whatsappCliente = "";
+        await guardarPerfiles();
+        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+        actualizarTodo();
+        toast("Perfil marcado como libre");
+      }
+    }
+    
+    async function eliminarPerfil(id) {
+      if(kioscoMode) {
+        toast("Modo kiosco: no se puede eliminar");
+        return;
+      }
+      if(confirm("¿Eliminar este perfil permanentemente?")) {
+        perfiles = perfiles.filter(p => p.id !== id);
+        await guardarPerfiles();
+        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+        actualizarTodo();
+        toast("Perfil eliminado");
+      }
+    }
+    
+    async function duplicarPerfil(id) {
+      const orig = perfiles.find(p => p.id === id);
+      if(orig) {
+        const nombre = prompt("Nombre del nuevo perfil:", orig.perfilNombre + " (copia)");
+        if(nombre && nombre.trim()) {
+          const copia = { 
+            ...orig, 
+            id: generarIdUnico(), 
+            perfilNombre: nombre.trim(), 
+            estado: "libre", 
+            fechaVenta: null, 
+            precioVenta: null, 
+            whatsappCliente: "" 
+          };
+          perfiles.push(copia);
+          await guardarPerfiles();
+          localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+          actualizarTodo();
+          toast("Perfil duplicado");
+        }
+      }
+    }
+    
+    function editarPerfil(id) {
+      if(kioscoMode) {
+        toast("Modo kiosco: no se puede editar");
+        return;
+      }
+      const p = perfiles.find(p => p.id === id);
+      if(!p) return;
+      editandoId = id;
+      
+      const conocidas = ["Netflix", "Netflix indiv", "Disney", "HBO Max", "Prime video", "Paramount", "Crunchyroll", "Spoty", "YouTube"];
+      if(!conocidas.includes(p.plataforma)) {
+        document.getElementById("platIndividual").value = "Otros";
+        document.getElementById("otraPlatIndividualDiv").style.display = "block";
+        document.getElementById("otraPlatIndividual").value = p.plataforma;
+      } else {
+        document.getElementById("platIndividual").value = p.plataforma;
+        document.getElementById("otraPlatIndividualDiv").style.display = "none";
+      }
+      document.getElementById("cuentaIdIndividual").value = p.cuentaId || "";
+      document.getElementById("nombrePerfilIndividual").value = p.perfilNombre || "";
+      document.getElementById("pinIndividual").value = p.pin || "";
+      document.getElementById("mailIndividual").value = p.mail || "";
+      document.getElementById("passIndividual").value = p.password || "";
+      document.getElementById("fechaIndividual").value = p.fechaVencimiento || "";
+      document.getElementById("precioIndividual").value = p.precio || "";
+      document.getElementById("proveedorIndividual").value = p.proveedor || "";
+      document.getElementById("whatsappIndividual").value = p.whatsappProveedor || "";
+      document.getElementById("obsIndividual").value = p.observaciones || "";
+      
+      document.querySelectorAll(".carga-tab").forEach(b => b.classList.remove("active"));
+      document.querySelector(".carga-tab[data-mod='individual']").classList.add("active");
+      document.getElementById("modo-completa").style.display = "none";
+      document.getElementById("modo-individual").style.display = "block";
+      document.getElementById("modo-masiva").style.display = "none";
+      document.getElementById("btnCancelarEdicion").style.display = "inline-block";
+      document.getElementById("btnGuardarIndividual").textContent = "Guardar cambios";
+      
+      cambiarTab("carga");
+    }
+    
+    async function guardarPerfilEditado() {
+      const id = editandoId;
+      let plataforma = document.getElementById("platIndividual").value;
+      if(plataforma === "Otros") {
+        plataforma = document.getElementById("otraPlatIndividual").value.trim();
+        if(!plataforma) {
+          toast("Escribí el nombre de la plataforma");
+          return;
+        }
+      }
+      const index = perfiles.findIndex(p => p.id === id);
+      if(index !== -1) {
+        perfiles[index] = {
+          ...perfiles[index],
+          plataforma: plataforma,
+          cuentaId: document.getElementById("cuentaIdIndividual").value,
+          perfilNombre: document.getElementById("nombrePerfilIndividual").value,
+          mail: document.getElementById("mailIndividual").value,
+          password: document.getElementById("passIndividual").value,
+          pin: document.getElementById("pinIndividual").value,
+          fechaVencimiento: document.getElementById("fechaIndividual").value || null,
+          proveedor: document.getElementById("proveedorIndividual").value,
+          whatsappProveedor: document.getElementById("whatsappIndividual").value,
+          observaciones: document.getElementById("obsIndividual").value,
+          precio: document.getElementById("precioIndividual").value ? Number(document.getElementById("precioIndividual").value) : null,
+          estado: document.getElementById("fechaIndividual").value ? obtenerEstado(document.getElementById("fechaIndividual").value) : "libre"
+        };
+        await guardarPerfiles();
+        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+        actualizarTodo();
+        toast("✅ Perfil actualizado");
+        editandoId = null;
+        limpiarFormularioIndividual();
+        document.getElementById("btnCancelarEdicion").style.display = "none";
+        document.getElementById("btnGuardarIndividual").textContent = "Guardar perfil";
+      }
+    }
+    
+    function limpiarFormularioIndividual() {
+      document.getElementById("platIndividual").value = "Netflix";
+      document.getElementById("cuentaIdIndividual").value = "";
+      document.getElementById("nombrePerfilIndividual").value = "";
+      document.getElementById("pinIndividual").value = "";
+      document.getElementById("mailIndividual").value = "";
+      document.getElementById("passIndividual").value = "";
+      document.getElementById("fechaIndividual").value = "";
+      document.getElementById("precioIndividual").value = "";
+      document.getElementById("proveedorIndividual").value = "";
+      document.getElementById("whatsappIndividual").value = "";
+      document.getElementById("obsIndividual").value = "";
+      document.getElementById("otraPlatIndividual").value = "";
+      document.getElementById("otraPlatIndividualDiv").style.display = "none";
+    }
+    
+    async function guardarPerfilIndividual() {
+      let plataforma = document.getElementById("platIndividual").value;
+      if(plataforma === "Otros") {
+        plataforma = document.getElementById("otraPlatIndividual").value.trim();
+        if(!plataforma) {
+          toast("Escribí el nombre de la plataforma");
+          return;
+        }
+      }
+      const cuentaId = document.getElementById("cuentaIdIndividual").value;
+      const nombrePerfil = document.getElementById("nombrePerfilIndividual").value;
+      const mail = document.getElementById("mailIndividual").value;
+      const password = document.getElementById("passIndividual").value;
+      const fecha = document.getElementById("fechaIndividual").value || null;
+      const proveedor = document.getElementById("proveedorIndividual").value;
+      const whatsapp = document.getElementById("whatsappIndividual").value;
+      const obs = document.getElementById("obsIndividual").value;
+      const precio = document.getElementById("precioIndividual").value;
+      const pin = document.getElementById("pinIndividual").value;
+      
+      if(!plataforma || !cuentaId || !nombrePerfil || !mail || !password || !proveedor) {
+        toast("Completá todos los campos");
+        return;
+      }
+      
+      perfiles.push({
+        id: generarIdUnico(),
+        plataforma: plataforma,
+        cuentaId: cuentaId,
+        perfilNombre: nombrePerfil,
+        mail: mail,
+        password: password,
+        pin: pin || "",
+        fechaVencimiento: fecha,
+        proveedor: proveedor,
+        whatsappProveedor: whatsapp,
+        observaciones: obs,
+        precio: precio ? Number(precio) : null,
+        estado: fecha ? obtenerEstado(fecha) : "libre",
+        fechaVenta: null,
+        precioVenta: null,
+        whatsappCliente: ""
+      });
+      
+      await guardarPerfiles();
+      localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+      actualizarTodo();
+      toast("✅ Perfil guardado");
+      limpiarFormularioIndividual();
+    }
+    
+    async function guardarCuentaCompleta() {
+      let plataforma = document.getElementById("platCompleta").value;
+      if(plataforma === "Otros") {
+        plataforma = document.getElementById("otraPlatCompleta").value.trim();
+        if(!plataforma) {
+          toast("Escribí el nombre de la plataforma");
+          return;
+        }
+      }
+      const cuentaId = document.getElementById("cuentaIdCompleta").value;
+      const mail = document.getElementById("mailCompleta").value;
+      const password = document.getElementById("passCompleta").value;
+      const fecha = document.getElementById("fechaCompleta").value || null;
+      const proveedor = document.getElementById("proveedorCompleta").value;
+      const whatsapp = document.getElementById("whatsappCompleta").value;
+      const obs = document.getElementById("obsCompleta").value;
+      const precio = document.getElementById("precioCompleta").value;
+      
+      if(!plataforma || !cuentaId || !mail || !password || !proveedor) {
+        toast("Completá todos los campos");
+        return;
+      }
+      
+      const cantidades = {
+        "Netflix": 5, "Netflix indiv": 1, "Disney": 7, "HBO Max": 5,
+        "Paramount": 5, "Crunchyroll": 1, "Prime video": 6, "Spoty": 1, "YouTube": 1
+      };
+      const cantidad = cantidades[plataforma] || 1;
+      
+      for(let i = 1; i <= cantidad; i++) {
+        perfiles.push({
+          id: generarIdUnico(),
+          plataforma: plataforma,
+          cuentaId: cuentaId,
+          mail: mail,
+          password: password,
+          perfilNombre: cantidad === 1 ? "Principal" : "Perfil " + i,
+          pin: "",
+          fechaVencimiento: fecha,
+          proveedor: proveedor,
+          whatsappProveedor: whatsapp,
+          observaciones: obs,
+          precio: precio ? Number(precio) : null,
+          estado: fecha ? obtenerEstado(fecha) : "libre",
+          fechaVenta: null,
+          precioVenta: null,
+          whatsappCliente: ""
+        });
+      }
+      
+      await guardarPerfiles();
+      localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+      actualizarTodo();
+      toast("✅ " + plataforma + " guardada (" + cantidad + " perfiles)");
+      
+      document.getElementById("cuentaIdCompleta").value = "";
+      document.getElementById("mailCompleta").value = "";
+      document.getElementById("passCompleta").value = "";
+      document.getElementById("proveedorCompleta").value = "";
+      document.getElementById("fechaCompleta").value = "";
+      document.getElementById("precioCompleta").value = "";
+      document.getElementById("whatsappCompleta").value = "";
+      document.getElementById("obsCompleta").value = "";
+      document.getElementById("otraPlatCompleta").value = "";
+      document.getElementById("otraPlatCompletaDiv").style.display = "none";
+    }
+    
+    // ============ RENDERIZADO ============
+    function actualizarDashboard() {
+      document.getElementById("totalPerfiles").innerHTML = perfiles.length;
+      document.getElementById("libresHoy").innerHTML = perfiles.filter(p => p.estado === "libre").length;
+      document.getElementById("vencenHoy").innerHTML = perfiles.filter(p => p.estado === "proximo").length;
+      document.getElementById("ventasHoy").innerHTML = perfiles.filter(p => p.fechaVenta && p.fechaVenta.split('T')[0] === new Date().toISOString().split('T')[0]).length;
+      document.getElementById("totalGanado").innerHTML = "$" + perfiles.reduce((s,p) => s + (p.precioVenta || 0), 0).toLocaleString();
+      document.getElementById("cantidadVendidos").innerHTML = perfiles.filter(p => p.fechaVenta).length;
+      
+      const porPlataforma = {};
+      perfiles.forEach(p => { porPlataforma[p.plataforma] = (porPlataforma[p.plataforma] || 0) + 1; });
+      document.getElementById("resumenRapido").innerHTML = Object.entries(porPlataforma).map(([k,v]) => `<span class="badge">${k}: ${v}</span>`).join('');
+      
+      const ventasPlataforma = {};
+      perfiles.filter(p => p.fechaVenta).forEach(p => { ventasPlataforma[p.plataforma] = (ventasPlataforma[p.plataforma] || 0) + 1; });
+      const top = Object.entries(ventasPlataforma).sort((a,b) => b[1] - a[1])[0];
+      document.getElementById("menosVendido").innerHTML = top ? `🔥 Más vendido: ${top[0]} (${top[1]} ventas)` : "📊 Sin ventas aún";
+      
+      const libresPlata = {};
+      perfiles.filter(p => p.estado === "libre").forEach(p => { libresPlata[p.plataforma] = (libresPlata[p.plataforma] || 0) + 1; });
+      const disponibles = Object.keys(libresPlata);
+      let combosHtml = "";
+      if(disponibles.length >= 2) {
+        combosHtml += `<div class="combo-card">⚡ Combo ${disponibles.slice(0,2).join(" + ")} - Precio especial</div>`;
+      }
+      combosHtml += `<div class="combo-card">🎯 Combo del día: Netflix + Disney + HBO Max</div>`;
+      document.getElementById("combosContainer").innerHTML = combosHtml;
+    }
+    
+    function renderResumenes() {
+      const streaming = {};
+      const proveedores = {};
+      perfiles.forEach(p => {
+        const plataforma = p.plataforma || "Otros";
+        if(!streaming[plataforma]) streaming[plataforma] = { total:0, activo:0, proximo:0, vencido:0, libre:0, vendido:0 };
+        streaming[plataforma].total++;
+        streaming[plataforma][p.estado]++;
+        const proveedor = p.proveedor || "Sin proveedor";
+        if(!proveedores[proveedor]) proveedores[proveedor] = { total:0, activo:0, proximo:0, vencido:0, libre:0, vendido:0 };
+        proveedores[proveedor].total++;
+        proveedores[proveedor][p.estado]++;
+      });
+      document.getElementById("resumenStreaming").innerHTML = Object.keys(streaming).sort().map(k => `<div style="font-size:0.7rem; margin-bottom:0.4rem;"><strong>${k}</strong> · ${streaming[k].total} total · ✅${streaming[k].activo||0} ⚠️${streaming[k].proximo||0} ❌${streaming[k].vencido||0} 🆓${streaming[k].libre||0} 💰${streaming[k].vendido||0}</div>`).join('');
+      document.getElementById("resumenProveedores").innerHTML = Object.keys(proveedores).sort().map(k => `<div style="font-size:0.7rem; margin-bottom:0.4rem;"><strong>${k}</strong> · ${proveedores[k].total} total · ✅${proveedores[k].activo||0} ⚠️${proveedores[k].proximo||0} ❌${proveedores[k].vencido||0} 🆓${proveedores[k].libre||0} 💰${proveedores[k].vendido||0}</div>`).join('');
+    }
+    
+    function renderListaPerfiles() {
+      let filtroPlat = document.getElementById("filtroPlataforma").value;
+      const filtroEst = document.getElementById("filtroEstado").value;
+      const busqueda = document.getElementById("buscarTexto").value.toLowerCase().trim();
+      const proveedorFiltro = document.getElementById("filtroProveedor").value.toLowerCase().trim();
+      const fechaDesde = document.getElementById("fechaDesde").value;
+      const fechaHasta = document.getElementById("fechaHasta").value;
+      const otraPlat = document.getElementById("otraPlatFiltro")?.value.toLowerCase().trim();
+      
+      // Si seleccionó "Otros", mostrar el input para escribir la plataforma personalizada
+      if(filtroPlat === "Otros") {
+        document.getElementById("otraPlatFiltroDiv").style.display = "block";
+        filtroPlat = otraPlat || "";
+      } else {
+        document.getElementById("otraPlatFiltroDiv").style.display = "none";
+      }
+      
+      let datos = perfiles.filter(p => {
+        if(filtroPlat && p.plataforma !== filtroPlat && (filtroPlat !== "Otros" || (filtroPlat === "Otros" && !p.plataforma.match(/^(Netflix|Netflix indiv|Disney|HBO Max|Prime video|Spoty|YouTube|Crunchyroll|Paramount)$/)))) return false;
+        if(filtroEst && p.estado !== filtroEst) return false;
+        if(proveedorFiltro && !p.proveedor?.toLowerCase().includes(proveedorFiltro)) return false;
+        if(fechaDesde && p.fechaVencimiento && p.fechaVencimiento < fechaDesde) return false;
+        if(fechaHasta && p.fechaVencimiento && p.fechaVencimiento > fechaHasta) return false;
+        if(busqueda) {
+          const campos = [p.perfilNombre, p.cuentaId, p.mail, p.proveedor, p.whatsappCliente, p.whatsappProveedor, p.plataforma];
+          return campos.some(campo => campo && campo.toLowerCase().includes(busqueda));
+        }
+        return true;
+      });
+      
+      const activos = datos.filter(p => p.estado !== "libre" && p.estado !== "vendido");
+      const libres = datos.filter(p => p.estado === "libre");
+      const vendidos = datos.filter(p => p.estado === "vendido");
+      const todosActivos = [...activos, ...vendidos];
+      
+      const contAct = document.getElementById("listaActivos");
+      const contLib = document.getElementById("listaLibres");
+      if(!contAct || !contLib) return;
+      
+      if(todosActivos.length === 0) {
+        contAct.innerHTML = '<div class="empty-state">No hay perfiles activos o vendidos</div>';
+      } else {
+        contAct.innerHTML = todosActivos.map(p => crearTarjetaPerfil(p, false)).join('');
+      }
+      
+      if(libres.length === 0) {
+        contLib.innerHTML = '<div class="empty-state">No hay perfiles libres</div>';
+      } else {
+        contLib.innerHTML = libres.map(p => crearTarjetaPerfil(p, true)).join('');
+      }
+      
+      agregarEventosBotones();
+    }
+    
+    function crearTarjetaPerfil(p, esLibre) {
+      const passOculto = '•'.repeat(Math.min(10, (p.password || "").length));
+      let botones = `
+        <button class="action-btn" data-act="wa" data-id="${p.id}"><i class="fab fa-whatsapp"></i> WA Prov</button>
+        <button class="action-btn" data-act="copy" data-id="${p.id}"><i class="fas fa-copy"></i> Copiar</button>
+        <button class="action-btn" data-act="pass" data-id="${p.id}"><i class="fas fa-key"></i> Pass</button>
+        <button class="action-btn" data-act="edit" data-id="${p.id}"><i class="fas fa-edit"></i> Editar</button>
+        <button class="action-btn" data-act="renew" data-id="${p.id}"><i class="fas fa-sync-alt"></i> Renovar</button>
+        <button class="action-btn" data-act="free" data-id="${p.id}"><i class="fas fa-circle"></i> Libre</button>
+        <button class="action-btn" data-act="dup" data-id="${p.id}"><i class="fas fa-copy"></i> Duplicar</button>
+        <button class="action-btn btn-danger" data-act="del" data-id="${p.id}"><i class="fas fa-trash"></i> Eliminar</button>
+      `;
+      
+      if(esLibre) {
+        botones += `<button class="action-btn btn-primary" data-act="sell" data-id="${p.id}"><i class="fas fa-tag"></i> Vender</button>`;
+        botones += `<button class="action-btn" data-act="reassign" data-id="${p.id}"><i class="fas fa-calendar-alt"></i> Reasignar</button>`;
+      }
+      
+      if(p.estado === "vendido" && p.whatsappCliente) {
+        botones += `<button class="action-btn whatsapp-btn" data-act="wacliente" data-id="${p.id}"><i class="fab fa-whatsapp"></i> WA Cliente</button>`;
+      }
+      
+      let fechaTexto = p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : "Sin fecha";
+      if(p.estado === "vendido" && p.fechaVenta) {
+        fechaTexto = `Vendido el ${new Date(p.fechaVenta).toLocaleDateString()}`;
+      }
+      
+      return `
+        <div class="profile-card">
+          <div class="profile-header">
+            <span class="badge">${escapeHtml(p.plataforma)}</span>
+            <span class="badge ${estadoClase(p.estado)}">${estadoTexto(p.estado)}</span>
+            ${p.precioVenta ? `<span class="badge">💰 $${p.precioVenta}</span>` : ''}
+          </div>
+          <div class="profile-info">
+            <strong>${escapeHtml(p.cuentaId || '')} - ${escapeHtml(p.perfilNombre || '')}</strong><br>
+            📧 ${escapeHtml(p.mail || '')}<br>
+            👤 ${escapeHtml(p.proveedor || '')}<br>
+            📅 ${fechaTexto}<br>
+            🔑 <span id="pass-${p.id}">${passOculto}</span>
+            <button class="toggle-password" data-id="${p.id}"><i class="fas fa-eye"></i></button>
+            ${p.whatsappCliente ? `<br>📱 Cliente: ${escapeHtml(p.whatsappCliente)}` : ''}
+            ${p.whatsappProveedor ? `<br>📱 Tu WhatsApp: ${escapeHtml(p.whatsappProveedor)}` : ''}
+          </div>
+          <div class="action-buttons">${botones}</div>
+        </div>
+      `;
+    }
+    
+    function agregarEventosBotones() {
+      document.querySelectorAll(".toggle-password").forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const p = perfiles.find(p => p.id === btn.dataset.id);
+          if(p) {
+            const span = document.getElementById(`pass-${p.id}`);
+            if(span.innerText === '•••••••') {
+              span.innerText = p.password;
+              btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+              span.innerText = '•••••••';
+              btn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+          }
+        };
+      });
+      
+      document.querySelectorAll(".action-btn").forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          const act = btn.dataset.act;
+          const p = perfiles.find(p => p.id === id);
+          if(!p) return;
+          if(act === "wa") {
+            if(p.whatsappProveedor) abrirWhatsApp(p.whatsappProveedor, plantillaProveedor(p));
+            else toast("Sin WhatsApp del proveedor");
+          } else if(act === "wacliente") {
+            if(p.whatsappCliente) abrirWhatsApp(p.whatsappCliente, plantillaCliente(p, false));
+            else toast("Sin WhatsApp del cliente");
+          } else if(act === "copy") {
+            navigator.clipboard.writeText(plantillaProveedor(p));
+            toast("Copiado");
+          } else if(act === "pass") {
+            cambiarPass(id);
+          } else if(act === "edit") {
+            editarPerfil(id);
+          } else if(act === "renew") {
+            renovarPerfil(id);
+          } else if(act === "free") {
+            marcarLibre(id);
+          } else if(act === "dup") {
+            duplicarPerfil(id);
+          } else if(act === "del") {
+            eliminarPerfil(id);
+          } else if(act === "sell") {
+            mostrarVentaModal(id);
+          } else if(act === "reassign") {
+            mostrarReasignarModal(id);
+          }
+        };
+      });
+    }
+    
+    function mostrarVentaModal(id) {
+      const p = perfiles.find(p => p.id === id);
+      if(!p) return;
+      pendingVentaId = id;
+      document.getElementById("ventaPerfilInfo").innerHTML = `<strong>${escapeHtml(p.plataforma)} - ${escapeHtml(p.perfilNombre)}</strong><br>Estado actual: ${estadoTexto(p.estado)}`;
+      document.getElementById("ventaPlataforma").value = p.plataforma || "Netflix";
+      document.getElementById("ventaCuentaId").value = p.cuentaId || "";
+      document.getElementById("ventaPerfilNombre").value = p.perfilNombre || "";
+      document.getElementById("ventaMail").value = p.mail || "";
+      document.getElementById("ventaPassword").value = p.password || "";
+      document.getElementById("ventaPin").value = p.pin || "";
+      document.getElementById("ventaFechaVencimiento").value = p.fechaVencimiento || "";
+      document.getElementById("ventaProveedor").value = p.proveedor || "";
+      document.getElementById("ventaPrecio").value = p.precio || 2500;
+      document.getElementById("ventaCliente").value = "";
+      document.getElementById("ventaObservaciones").value = p.observaciones || "";
+      document.getElementById("ventaModal").style.display = "flex";
+    }
+    
+    function mostrarReasignarModal(id) {
+      const p = perfiles.find(p => p.id === id);
+      if(p) {
+        document.getElementById("reasignarPerfilInfo").innerHTML = `${p.plataforma} - ${p.perfilNombre}`;
+        document.getElementById("reasignarFecha").value = p.fechaVencimiento || "";
+        document.getElementById("reasignarModal").style.display = "flex";
+        window.reasignarId = id;
+      }
+    }
+    
+    async function confirmarReasignar() {
+      const nuevaFecha = document.getElementById("reasignarFecha").value;
+      if(!nuevaFecha) {
+        toast("Seleccioná una fecha");
+        return;
+      }
+      const p = perfiles.find(p => p.id === window.reasignarId);
+      if(p) {
+        p.fechaVencimiento = nuevaFecha;
+        p.estado = obtenerEstado(nuevaFecha);
+        await guardarPerfiles();
+        actualizarTodo();
+        toast("Fecha reasignada");
+        document.getElementById("reasignarModal").style.display = "none";
+      }
+    }
+    
+    async function cambiarPass(id) {
+      const p = perfiles.find(p => p.id === id);
+      if(p) {
+        const nueva = prompt("Nueva contraseña (mínimo 6 caracteres):");
+        if(nueva && nueva.length >= 6) {
+          const confirmar = prompt("Confirmar nueva contraseña:");
+          if(confirmar === nueva) {
+            p.password = nueva;
+            await guardarPerfiles();
+            actualizarTodo();
+            toast("Contraseña actualizada");
+          } else {
+            toast("Las contraseñas no coinciden");
+          }
+        } else if(nueva) {
+          toast("La contraseña debe tener al menos 6 caracteres");
+        }
+      }
+    }
+    
+    function renderHistorial() {
+      const fp = document.getElementById("historialFiltroPlataforma").value;
+      const busqueda = document.getElementById("historialBuscar").value.toLowerCase();
+      let ventas = perfiles.filter(p => p.fechaVenta);
+      if(fp) ventas = ventas.filter(p => p.plataforma === fp);
+      if(busqueda) ventas = ventas.filter(p => p.perfilNombre.toLowerCase().includes(busqueda) || (p.whatsappCliente && p.whatsappCliente.toLowerCase().includes(busqueda)));
+      ventas.sort((a,b) => new Date(b.fechaVenta) - new Date(a.fechaVenta));
+      const container = document.getElementById("historialLista");
+      if(ventas.length === 0) {
+        container.innerHTML = '<div class="empty-state">No hay ventas registradas</div>';
+      } else {
+        container.innerHTML = ventas.map(p => `
+          <div class="profile-card">
+            <div class="profile-header"><span class="badge">${escapeHtml(p.plataforma)}</span><span class="badge badge-success">Vendido</span></div>
+            <div class="profile-info"><strong>${escapeHtml(p.perfilNombre)}</strong><br>💰 $${p.precioVenta}<br>📅 ${new Date(p.fechaVenta).toLocaleDateString()}<br>👤 Cliente: ${p.whatsappCliente || "No especificado"}</div>
+            <div class="action-buttons"><button class="action-btn reenviar-wa" data-numero="${p.whatsappCliente || ''}" data-mensaje="${escapeHtml(plantillaCliente(p, true))}"><i class="fab fa-whatsapp"></i> Reenviar plantilla</button></div>
+          </div>
+        `).join('');
+      }
+      document.querySelectorAll(".reenviar-wa").forEach(btn => {
+        btn.onclick = () => {
+          const numero = btn.dataset.numero;
+          const mensaje = btn.dataset.mensaje;
+          if(numero) abrirWhatsApp(numero, mensaje);
+          else toast("Sin número de cliente");
+        };
+      });
+    }
+    
+    function actualizarPanelMiCuenta() {
+      if(!currentUser) return;
+      document.getElementById("perfilEmail").innerHTML = currentUser.email || "-";
+      document.getElementById("perfilPlan").innerHTML = planEstado === "token" ? "PRO - PREMIUM" : (planEstado === "bloqueado" ? "BLOQUEADO" : "DEMO - PRUEBA");
+      document.getElementById("perfilDiasRestantes").innerHTML = planEstado === "token" ? "✅ Suscripción activa" : (planEstado === "bloqueado" ? "⚠️ Período expirado - Ingresá un token" : `🎯 ${diasPruebaRestantes} días restantes`);
+      document.getElementById("perfilTotalPerfiles").innerHTML = perfiles.length;
+      document.getElementById("perfilTotalVentas").innerHTML = perfiles.filter(p => p.fechaVenta).length;
+      document.getElementById("perfilGanado").innerHTML = "$" + perfiles.reduce((s,p) => s + (p.precioVenta || 0), 0).toLocaleString();
+      document.getElementById("perfilActivos").innerHTML = perfiles.filter(p => p.estado === "activo" || p.estado === "proximo").length;
+      
+      const progresoBarra = document.getElementById("progresoBarra");
+      const progresoTexto = document.getElementById("progresoTexto");
+      const fechaExpiracionSpan = document.getElementById("fechaExpiracionTexto");
+      if(planEstado === "token") {
+        const totalDias = DIAS_TOKEN;
+        const progreso = (diasPruebaRestantes / totalDias) * 100;
+        if(progresoBarra) progresoBarra.style.width = `${progreso}%`;
+        if(progresoTexto) progresoTexto.innerText = `${diasPruebaRestantes} días restantes del plan PRO`;
+        if(fechaExpiracionSpan) fechaExpiracionSpan.innerText = `+${diasPruebaRestantes} días`;
+      } else if(planEstado === "demo") {
+        const totalDias = DIAS_PRUEBA_GRATIS;
+        const progreso = (diasPruebaRestantes / totalDias) * 100;
+        if(progresoBarra) progresoBarra.style.width = `${progreso}%`;
+        if(progresoTexto) progresoTexto.innerText = `${diasPruebaRestantes} días restantes de prueba`;
+        if(fechaExpiracionSpan) fechaExpiracionSpan.innerText = `+${diasPruebaRestantes} días`;
+      } else {
+        if(progresoBarra) progresoBarr
