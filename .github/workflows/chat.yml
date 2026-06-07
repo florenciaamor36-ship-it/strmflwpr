@@ -1,0 +1,143 @@
+name: Add Zapia AI Chat
+on:
+  workflow_dispatch:
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Patch for AI Chat
+        run: |
+          cat << 'EOF' > patch_chat.py
+          import os
+          with open('index.html', 'r', encoding='utf-8') as f:
+              lines = f.readlines()
+          
+          # 1. CSS para el widget de Chat
+          css_chat = """
+    /* ZAPIA AI CHAT WIDGET */
+    .zapia-chat-bubble {
+      position: fixed; bottom: 80px; right: 20px;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: linear-gradient(145deg, #f5af19, #f12711);
+      color: white; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 15px rgba(241, 39, 17, 0.4);
+      cursor: pointer; z-index: 1000; transition: transform 0.3s;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .zapia-chat-bubble:hover { transform: scale(1.1); }
+    .zapia-chat-bubble i { font-size: 1.5rem; }
+    
+    .zapia-chat-window {
+      position: fixed; bottom: 140px; right: 20px;
+      width: 320px; height: 450px; background: #0f0c29;
+      border: 1px solid rgba(245, 175, 25, 0.3);
+      border-radius: 1.5rem; z-index: 1001; display: none;
+      flex-direction: column; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+    }
+    .zapia-chat-header {
+      padding: 1rem; background: linear-gradient(145deg, #f5af19, #f12711);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .zapia-chat-body { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; }
+    .zapia-msg { padding: 0.7rem 1rem; border-radius: 1rem; font-size: 0.8rem; max-width: 85%; }
+    .zapia-msg.bot { background: rgba(255,255,255,0.1); align-self: flex-start; color: #fff; border-bottom-left-radius: 0.2rem; }
+    .zapia-msg.user { background: #f5af19; align-self: flex-end; color: #000; font-weight: 600; border-bottom-right-radius: 0.2rem; }
+    .zapia-chat-footer { padding: 0.8rem; display: flex; gap: 5px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .zapia-chat-input {
+      flex: 1; background: rgba(255,255,255,0.05); border: none; border-radius: 1rem;
+      padding: 0.5rem 1rem; color: #fff; font-size: 0.8rem; outline: none;
+    }
+    .zapia-chat-send { background: #f5af19; color: #000; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
+"""
+          for i, line in enumerate(lines):
+              if "</style>" in line:
+                  lines.insert(i, css_chat)
+                  break
+
+          # 2. HTML para el widget de Chat
+          html_chat = """
+  <!-- ZAPIA AI CHAT WIDGET -->
+  <div class="zapia-chat-bubble" id="zapiaBubble"><i class="fas fa-robot"></i></div>
+  <div class="zapia-chat-window" id="zapiaChatWindow">
+    <div class="zapia-chat-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <i class="fas fa-robot"></i>
+        <span style="font-weight:700; font-size:0.9rem;">Zapia AI Assistant</span>
+      </div>
+      <i class="fas fa-times" id="closeChat" style="cursor:pointer;"></i>
+    </div>
+    <div class="zapia-chat-body" id="zapiaChatBody">
+      <div class="zapia-msg bot">¡Hola! Soy Zapia. 😊 ¿En qué puedo ayudarte hoy con StreamFlow Pro?</div>
+    </div>
+    <div class="zapia-chat-footer">
+      <input type="text" class="zapia-chat-input" id="zapiaChatInput" placeholder="Escribí tu duda...">
+      <button class="zapia-chat-send" id="zapiaSendBtn"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+"""
+          for i, line in enumerate(lines):
+              if "</body>" in line:
+                  lines.insert(i, html_chat)
+                  break
+
+          # 3. JS para el widget de Chat
+          js_chat = """
+    // ZAPIA AI CHAT LOGIC
+    const bubble = document.getElementById('zapiaBubble');
+    const windowChat = document.getElementById('zapiaChatWindow');
+    const closeBtn = document.getElementById('closeChat');
+    const sendBtn = document.getElementById('zapiaSendBtn');
+    const chatInput = document.getElementById('zapiaChatInput');
+    const chatBody = document.getElementById('zapiaChatBody');
+
+    bubble.addEventListener('click', () => { windowChat.style.display = 'flex'; bubble.style.display = 'none'; });
+    closeBtn.addEventListener('click', () => { windowChat.style.display = 'none'; bubble.style.display = 'flex'; });
+
+    function addMsg(text, type) {
+      const msg = document.createElement('div');
+      msg.className = `zapia-msg ${type}`;
+      msg.innerText = text;
+      chatBody.appendChild(msg);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    sendBtn.addEventListener('click', () => {
+      const txt = chatInput.value.trim();
+      if(!txt) return;
+      addMsg(txt, 'user');
+      chatInput.value = '';
+      
+      // Inteligencia Artificial básica para el usuario (Flor's SaaS version)
+      setTimeout(() => {
+        let resp = "No estoy segura de eso, pero podés contactar a Flor por WhatsApp tocando el botón de Soporte.";
+        const low = txt.toLowerCase();
+        if(low.includes("pago") || low.includes("prex")) resp = "Podés renovar tu cuenta por Prex en la sección 'Mi Cuenta' usando el alias ultralinkpagos.ar";
+        else if(low.includes("vence") || low.includes("vencimiento")) resp = "Fijate en 'Mi Cuenta', ahí dice cuántos días te quedan de plan.";
+        else if(low.includes("perfil") || low.includes("cuenta")) resp = "En la pestaña 'Perfiles' tenés todos tus accesos cargados.";
+        else if(low.includes("hola")) resp = "¡Hola! ¿Cómo te puedo ayudar con tu streaming hoy?";
+        
+        addMsg(resp, 'bot');
+      }, 800);
+    });
+
+    chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendBtn.click(); });
+"""
+          for i, line in enumerate(lines):
+              if "// ============ FUNCIONES UTILITARIAS ============" in line:
+                  lines.insert(i, js_chat)
+                  break
+
+          with open('index.html', 'w', encoding='utf-8') as f:
+              f.writelines(lines)
+          EOF
+          python3 patch_chat.py
+      - name: Commit changes
+        run: |
+          git config --local user.email "florenciaamor36@gmail.com"
+          git config --local user.name "Zapia AI"
+          git add index.html
+          git commit -m "Add Zapia AI Chat Widget to the app"
+          git push
