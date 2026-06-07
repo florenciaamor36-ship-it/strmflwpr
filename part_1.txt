@@ -1,0 +1,492 @@
+ value="Crunchyroll">Crunchyroll</option><option value="Prime video">Prime video</option><option value="Spoty">Spoty</option><option value="YouTube">YouTube</option><option value="Otros">Otros</option></select></div>
+      <div class="row"><div class="venta-field-group"><label>Cuenta N°</label><input type="text" id="ventaCuentaId"></div><div class="venta-field-group"><label>Perfil</label><input type="text" id="ventaPerfilNombre"></div></div>
+      <div class="row"><div class="venta-field-group"><label>Correo</label><input type="email" id="ventaMail"></div><div class="venta-field-group"><label>Contraseña</label><input type="text" id="ventaPassword"></div></div>
+      <div class="row"><div class="venta-field-group"><label>PIN</label><input type="text" id="ventaPin"></div><div class="venta-field-group"><label>Vencimiento</label><input type="date" id="ventaFechaVencimiento"></div></div>
+      <div class="row"><div class="venta-field-group"><label>Proveedor (tuyo, el que le mostrás al cliente)</label><input type="text" id="ventaProveedor" placeholder="Tu nombre o empresa"></div><div class="venta-field-group"><label>Precio ($)</label><input type="number" id="ventaPrecio" step="1" min="1"></div></div>
+      <div class="venta-field-group"><label>WhatsApp cliente</label><input type="tel" id="ventaCliente"></div>
+      <div class="venta-field-group"><label>Observaciones</label><textarea id="ventaObservaciones" rows="2"></textarea></div>
+      <div class="tip" style="margin-bottom:0.8rem; text-align:left;">
+        <strong><i class="fas fa-shield-alt"></i> La plantilla incluirá:</strong><br>
+        ✅ Datos de acceso completos<br>
+        ✅ Reglas de uso y seguridad<br>
+        ✅ Garantía por el tiempo contratado<br>
+        ✅ Tus datos de contacto
+      </div>
+      <div class="modal-buttons"><button id="ventaConfirmar"><i class="fas fa-check-circle"></i> Vender y enviar plantilla</button><button id="ventaCancelar"><i class="fas fa-times"></i> Cancelar</button></div>
+      <div id="ventaMessage" style="margin-top:1rem; font-size:0.7rem;"></div>
+    </div>
+  </div>
+
+  <div id="reasignarModal" class="modal"><div class="modal-content"><h3><i class="fas fa-calendar-alt"></i> Reasignar fecha</h3><div id="reasignarPerfilInfo"></div><input type="date" id="reasignarFecha"><div class="modal-buttons"><button id="reasignarConfirmar">Reasignar</button><button id="reasignarCancelar">Cancelar</button></div><div id="reasignarMessage" style="margin-top:1rem; font-size:0.7rem;"></div></div></div>
+  
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <div style="text-align:center; margin-bottom:0.8rem;"><div style="width:50px; height:50px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 0.5rem auto;"><i class="fas fa-gem" style="font-size:1.5rem; color:#fff;"></i></div></div>
+      <h3 id="confirmModalTitle" style="color:#f5af19; font-size:1rem; margin-bottom:0.5rem;"><i class="fab fa-whatsapp"></i> StreamFlow Pro</h3>
+      <p id="confirmModalMessage" style="color:rgba(255,255,255,0.9); font-size:0.8rem; margin-bottom:1rem;">¿Estás seguro?</p>
+      <div class="modal-buttons"><button id="confirmModalOk" style="background:linear-gradient(145deg,#f5af19,#f12711); color:#fff; border:none; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:700; cursor:pointer;">Aceptar</button><button id="confirmModalCancel" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:600; cursor:pointer;">Cancelar</button></div>
+    </div>
+  </div>
+
+  <div id="promptModal" class="modal">
+    <div class="modal-content">
+      <div style="text-align:center; margin-bottom:0.8rem;"><div style="width:50px; height:50px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 0.5rem auto;"><i class="fas fa-gem" style="font-size:1.5rem; color:#fff;"></i></div></div>
+      <h3 id="promptModalTitle" style="color:#f5af19; font-size:1rem; margin-bottom:0.5rem;"><i class="fas fa-edit"></i> StreamFlow Pro</h3>
+      <p id="promptModalMessage" style="color:rgba(255,255,255,0.9); font-size:0.8rem; margin-bottom:0.8rem;"></p>
+      <input type="text" id="promptModalInput" placeholder="" style="width:100%; margin:0.5rem 0; padding:0.8rem; border-radius:2rem; border:1px solid rgba(245,175,25,0.4); background:rgba(255,255,255,0.08); color:#fff; font-size:0.8rem;">
+      <div class="modal-buttons"><button id="promptModalOk" style="background:linear-gradient(145deg,#f5af19,#f12711); color:#fff; border:none; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:700; cursor:pointer;">Aceptar</button><button id="promptModalCancel" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:600; cursor:pointer;">Cancelar</button></div>
+    </div>
+  </div>
+
+  <div id="acercaModal" class="modal"><div class="modal-content"><div class="acerca-container"><div class="acerca-logo"><i class="fas fa-gem"></i></div><h3>StreamFlow Pro</h3><div class="acerca-version">Versión 2.0 · Build 2026</div><div class="acerca-info"><strong>Desarrollado y creado por</strong><br><span style="font-size:1rem; font-weight:700; color:#f5af19;">La Clave Argentina & Tienda SSH</span><br><br>Soluciones digitales profesionales para gestión de streaming.<br>Plataforma integral de administración, venta y control de cuentas.<br><br><strong>Tecnologías:</strong> Firebase, HTML5, CSS3, JavaScript ES6+, PWA<br><strong>Arquitectura:</strong> SPA con sincronización en tiempo real</div><div class="acerca-legal">© 2026 La Clave Argentina & Tienda SSH. Todos los derechos reservados.<br><br>Este software está protegido por las leyes de propiedad intelectual de la República Argentina (Ley 11.723) y tratados internacionales de copyright. Queda expresamente prohibida la reproducción, distribución, modificación o ingeniería inversa del código sin autorización expresa por escrito.<br><br>Desarrollado bajo normas de calidad ISO 9001:2015 e ISO/IEC 25010 para calidad de software. Cumple con los estándares de seguridad de datos GDPR y Ley de Protección de Datos Personales 25.326.<br><br><i class="fas fa-shield-alt"></i> Todos los datos se transmiten cifrados mediante protocolos seguros. La información del usuario es confidencial y no se comparte con terceros.</div><div class="modal-buttons" style="margin-top:1rem;"><button id="acercaCerrar"><i class="fas fa-check"></i> Cerrar</button></div></div></div></div>
+
+  <!-- APP PRINCIPAL -->
+  <div class="app-container" id="appContainer">
+    <div class="app-header">
+      <div class="header-content">
+        <div class="logo"><div class="logo-icon"><i class="fas fa-gem"></i></div><div class="logo-text"><h1>StreamFlow Pro</h1><p>GESTIÓN PROFESIONAL</p></div></div>
+        <div class="header-actions">
+          <div id="planBadge" class="plan-badge demo"><i class="fas fa-gift"></i> DEMO 3d</div>
+          <button class="sync-status sincronizado" id="syncStatus" title="Sincronización"><i class="fas fa-cloud"></i></button>
+          <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+      </div>
+      <div class="auto-save">
+        <div class="auto-save-indicator" id="saveIndicator">
+          <i class="fas fa-database"></i> <span id="saveText">Sincronizado en la nube</span>
+          <span id="syncIndicator" class="sync-indicator synced" style="display:none;"><i class="fas fa-check-circle"></i> Sincronizado</span>
+        </div>
+      </div>
+    </div>
+    <div class="main-content" id="mainContent">
+      <!-- DASHBOARD -->
+      <div id="tab-dashboard" class="tab-panel active">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-number neon-text" id="totalPerfiles">0</div><div class="stat-label">Total</div></div>
+          <div class="stat-card"><div class="stat-number neon-text" id="libresHoy">0</div><div class="stat-label">Disponibles</div></div>
+          <div class="stat-card"><div class="stat-number neon-text" id="vencenHoy">0</div><div class="stat-label">Próximos</div></div>
+          <div class="stat-card"><div class="stat-number neon-text" id="ventasHoy">0</div><div class="stat-label">Ventas hoy</div></div>
+        </div>
+        <div class="card"><div class="card-title neon-text"><i class="fas fa-fire"></i> Tendencias</div><div id="menosVendido"></div></div>
+        <div class="card"><div class="card-title neon-text"><i class="fas fa-chart-line"></i> Combos del día</div><div id="combosContainer"></div></div>
+        <div class="card"><div class="card-title neon-text"><i class="fas fa-chart-pie"></i> Resumen rápido</div><div id="resumenRapido" style="display:flex; flex-wrap:wrap; gap:0.4rem;"></div></div>
+      </div>
+
+      <!-- PERFILES - CON BÚSQUEDA MEJORADA -->
+      <div id="tab-perfiles" class="tab-panel">
+        <div class="card">
+          <div class="row" style="margin-bottom:0.8rem"><button id="btnExportar" class="btn btn-success"><i class="fas fa-download"></i> Exportar</button><button id="btnImportar" class="btn btn-outline"><i class="fas fa-upload"></i> Importar</button><input type="file" id="archivoImportar" accept=".json" style="display:none"><button id="btnBorrarTodo" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Borrar</button></div>
+          <div class="filters-bar">
+            <select id="filtroPlataforma">
+              <option value="">Todas</option>
+              <option value="Netflix">Netflix</option>
+              <option value="Netflix indiv">Netflix indiv</option>
+              <option value="Disney">Disney+</option>
+              <option value="HBO Max">HBO Max</option>
+              <option value="Prime video">Prime Video</option>
+              <option value="Spoty">Spotify</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Crunchyroll">Crunchyroll</option>
+              <option value="Paramount">Paramount+</option>
+              <option value="Otros">📝 OTROS</option>
+            </select>
+            <input type="text" id="buscarTexto" placeholder="Buscar por nombre, correo, cuenta, proveedor, teléfono...">
+            <select id="filtroEstado"><option value="">Todos</option><option value="activo">Activos</option><option value="proximo">Próximos</option><option value="vencido">Vencidos</option><option value="libre">Libres</option><option value="vendido">Vendidos</option></select>
+            <input type="text" id="filtroProveedor" placeholder="Filtrar por proveedor">
+            <input type="date" id="fechaDesde" placeholder="Desde">
+            <input type="date" id="fechaHasta" placeholder="Hasta">
+          </div>
+          <div id="otraPlatFiltroDiv" style="display:none; margin-bottom:0.5rem;"><input type="text" id="otraPlatFiltro" placeholder="Nombre de plataforma personalizada"></div>
+          <div class="row" style="margin-bottom:0.8rem"><button id="btnOrdenar" class="btn btn-outline"><i class="fas fa-sort-amount-down"></i> Ordenar</button><button id="btnLimpiarFiltros" class="btn btn-outline"><i class="fas fa-eraser"></i> Limpiar</button></div>
+          <div class="card-title neon-text"><i class="fas fa-check-circle"></i> Perfiles activos</div><div id="listaActivos"></div>
+          <div class="card-title neon-text"><i class="fas fa-circle"></i> Perfiles libres</div><div id="listaLibres"></div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div id="tab-stats" class="tab-panel">
+        <div class="card"><div class="card-title neon-text"><i class="fas fa-chart-bar"></i> Por plataforma</div><div id="resumenStreaming"></div><hr><div class="card-title neon-text"><i class="fas fa-users"></i> Por proveedor</div><div id="resumenProveedores"></div><hr><div class="card-title neon-text"><i class="fas fa-coins"></i> Ganancias</div><div class="row"><div class="stat-card"><div class="stat-number neon-text" id="totalGanado">$0</div><div class="stat-label">Total</div></div><div class="stat-card"><div class="stat-number neon-text" id="cantidadVendidos">0</div><div class="stat-label">Vendidos</div></div></div><hr><button id="btnResetVentas" class="btn btn-danger" style="width:100%"><i class="fas fa-sync-alt"></i> Reiniciar ventas</button></div>
+      </div>
+
+      <!-- HISTORIAL -->
+      <div id="tab-historial" class="tab-panel">
+        <div class="card"><div class="card-title neon-text"><i class="fas fa-list"></i> Historial de ventas</div><div class="filters-bar"><select id="historialFiltroPlataforma"><option value="">Todas</option><option value="Netflix">Netflix</option><option value="Disney">Disney+</option><option value="HBO Max">HBO Max</option><option value="Prime video">Prime Video</option><option value="Spoty">Spotify</option></select><input type="text" id="historialBuscar" placeholder="Buscar por cliente o perfil"><input type="date" id="historialFechaInicio" placeholder="Desde"><input type="date" id="historialFechaFin" placeholder="Hasta"></div><div id="historialLista"></div></div>
+      </div>
+
+      <!-- CARGA -->
+      <div id="tab-carga" class="tab-panel">
+        <div class="card">
+          <div class="card-title neon-text"><i class="fas fa-plus-circle"></i> Cargar datos</div>
+          <div class="carga-tabs">
+            <button class="carga-tab active" data-mod="completa">📦 Cuenta</button>
+            <button class="carga-tab" data-mod="individual">🎭 Individual</button>
+            <button class="carga-tab" data-mod="masiva">📋 Masiva</button>
+          </div>
+          <div id="modo-completa">
+            <div class="row"><div class="input-group"><label>Plataforma</label><select id="platCompleta"><option value="">Seleccionar...</option><option value="Netflix">Netflix (5)</option><option value="Netflix indiv">Netflix indiv (1)</option><option value="Disney">Disney+ (7)</option><option value="HBO Max">HBO Max (5)</option><option value="Paramount">Paramount+ (5)</option><option value="Crunchyroll">Crunchyroll (1)</option><option value="Prime video">Prime Video (6)</option><option value="Spoty">Spotify (1)</option><option value="YouTube">YouTube (1)</option><option value="Otros">📝 OTROS (escribir nombre)</option></select></div><div class="input-group"><label>N° Cuenta</label><input type="text" id="cuentaIdCompleta" placeholder="Ej: Cuenta 1"></div></div>
+            <div id="otraPlatCompletaDiv" style="display:none"><div class="input-group"><label>Nombre de la plataforma</label><input type="text" id="otraPlatCompleta" placeholder="Ej: Apple TV+, Star+"></div></div>
+            <div class="input-group"><label>Correo / Usuario</label><input type="email" id="mailCompleta" placeholder="usuario@mail.com"></div>
+            <div class="input-group"><label>Contraseña</label><input type="text" id="passCompleta" placeholder="Contraseña"></div>
+            <div class="row"><div class="input-group"><label>Vencimiento</label><input type="date" id="fechaCompleta"></div><div class="input-group"><label>Precio sugerido</label><input type="number" id="precioCompleta" placeholder="2500"></div></div>
+            <div class="input-group"><label>Proveedor (tu nombre, para mostrar al cliente)</label><input type="text" id="proveedorCompleta" placeholder="Tu nombre o empresa"></div>
+            <div class="input-group"><label>WhatsApp del proveedor (tu número)</label><input type="tel" id="whatsappCompleta" placeholder="5491112345678"></div>
+            <div class="input-group"><label>Observaciones internas</label><textarea id="obsCompleta" rows="2"></textarea></div>
+            <button id="btnGuardarCompleta" class="btn btn-primary" style="width:100%"><i class="fas fa-save"></i> Guardar cuenta</button>
+          </div>
+          <div id="modo-individual" style="display:none">
+            <div class="row"><div class="input-group"><label>Plataforma</label><select id="platIndividual"><option value="">Seleccionar...</option><option value="Netflix">Netflix</option><option value="Netflix indiv">Netflix indiv</option><option value="Disney">Disney+</option><option value="HBO Max">HBO Max</option><option value="Paramount">Paramount+</option><option value="Crunchyroll">Crunchyroll</option><option value="Prime video">Prime Video</option><option value="Spoty">Spotify</option><option value="YouTube">YouTube</option><option value="Otros">📝 OTROS (escribir nombre)</option></select></div><div class="input-group"><label>N° Cuenta</label><input type="text" id="cuentaIdIndividual" placeholder="Ej: Cuenta 1"></div></div>
+            <div id="otraPlatIndividualDiv" style="display:none"><div class="input-group"><label>Nombre de la plataforma</label><input type="text" id="otraPlatIndividual" placeholder="Ej: Apple TV+"></div></div>
+            <div class="row"><div class="input-group"><label>Perfil</label><input type="text" id="nombrePerfilIndividual" placeholder="Nombre del perfil"></div><div class="input-group"><label>PIN</label><input type="text" id="pinIndividual" placeholder="Opcional"></div></div>
+            <div class="input-group"><label>Correo / Usuario</label><input type="email" id="mailIndividual" placeholder="usuario@mail.com"></div>
+            <div class="input-group"><label>Contraseña</label><input type="text" id="passIndividual" placeholder="Contraseña"></div>
+            <div class="row"><div class="input-group"><label>Vencimiento</label><input type="date" id="fechaIndividual"></div><div class="input-group"><label>Precio sugerido</label><input type="number" id="precioIndividual" placeholder="2500"></div></div>
+            <div class="input-group"><label>Proveedor (tu nombre, para mostrar al cliente)</label><input type="text" id="proveedorIndividual" placeholder="Tu nombre o empresa"></div>
+            <div class="input-group"><label>WhatsApp del proveedor (tu número)</label><input type="tel" id="whatsappIndividual" placeholder="5491112345678"></div>
+            <div class="input-group"><label>Observaciones internas</label><textarea id="obsIndividual" rows="2"></textarea></div>
+            <div class="row"><button id="btnGuardarIndividual" class="btn btn-primary" style="flex:2"><i class="fas fa-save"></i> Guardar perfil</button><button id="btnCancelarEdicion" class="btn btn-outline" style="flex:1; display:none;"><i class="fas fa-times"></i> Cancelar</button></div>
+          </div>
+          <div id="modo-masiva" style="display:none">
+            <div class="tip">Separa cada cuenta con línea en blanco o "---". Ejemplo:<br>Mail: correo@mail.com | Contraseña: pass | Perfil: Juan | Proveedor: María</div>
+            <div class="input-group"><label>Plantillas</label><textarea id="batchTexto" rows="8" placeholder="Mail: usuario@mail.com\nContraseña: pass123\nPerfil: Juan\nProveedor: María"></textarea></div>
+            <div class="row"><button id="btnPrevisualizar" class="btn btn-outline"><i class="fas fa-eye"></i> Previsualizar</button><button id="btnCargarMasivo" class="btn btn-primary"><i class="fas fa-upload"></i> Cargar todo</button></div>
+            <div id="batchResultados" style="display:none; background:rgba(0,0,0,0.5); border-radius:20px; padding:0.6rem; margin-top:0.6rem; font-size:0.7rem;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MI CUENTA - CON SEMÁFORO Y SIN DUPLICADOS -->
+      <div id="tab-micuenta" class="tab-panel">
+        <div class="card">
+          <div class="card-title neon-text"><i class="fas fa-id-card"></i> Mi información</div>
+          
+          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;">
+            <div style="display:flex; align-items:center; gap:0.8rem;">
+              <div style="width:50px; height:50px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-envelope" style="font-size:1.3rem;"></i></div>
+              <div><div style="font-size:0.65rem; opacity:0.7;">Email registrado</div><div style="font-size:0.9rem; font-weight:700;" id="perfilEmail">Cargando...</div></div>
+            </div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;">
+            <div style="display:flex; align-items:center; gap:0.8rem;">
+              <div style="width:50px; height:50px; background:linear-gradient(145deg,#6366f1,#8b5cf6); border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-crown" style="font-size:1.3rem;"></i></div>
+              <div style="flex:1;"><div style="font-size:0.65rem; opacity:0.7;">Plan actual</div><div style="font-size:1rem; font-weight:800;" id="perfilPlan">DEMO</div><div style="font-size:0.65rem; margin-top:0.3rem;" id="perfilDiasRestantes"></div></div>
+              <div id="perfilPlanBadge" style="padding:0.3rem 0.8rem; border-radius:1.5rem; font-size:0.7rem; font-weight:700;"></div>
+            </div>
+            <div style="margin-top:0.8rem;" id="semaforoPerfil"></div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;">
+            <div style="font-size:0.65rem; margin-bottom:0.5rem;"><span id="progresoTexto">Días restantes</span></div>
+            <div style="background:rgba(255,255,255,0.1); border-radius:1rem; height:12px; overflow:hidden;"><div id="progresoBarra" style="width:0%; height:100%; background:linear-gradient(90deg,#f5af19,#f12711); border-radius:1rem; transition:width 0.5s;"></div></div>
+            <div style="display:flex; justify-content:space-between; margin-top:0.4rem; font-size:0.55rem;"><span>Inicio</span><span id="fechaExpiracionTexto"></span><span>Fin</span></div>
+          </div>
+
+          <div class="stats-grid" style="margin-bottom:1rem;">
+            <div class="stat-card"><div class="stat-number" id="perfilTotalPerfiles">0</div><div class="stat-label">Mis perfiles</div></div>
+            <div class="stat-card"><div class="stat-number" id="perfilTotalVentas">0</div><div class="stat-label">Mis ventas</div></div>
+            <div class="stat-card"><div class="stat-number" id="perfilGanado">$0</div><div class="stat-label">Ganado</div></div>
+            <div class="stat-card"><div class="stat-number" id="perfilActivos">0</div><div class="stat-label">Activos</div></div>
+          </div>
+
+          <hr>
+          <div class="tip" style="margin-top:1rem;"><i class="fas fa-info-circle"></i> <strong>¿Cómo funciona?</strong><br>• Al registrarte, tenés <strong>3 días de prueba GRATIS</strong> con todo desbloqueado.<br>• Después, necesitás un <strong>token de acceso</strong> que podés comprar en Ajustes.<br>• Cada token te da <strong>30 días adicionales</strong> de uso.<br>• <strong>¡Tus datos NO se pierden!</strong> Al expirar el token o la prueba, solo se bloquea la edición. Al ingresar un nuevo token, recuperás el acceso completo.</div>
+        </div>
+      </div>
+
+      <!-- AYUDA -->
+      <div id="tab-ayuda" class="tab-panel">
+        <div class="card"><button id="btnVolverDeAyuda" class="btn btn-outline" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Volver a Ajustes</button>
+          <div class="card-title neon-text"><i class="fas fa-book-open"></i> Manual de Usuario</div>
+          <div class="manual-search"><input type="text" id="manualSearch" placeholder="Buscar en el manual..."><div id="manualSearchResults" style="display:none; margin-top:0.5rem; font-size:0.65rem;"></div></div>
+          <div class="quick-nav" id="manualQuickNav"><span class="quick-link" data-section="intro">Inicio</span><span class="quick-link" data-section="carga">Cargar</span><span class="quick-link" data-section="gestion">Gestión</span><span class="quick-link" data-section="ventas">Ventas</span><span class="quick-link" data-section="config">Config</span></div>
+          <div class="manual-section" id="manual-intro"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 1. Introducción</div><div class="manual-section-body"><p><strong>StreamFlow Pro</strong> es tu centro de control para administrar cuentas de streaming.</p><div class="tip">Al registrarte tenés 3 días de prueba gratis.</div></div></div>
+          <div class="manual-section" id="manual-carga"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 2. Cargar Cuentas</div><div class="manual-section-body"><p>Hay tres modos: <strong>Cuenta Completa</strong> (crea todos los perfiles automáticos), <strong>Individual</strong> (un solo perfil) y <strong>Masiva</strong> (pegás un bloque de texto).</p></div></div>
+          <div class="manual-section" id="manual-gestion"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 3. Gestión de Perfiles</div><div class="manual-section-body"><p>Cada perfil tiene botones: Copiar, Renovar, Libre, Editar, Eliminar, Vender, Reasignar, Duplicar, Pass.</p></div></div>
+          <div class="manual-section" id="manual-ventas"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 4. Ventas</div><div class="manual-section-body"><p>Al vender un perfil, se genera automáticamente una plantilla para WhatsApp con todos los datos y reglas de uso.</p></div></div>
+          <div class="manual-section" id="manual-config"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 5. Configuración</div><div class="manual-section-body"><p>Podés cambiar tema, modo kiosco, días para "próximo", exportar/importar configuración.</p></div></div>
+        </div>
+      </div>
+
+      <!-- AJUSTES -->
+      <div id="tab-ajustes" class="tab-panel">
+        <div class="card">
+          <div class="card-title neon-text"><i class="fas fa-sliders-h"></i> Configuración</div>
+          <div class="switch-group"><span>Tema claro</span><label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label></div>
+          <div class="switch-group"><span>Modo kiosco</span><label class="switch"><input type="checkbox" id="kioscoToggle"><span class="slider"></span></label></div>
+          <div class="switch-group"><span>Notificaciones de vencimiento</span><label class="switch"><input type="checkbox" id="notificationsToggle" checked><span class="slider"></span></label></div>
+          <div class="input-group"><label>Días para considerar "Próximo a vencer"</label><input type="number" id="diasProximoConfig" min="1" max="10" value="3"></div>
+          <div class="row"><button id="btnExportConfig" class="btn btn-outline"><i class="fas fa-download"></i> Exportar config</button><button id="btnImportConfig" class="btn btn-outline"><i class="fas fa-upload"></i> Importar config</button><button id="btnResetConfig" class="btn btn-outline"><i class="fas fa-undo-alt"></i> Resetear</button></div>
+          <input type="file" id="archivoConfig" accept=".json" style="display:none">
+          <hr>
+          <button id="btnAbrirManual" class="btn btn-outline" style="width:100%"><i class="fas fa-book-open"></i> Manual de Usuario</button>
+          <hr>
+          <button id="btnAcercaDe" class="btn btn-acerca" style="width:100%">Acerca de</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav-bar">
+      <button class="nav-btn active" data-nav="dashboard"><i class="fas fa-home"></i><span>Inicio</span></button>
+      <button class="nav-btn" data-nav="carga"><i class="fas fa-plus-circle"></i><span>Cargar</span></button>
+      <button class="nav-btn" data-nav="perfiles"><i class="fas fa-list-ul"></i><span>Perfiles</span></button>
+      <button class="nav-btn" data-nav="historial"><i class="fas fa-history"></i><span>Historial</span></button>
+      <button class="nav-btn" data-nav="stats"><i class="fas fa-chart-line"></i><span>Stats</span></button>
+      <button class="nav-btn" data-nav="micuenta"><i class="fas fa-user-circle"></i><span>Mi Cuenta</span></button>
+      <button class="nav-btn" data-nav="ajustes"><i class="fas fa-cog"></i><span>Ajustes</span></button>
+      <button class="nav-btn" data-nav="ayuda"><i class="fab fa-whatsapp"></i><span>Soporte</span></button>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // STREAMFLOW PRO - VERSIÓN COMPLETA CORREGIDA
+    // Firebase Compat (sin import maps)
+    // ============================================
+    
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8jYiHFiD_-MTHUQr2c3WU_b84RAPonvA",
+      authDomain: "stream-flow-pro.firebaseapp.com",
+      projectId: "stream-flow-pro",
+      storageBucket: "stream-flow-pro.firebasestorage.app",
+      messagingSenderId: "837367317965",
+      appId: "1:837367317965:web:00f039846e2a3646d87084"
+    };
+    
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    
+    // ============ CONFIGURACIÓN GLOBAL ============
+    const WHATSAPP_TOKEN_NUMBER = "5492236785329";
+    const DIAS_PRUEBA_GRATIS = 3;
+    const DIAS_TOKEN = 30;
+    
+    // ============ TOKENS VÁLIDOS (150+ tokens originales) ============
+    const TOKENS_VALIDOS = new Set([
+      "SF-A7K2-M9P4-X8N1","SF-B3F8-R6W2-Q5L9","SF-C9M4-T1Y7-V2H6","SF-D5R1-K8U3-W7Z0",
+      "SF-E2X6-N4Q9-J3P5","SF-F8S3-Y1M7-B6G4","SF-G4W9-C2T8-L5R1","SF-H6V1-Z5Q3-D9F7",
+      "SF-J1A4-B7C9-E2F5","SF-K3D6-G8H1-M4N7","SF-L5F9-J2K6-P8Q3","SF-M7H2-L9R5-T1V4",
+      "SF-N9K4-P3S7-W6X2","SF-P2M5-R8T4-Y9Z1","SF-Q4N7-V1W6-A3B8","SF-R6P9-X5Y2-C7D3",
+      "SF-S8R1-Z7A4-E9F6","SF-T1S3-B6C8-G2H5","SF-U3T5-D9F1-J4K7","SF-V5U7-G2H3-M6N9",
+      "SF-W7V9-J5K8-P1Q4","SF-X9W2-L7M3-R5S8","SF-Y2X4-N8P6-T9U3","SF-Z4Y6-Q1R7-V2W5",
+      "SF-A6Z8-S3T9-X7Y1","SF-B8A1-U5V2-Z9W4","SF-C1B3-W7X5-A2D6","SF-D3C5-Y9Z1-B4F8",
+      "SF-E5D7-A2B6-C8G3","SF-F7E9-C4D8-H1J5","SF-G9F2-E6H3-K4L7","SF-H2G4-F8J5-M6N9",
+      "SF-J4H6-G1K7-P8Q2","SF-K6J8-H3L9-R1S4","SF-L8K1-J5M2-T3U6","SF-M1L3-K7N4-V5W8",
+      "SF-N3M5-L9P6-X7Y2","SF-P5N7-M2Q8-Z9A4","SF-Q7P9-N4R1-B3C6","SF-R9Q2-P6S3-D5F8",
+      "SF-S2R4-Q8T5-G7H1","SF-T4S6-R1U7-J9K3","SF-U6T8-S3V9-L2M5","SF-V8U1-T5W2-N4P7",
+      "SF-W1V3-U7X4-Q6R9","SF-X3W5-V9Y6-S8T2","SF-Y5X7-W2Z8-U4V6","SF-Z7Y9-X4A1-W6B3",
+      "SF-A9Z2-Y6B3-X8C5","SF-B2A4-Z8C5-Y1D7","SF-C4B6-A1D7-Z3E9","SF-D6C8-B3E9-A5F2",
+      "SF-E8D1-C5F2-B7G4","SF-F1E3-D7G4-C9H6","SF-G3F5-E9H6-D2J8","SF-H5G7-F2J8-E4K1",
+      "SF-J7H9-G4K1-F6L3","SF-K9J2-H6L3-G8M5","SF-L2K4-J8M5-H1N7","SF-M4L6-K1N7-J3P9",
+      "SF-N6M8-L3P9-K5Q2","SF-P8N1-M5Q2-L7R4","SF-Q1P3-N7R4-M9S6","SF-R3Q5-P9S6-N2T8",
+      "SF-S5R7-Q2T8-P4U1","SF-T7S9-R4U1-Q6V3","SF-U9T2-S6V3-R8W5","SF-V2U4-T8W5-S1X7",
+      "SF-W4V6-U1X7-T3Y9","SF-X6W8-V3Y9-U5Z2","SF-Y8X1-W5Z2-V7A4","SF-Z1Y3-X7A4-W9B6",
+      "SF-A3Z5-Y9B6-X2C8","SF-B5A7-Z2C8-Y4D1","SF-C7B9-A4D1-Z6E3","SF-D9C2-B6E3-A8F5",
+      "SF-E2D4-C8F5-B1G7","SF-F4E6-D1G7-C3H9","SF-G6F8-E3H9-D5J2","SF-H8G1-F5J2-E7K4",
+      "SF-J1H3-G7K4-F9L6","SF-K3J5-H9L6-G2M8","SF-L5K7-J2M8-H4N1","SF-M7L9-K4N1-J6P3",
+      "SF-N9M2-L6P3-K8Q5","SF-P2N4-M8Q5-L1R7","SF-Q4P6-N1R7-M3S9","SF-R6Q8-P3S9-N5T2",
+      "SF-S8R1-Q5T2-P7U4","SF-T1S3-R7U4-Q9V6","SF-U3T5-S9V6-R2W8","SF-V5U7-T2W8-S4X1",
+      "SF-W7V9-U4X1-T6Y3","SF-X9W2-V6Y3-U8Z5","SF-Y2X4-W8Z5-V1A7","SF-Z4Y6-X1A7-W3B9",
+      "SF-A6Z8-Y3B9-X5C2","SF-B8A1-Z5C2-Y7D4","SF-C1B3-A7D4-Z9E6","SF-D3C5-B9E6-A2F8",
+      "SF-E5D7-C2F8-B4G1","SF-F7E9-D4G1-C6H3","SF-G9F2-E6H3-D8J5","SF-H2G4-F8J5-E1K7",
+      "SF-J4H6-G1K7-F3L9","SF-K6J8-H3L9-G5M2","SF-L8K1-J5M2-H7N4","SF-M1L3-K7N4-J9P6",
+      "SF-N3M5-L9P6-K2Q8","SF-P5N7-M2Q8-L4R1","SF-Q7P9-N4R1-M6S3","SF-R9Q2-P6S3-N8T5",
+      "SF-S2R4-Q8T5-P1U7","SF-T4S6-R1U7-Q3V9","SF-U6T8-S3V9-R5W2","SF-V8U1-T5W2-S7X4",
+      "SF-W1V3-U7X4-T9Y6","SF-X3W5-V9Y6-U2Z8","SF-Y5X7-W2Z8-V4A1","SF-Z7Y9-X4A1-W6B3"
+    ]);
+    
+    // ============ VARIABLES GLOBALES ============
+    let perfiles = [];
+    let DIAS_PROXIMO = 3;
+    let kioscoMode = false;
+    let notificationsEnabled = true;
+    let ordenAsc = true;
+    let currentUser = null;
+    let editandoId = null;
+    let pendingVentaId = null;
+    let unsubscribeFirestore = null;
+    let filtroTimeout = null;
+    let appDesbloqueada = true;
+    let diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
+    let planEstado = "demo";
+    let versionLocal = 0;
+    let autoSyncEnabled = true;
+    
+    // ============ FUNCIONES UTILITARIAS ============
+    function showLoader(texto = "Cargando...") {
+      const overlay = document.getElementById("loaderOverlay");
+      if(overlay) {
+        const textEl = overlay.querySelector(".loader-text");
+        if(textEl) textEl.innerText = texto;
+        overlay.classList.add("active");
+      }
+    }
+    
+    function hideLoader() {
+      const overlay = document.getElementById("loaderOverlay");
+      if(overlay) overlay.classList.remove("active");
+    }
+    
+    function toast(msg) {
+      let t = document.querySelector(".toast");
+      if(t) t.remove();
+      t = document.createElement("div");
+      t.className = "toast";
+      t.innerHTML = '<i class="fas fa-info-circle"></i> ' + msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+    }
+    
+    function escapeHtml(str) {
+      if(!str) return "";
+      return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+    
+    function generarIdUnico() {
+      return Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    function parseFecha(str) {
+      if(!str) return null;
+      const p = str.split("-");
+      if(p.length !== 3) return null;
+      return new Date(p[0], p[1] - 1, p[2]);
+    }
+    
+    function formatearFecha(str) {
+      if(!str) return "";
+      const f = parseFecha(str);
+      if(!f) return str;
+      return f.getDate().toString().padStart(2, '0') + '/' + (f.getMonth() + 1).toString().padStart(2, '0') + '/' + f.getFullYear();
+    }
+    
+    function aInputDate(d) {
+      return d.getFullYear() + '-' + (d.getMonth() + 1).toString().padStart(2, '0') + '-' + d.getDate().toString().padStart(2, '0');
+    }
+    
+    function obtenerEstado(fechaStr) {
+      if(!fechaStr) return "libre";
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const venc = parseFecha(fechaStr);
+      if(!venc) return "libre";
+      venc.setHours(0, 0, 0, 0);
+      const diff = Math.round((venc - hoy) / 86400000);
+      if(diff < 0) return "vencido";
+      if(diff <= DIAS_PROXIMO) return "proximo";
+      return "activo";
+    }
+    
+    function estadoTexto(e) {
+      const mapa = { activo: "Activo", proximo: "Próximo", vencido: "Vencido", libre: "Libre", vendido: "Vendido" };
+      return mapa[e] || e;
+    }
+    
+    function estadoClase(e) {
+      const mapa = { activo: "badge-success", proximo: "badge-warning", vencido: "badge-danger", libre: "badge-info", vendido: "badge-vendido" };
+      return mapa[e] || "badge";
+    }
+    
+    function abrirWhatsApp(numero, mensaje) {
+      if(!numero) {
+        toast("⚠️ No hay número de WhatsApp");
+        return;
+      }
+      const url = "https://wa.me/" + numero.replace(/\D/g, '') + "?text=" + encodeURIComponent(mensaje);
+      window.open(url, "_blank");
+    }
+    
+    // ============ PLANTILLAS ============
+    function plantillaCliente(p, esVenta) {
+      const fechaVence = p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : "Sin fecha asignada";
+      const garantia = p.fechaVencimiento ? "hasta " + fechaVence : "durante el período contratado";
+      const proveedorMostrar = p.proveedor || "StreamFlow Pro";
+      const whatsappMostrar = p.whatsappProveedor || "";
+      
+      return (esVenta ? "🎉 *¡CUENTA ACTIVADA!* 🎉" : "🔄 *RENOVACIÓN DE CUENTA*") + 
+             "\n\n📺 *Plataforma:* " + p.plataforma +
+             "\n👤 *Perfil:* " + p.perfilNombre +
+             (p.pin ? "\n🔢 *PIN:* " + p.pin : "") +
+             "\n📧 *Usuario:* " + p.mail +
+             "\n🔐 *Contraseña:* " + p.password +
+             "\n📅 *Vence:* " + fechaVence +
+             (p.precioVenta ? "\n💰 *Precio:* $" + p.precioVenta : "") +
+             "\n\n━━━━━━━━━━━━━━━" +
+             "\n📋 *REGLAS DE USO Y SEGURIDAD*" +
+             "\n━━━━━━━━━━━━━━━" +
+             "\n\n✅ *Perfil 100% seguro y verificado*" +
+             "\n🔒 *No modificar:* correo, contraseña ni PIN del perfil" +
+             "\n🚫 *Prohibido:* compartir el acceso con terceros" +
+             "\n👤 *Uso exclusivo:* solo el comprador autorizado" +
+             "\n⚠️ *No cambiar:* configuración de cuenta ni datos de facturación" +
+             "\n🛡️ *Garantía:* " + garantia + ". Si tenés problemas técnicos, contactanos de inmediato." +
+             "\n📞 *Soporte:* " + proveedorMostrar + (whatsappMostrar ? " - +" + whatsappMostrar : "") +
+             "\n🔄 *Renovación:* avisamos con anticipación para que no te quedes sin servicio." +
+             "\n\n━━━━━━━━━━━━━━━" +
+             "\n💎 *CUENTA PREMIUM GARANTIZADA*" +
+             "\n━━━━━━━━━━━━━━━" +
+             "\n\n✅ Guardá estos datos en un lugar seguro." +
+             "\n🙏 ¡Gracias por confiar en nosotros!" +
+             (p.observaciones ? "\n📝 Notas: " + p.observaciones : "");
+    }
+    
+    function plantillaProveedor(p) {
+      return "🚨 *CONSULTA DE PERFIL*\n\n" +
+             "📺 *Plataforma:* " + p.plataforma +
+             "\n👤 *Perfil:* " + p.perfilNombre +
+             "\n📧 *Usuario:* " + p.mail +
+             "\n🔐 *Contraseña:* " + p.password +
+             (p.pin ? "\n🔢 *PIN:* " + p.pin : "") +
+             "\n📅 *Vencimiento:* " + (p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : "Sin fecha") +
+             "\n👤 *Proveedor:* " + (p.proveedor || "No especificado") +
+             "\n📞 Necesito información sobre este perfil.";
+    }
+    
+    // ============ SINCRONIZACIÓN CON FIRESTORE ============
+    async function guardarPerfiles() {
+      if(!currentUser) return;
+      showLoader("Guardando en la nube...");
+      try {
+        await db.collection("usuarios").doc(currentUser.uid).set({
+          perfiles: perfiles,
+          ultimaActualizacion: new Date().toISOString(),
+          version: Date.now()
+        }, { merge: true });
+        toast("✅ Datos guardados en la nube");
+        actualizarSyncStatus("sincronizado");
+        document.getElementById("saveText").innerText = "Sincronizado en la nube";
+      } catch(e) {
+        console.error(e);
+        toast("⚠️ Sin conexión. Datos guardados localmente");
+        actualizarSyncStatus("error");
+        document.getElementById("saveText").innerText = "Guardado local (sin conexión)";
+      } finally {
+        hideLoader();
+      }
+    }
+    
+    async function cargarPerfiles() {
+      if(!currentUser) return;
+      showLoader("Cargando datos desde la nube...");
+      try {
+        const doc = await db.collection("usuarios").doc(currentUser.uid).get();
+        if(doc.exists && doc.data().perfiles) {
+          perfiles = doc.data().perfiles;
+          toast("✅ Datos cargados desde la nube");
+          actualizarSyncStatus("sincronizado");
+          document.getElementById("saveText").innerText = "Sincronizado en la nube";
+        } else {
+          perfiles = [];
+          toast("📦 No hay datos, comenzando con perfil vacío");
+        }
+        actualizarTodo();
+      } catch(e) {
+        console.error(e);
+        toast("⚠️ Sin conexión. Usando datos locales");
+        actualizarSyncStatus("error");
+        document.getElementById("saveText").innerText = "Modo local (sin conexión)";
+        const localBackup = localStorage.getItem("streamflow_perfiles_backup");
+        if(localBackup) {
+        
