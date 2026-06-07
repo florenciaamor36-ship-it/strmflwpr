@@ -691,3 +691,12 @@
     .acerca-info strong { color:#f5af19; }
     .acerca-legal { font-size:0.55rem; opacity:0.6; line-height:1.5; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem; margin-top:1rem; }
     body.light .acerca-legal { border-top-color:rgba(0,0,0,0.1); }
+
+    /* PROFESSIONAL BLOCKING CARD */
+    .bloqueo-app-msg-pro {
+      margin-bottom: 1.5rem;
+      animation: fadeInDown 0.4s ease;
+    }
+    @keyframes fadeInDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+    .lock-card {
+      background: linear-gradient(160deg, rgba(30, 30, 50, 0.95) 0
