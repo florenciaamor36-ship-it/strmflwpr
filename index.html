@@ -286,9 +286,9 @@
             <div class="card-title neon-text" style="font-size:0.8rem; margin-bottom:1rem;"><i class="fas fa-key"></i> Activar suscripción</div>
             <div class="input-group">
               <label>Ingresá tu token de 30 días</label>
-              <div style="display:flex; gap:0.5rem;">
-                <input type="text" id="tokenAcceso" placeholder="SF-XXXX-XXXX" style="flex:1;">
-                <button id="btnValidarToken" class="btn btn-primary" style="padding:0 1rem;"><i class="fas fa-check"></i></button>
+              <div style="display:grid; grid-template-columns: 1fr 60px; gap:0.5rem; align-items:center;">
+                <input type="text" id="tokenAcceso" placeholder="SF-XXXX-XXXX" style="width:100%; margin:0; background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.3); height:48px;">
+                <button id="btnValidarToken" class="btn btn-primary" style="width:60px; margin:0; padding:0; height:48px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-check"></i></button>
               </div>
               <div id="tokenEstado" style="font-size:0.6rem; margin-top:0.4rem;"></div>
             </div>
