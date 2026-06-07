@@ -1,0 +1,27 @@
+name: Mega Reconstruct V2
+on:
+  workflow_dispatch:
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: |
+          echo "Files in root:"
+          ls -F
+          # Reconstruct index.html
+          cat idx_aa idx_ab idx_ac idx_ad > index.html || echo "idx fail"
+          # Reconstruct style.css
+          cat css_aa > style.css || echo "css fail"
+          # Reconstruct app.js
+          cat js_aa js_ab js_ac > app.js || echo "js fail"
+          
+          # Verification
+          ls -lh index.html style.css app.js
+          
+          git config --local user.email "florenciaamor36@gmail.com"
+          git config --local user.name "Zapia AI"
+          git add index.html style.css app.js
+          git commit -m "SaaS Premium Architecture Fix" || echo "Nothing to commit"
+          git push
