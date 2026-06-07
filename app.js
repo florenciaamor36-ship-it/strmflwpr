@@ -464,13 +464,42 @@
         if(!bloqueoMsg) {
           const msg = document.createElement("div");
           msg.id = "bloqueoAppMsg";
-          msg.className = "bloqueo-app-msg";
-          msg.innerHTML = '<i class="fas fa-lock"></i><strong>App bloqueada</strong><br>Tu período de prueba ha expirado o tu token ha vencido.<br>Ingresá un token en Ajustes o Mi Cuenta para continuar.<br><small>⚠️ Tus datos NO se perderán al ingresar un nuevo token.</small>';
+          msg.className = "bloqueo-app-msg-pro";
+          msg.innerHTML = `
+            <div class="lock-card">
+              <div class="lock-icon"><i class="fas fa-lock"></i></div>
+              <h3>Acceso Restringido</h3>
+              <p>Tu período de acceso ha finalizado. Para seguir utilizando todas las herramientas profesionales de <strong>StreamFlow Pro</strong>, por favor renová tu suscripción.</p>
+              
+              <div class="plans-grid">
+                <div class="plan-card">
+                  <div class="plan-name">Plan Mensual</div>
+                  <div class="plan-price">$5.000 <span>/mes</span></div>
+                  <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Gestión Ilimitada</li>
+                    <li><i class="fas fa-check"></i> Soporte WhatsApp</li>
+                  </ul>
+                </div>
+                <div class="plan-card featured">
+                  <div class="plan-badge">Ahorrá $18.000</div>
+                  <div class="plan-name">Plan Anual</div>
+                  <div class="plan-price">$42.000 <span>/año</span></div>
+                  <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Todo lo del Mensual</li>
+                    <li><i class="fas fa-check"></i> Acceso Prioritario</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="lock-actions">
+                <button onclick="cambiarTab('micuenta')" class="btn btn-primary"><i class="fas fa-key"></i> Ingresar Token</button>
+                <button onclick="window.open('https://wa.me/5492236785329?text=Hola,%20quiero%20renovar%20mi%20suscripción%20de%20StreamFlow%20Pro', '_blank')" class="btn btn-outline"><i class="fab fa-whatsapp"></i> Comprar Token</button>
+              </div>
+              <p class="lock-footer">⚠️ Tus datos están seguros. Se desbloquearán al ingresar el token.</p>
+            </div>
+          `;
           const mainContent = document.getElementById("mainContent");
           if(mainContent) mainContent.insertBefore(msg, mainContent.firstChild);
-        }
-        if(planEstado === "bloqueado") {
-          toast("Modo bloqueado: solo lectura. Ingresá un token para editar.");
         }
       } else {
         if(bloqueoMsg) bloqueoMsg.remove();
