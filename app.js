@@ -477,6 +477,9 @@
                   <div class="plan-price">$5.000 <span>/mes</span></div>
                   <ul class="plan-features">
                     <li><i class="fas fa-check"></i> Gestión Ilimitada</li>
+                    <li><i class="fas fa-check"></i> Plantillas Automáticas</li>
+                    <li><i class="fas fa-check"></i> Cálculo de Ganancias</li>
+                    <li><i class="fas fa-check"></i> Recordatorios de Vencimiento</li>
                     <li><i class="fas fa-check"></i> Soporte WhatsApp</li>
                   </ul>
                 </div>
@@ -486,7 +489,10 @@
                   <div class="plan-price">$42.000 <span>/año</span></div>
                   <ul class="plan-features">
                     <li><i class="fas fa-check"></i> Todo lo del Mensual</li>
+                    <li><i class="fas fa-check"></i> Carga Masiva de Cuentas</li>
+                    <li><i class="fas fa-check"></i> Panel de Estadísticas</li>
                     <li><i class="fas fa-check"></i> Acceso Prioritario</li>
+                    <li><i class="fas fa-check"></i> Soporte VIP</li>
                   </ul>
                 </div>
               </div>
