@@ -1,0 +1,19 @@
+name: Mega Reconstruct
+on:
+  workflow_dispatch:
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: |
+          ls -R
+          cat idx_aa idx_ab idx_ac idx_ad > index.html
+          cat js_aa js_ab js_ac > app.js
+          cat css_aa > style.css
+          git config --local user.email "florenciaamor36@gmail.com"
+          git config --local user.name "Zapia AI"
+          git add index.html app.js style.css
+          git commit -m "SaaS Premium Architecture"
+          git push
