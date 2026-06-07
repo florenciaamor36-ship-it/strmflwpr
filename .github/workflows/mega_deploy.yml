@@ -1,0 +1,26 @@
+name: Mega Deploy Split
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Reconstruct Files
+        run: |
+          # Reconstruct index.html
+          cat idx_aa idx_ab idx_ac idx_ad > index.html
+          # Reconstruct style.css
+          cat css_aa > style.css
+          # Reconstruct app.js
+          cat js_aa js_ab js_ac > app.js
+          
+          # Clean parts
+          rm idx_* js_* css_*
+          
+          # Commit and Push
+          git config --local user.email "florenciaamor36@gmail.com"
+          git config --local user.name "Zapia AI"
+          git add index.html style.css app.js
+          git commit -m "Split Architecture: HTML, CSS, JS + Premium SaaS Update"
+          git push
