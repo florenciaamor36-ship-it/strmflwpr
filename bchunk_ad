@@ -1,0 +1,66 @@
+ } else {
+          icon.classList.remove("fa-chevron-down");
+          icon.classList.add("fa-chevron-right");
+        }
+      });
+    });
+    
+    document.getElementById("manualSearch")?.addEventListener("input", function() {
+      const query = this.value.toLowerCase().trim();
+      const secciones = document.querySelectorAll(".manual-section");
+      let found = 0;
+      secciones.forEach(seccion => {
+        if(!query || seccion.textContent.toLowerCase().includes(query)) {
+          seccion.style.display = "block";
+          found++;
+        } else {
+          seccion.style.display = "none";
+        }
+      });
+      const resultsDiv = document.getElementById("manualSearchResults");
+      if(query) {
+        resultsDiv.style.display = "block";
+        resultsDiv.innerHTML = `🔍 ${found} resultado(s) para "<strong>${escapeHtml(query)}</strong>"`;
+      } else {
+        resultsDiv.style.display = "none";
+      }
+    });
+    
+    // ============ INICIALIZACIÓN ============
+    cargarConfigLocal();
+    
+    const emailGuardado = localStorage.getItem("recordarEmail");
+    if(emailGuardado) {
+      document.getElementById("loginEmail").value = emailGuardado;
+      document.getElementById("rememberMeCheckbox").checked = true;
+    }
+    
+    auth.onAuthStateChanged(async (user) => {
+      if(user) {
+        currentUser = user;
+        document.getElementById("loginWrapper").style.display = "none";
+        document.getElementById("appContainer").style.display = "flex";
+        document.body.style.overflow = "hidden";
+        document.body.style.height = "100vh";
+        document.body.style.position = "fixed";
+        document.body.style.width = "100%";
+        await verificarSuscripcion(user.uid);
+        await cargarPerfiles();
+        iniciarListenerFirestore(user.uid);
+        toast("Bienvenido " + user.email);
+        if(notificationsEnabled) mostrarAvisoVencimientos();
+      } else {
+        currentUser = null;
+        document.getElementById("loginWrapper").style.display = "flex";
+        document.getElementById("appContainer").style.display = "none";
+        document.body.style.overflow = "";
+        document.body.style.height = "";
+        document.body.style.position = "";
+        document.body.style.width = "";
+        if(unsubscribeFirestore) unsubscribeFirestore();
+      }
+    });
+  </script>
+/<script src="admin-gate.js"></script></body>
+</html>
+
