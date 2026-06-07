@@ -1215,4 +1215,394 @@
              "\n🔒 *No modificar:* correo, contraseña ni PIN del perfil" +
              "\n🚫 *Prohibido:* compartir el acceso con terceros" +
              "\n👤 *Uso exclusivo:* solo el comprador autorizado" +
-             "\n⚠️ *No cambiar:* configuración de cuenta
+             "\n⚠️ *No cambiar:* configuración de cuenta ni datos de facturación" +
+             "\n🛡️ *Garantía:* " + garantia + ". Si tenés problemas técnicos, contactanos de inmediato." +
+             "\n📞 *Soporte:* " + proveedorMostrar + (whatsappMostrar ? " - +" + whatsappMostrar : "") +
+             "\n🔄 *Renovación:* avisamos con anticipación para que no te quedes sin servicio." +
+             "\n\n━━━━━━━━━━━━━━━" +
+             "\n💎 *CUENTA PREMIUM GARANTIZADA*" +
+             "\n━━━━━━━━━━━━━━━" +
+             "\n\n✅ Guardá estos datos en un lugar seguro." +
+             "\n🙏 ¡Gracias por confiar en nosotros!" +
+             (p.observaciones ? "\n📝 Notas: " + p.observaciones : "");
+    }
+    
+    function plantillaProveedor(p) {
+      return "🚨 *CONSULTA DE PERFIL*\n\n" +
+             "📺 *Plataforma:* " + p.plataforma +
+             "\n👤 *Perfil:* " + p.perfilNombre +
+             "\n📧 *Usuario:* " + p.mail +
+             "\n🔐 *Contraseña:* " + p.password +
+             (p.pin ? "\n🔢 *PIN:* " + p.pin : "") +
+             "\n📅 *Vencimiento:* " + (p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : "Sin fecha") +
+             "\n👤 *Proveedor:* " + (p.proveedor || "No especificado") +
+             "\n📞 Necesito información sobre este perfil.";
+    }
+    
+    // ============ SINCRONIZACIÓN CON FIRESTORE ============
+    async function guardarPerfiles() {
+      if(planEstado === "bloqueado") { toast("❌ App bloqueada. Renová tu suscripción para guardar cambios."); return; }
+      if(!currentUser) return;
+      showLoader("Guardando en la nube...");
+      try {
+        await db.collection("usuarios").doc(currentUser.uid).set({
+          perfiles: perfiles,
+          ultimaActualizacion: new Date().toISOString(),
+          version: Date.now()
+        }, { merge: true });
+        toast("✅ Datos guardados en la nube");
+        actualizarSyncStatus("sincronizado");
+        document.getElementById("saveText").innerText = "Sincronizado en la nube";
+      } catch(e) {
+        console.error(e);
+        toast("⚠️ Sin conexión. Datos guardados localmente");
+        actualizarSyncStatus("error");
+        document.getElementById("saveText").innerText = "Guardado local (sin conexión)";
+      } finally {
+        hideLoader();
+      }
+    }
+    
+    async function cargarPerfiles() {
+      if(!currentUser) return;
+      showLoader("Cargando datos desde la nube...");
+      try {
+        const doc = await db.collection("usuarios").doc(currentUser.uid).get();
+        if(doc.exists && doc.data().perfiles) {
+          perfiles = doc.data().perfiles;
+          toast("✅ Datos cargados desde la nube");
+          actualizarSyncStatus("sincronizado");
+          document.getElementById("saveText").innerText = "Sincronizado en la nube";
+        } else {
+          perfiles = [];
+          toast("📦 No hay datos, comenzando con perfil vacío");
+        }
+        actualizarTodo();
+      } catch(e) {
+        console.error(e);
+        toast("⚠️ Sin conexión. Usando datos locales");
+        actualizarSyncStatus("error");
+        document.getElementById("saveText").innerText = "Modo local (sin conexión)";
+        const localBackup = localStorage.getItem("streamflow_perfiles_backup");
+        if(localBackup) {
+          try {
+            perfiles = JSON.parse(localBackup);
+            actualizarTodo();
+          } catch(e2) {}
+        }
+      } finally {
+        hideLoader();
+      }
+    }
+    
+    function iniciarListenerFirestore(uid) {
+      if(unsubscribeFirestore) unsubscribeFirestore();
+      if(!uid) return;
+      unsubscribeFirestore = db.collection("usuarios").doc(uid).onSnapshot((snap) => {
+        if(snap.exists && snap.data().perfiles) {
+          const serverData = snap.data().perfiles;
+          if(JSON.stringify(serverData) !== JSON.stringify(perfiles)) {
+            perfiles = serverData;
+            localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+            actualizarTodo();
+            toast("🔄 Datos actualizados desde la nube");
+          }
+        }
+      }, (error) => {
+        console.error("Error en listener:", error);
+      });
+    }
+    
+    function actualizarSyncStatus(estado) {
+      const btn = document.getElementById("syncStatus");
+      if(!btn) return;
+      if(estado === "sincronizado") {
+        btn.className = "sync-status sincronizado";
+        btn.title = "Sincronizado con la nube";
+      } else if(estado === "esperando") {
+        btn.className = "sync-status esperando";
+        btn.title = "Sincronizando...";
+      } else {
+        btn.className = "sync-status error";
+        btn.title = "Sin conexión - Modo local";
+      }
+    }
+    
+    // ============ SISTEMA DE SUSCRIPCIÓN Y TOKENS ============
+    async function verificarSuscripcion(uid) {
+      if(!uid) return;
+      try {
+        const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
+        const snap = await suscRef.get();
+        const ahora = new Date();
+        
+        if(!snap.exists) {
+          const fechaFinPrueba = new Date(ahora);
+          fechaFinPrueba.setDate(fechaFinPrueba.getDate() + DIAS_PRUEBA_GRATIS);
+          await suscRef.set({
+            fechaPrimerIngreso: ahora.toISOString(),
+            estado: "prueba",
+            fechaExpiracion: fechaFinPrueba.toISOString()
+          });
+          appDesbloqueada = true;
+          diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
+          planEstado = "demo";
+          actualizarBadgePlan();
+          actualizarSemaforo();
+          return;
+        }
+        
+        const data = snap.data();
+        const fechaExpiracion = new Date(data.fechaExpiracion);
+        
+        if(data.estado === "prueba") {
+          if(ahora < fechaExpiracion) {
+            appDesbloqueada = true;
+            diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
+            planEstado = "demo";
+          } else {
+            appDesbloqueada = false;
+            diasPruebaRestantes = 0;
+            planEstado = "bloqueado";
+          }
+        } else if(data.estado === "token") {
+          if(ahora < fechaExpiracion) {
+            appDesbloqueada = true;
+            diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
+            planEstado = "token";
+          } else {
+            appDesbloqueada = false;
+            diasPruebaRestantes = 0;
+            planEstado = "bloqueado";
+          }
+        }
+        
+        actualizarBadgePlan();
+        actualizarSemaforo();
+        aplicarBloqueoApp();
+        actualizarPanelMiCuenta();
+      } catch(e) {
+        console.error("Error al verificar suscripción:", e);
+        appDesbloqueada = false;
+        planEstado = "bloqueado";
+        actualizarBadgePlan();
+        aplicarBloqueoApp();
+      }
+    }
+    
+    async function validarToken(token, uid) {
+      if(!uid) return { valido: false, mensaje: "Usuario no autenticado" };
+      token = token.trim().toUpperCase();
+      if(!TOKENS_VALIDOS.has(token)) return { valido: false, mensaje: "❌ Token inválido" };
+      try {
+        const tokenRef = db.collection("tokens_usados").doc(token);
+        const snap = await tokenRef.get();
+        if(snap.exists && snap.data().usadoPor !== uid) {
+          return { valido: false, mensaje: "❌ Token ya usado por otra cuenta" };
+        }
+        const ahora = new Date();
+        const expiracion = new Date(ahora);
+        expiracion.setDate(expiracion.getDate() + DIAS_TOKEN);
+        await tokenRef.set({
+          token: token,
+          usadoPor: uid,
+          fechaActivacion: ahora.toISOString(),
+          fechaExpiracion: expiracion.toISOString()
+        });
+        const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
+        await suscRef.set({
+          estado: "token",
+          fechaExpiracion: expiracion.toISOString()
+        }, { merge: true });
+        appDesbloqueada = true;
+        diasPruebaRestantes = DIAS_TOKEN;
+        planEstado = "token";
+        actualizarBadgePlan();
+        actualizarSemaforo();
+        aplicarBloqueoApp();
+        actualizarPanelMiCuenta();
+        return { valido: true, mensaje: "✅ Token activado por 30 días" };
+      } catch(e) {
+        console.error(e);
+        return { valido: false, mensaje: "⚠️ Error al validar token" };
+      }
+    }
+    
+    function actualizarBadgePlan() {
+      const badge = document.getElementById("planBadge");
+      if(!badge) return;
+      if(planEstado === "token") {
+        badge.className = "plan-badge pro";
+        badge.innerHTML = '<i class="fas fa-crown"></i> PRO ' + diasPruebaRestantes + 'd';
+      } else if(planEstado === "bloqueado") {
+        badge.className = "plan-badge blocked";
+        badge.innerHTML = '<i class="fas fa-lock"></i> BLOQUEADO';
+      } else {
+        badge.className = "plan-badge demo";
+        badge.innerHTML = '<i class="fas fa-gift"></i> DEMO ' + diasPruebaRestantes + 'd';
+      }
+    }
+    
+    function actualizarSemaforo() {
+      const semaforoPerfil = document.getElementById("semaforoPerfil");
+      let color = "", texto = "", icono = "";
+      
+      if(planEstado === "bloqueado") {
+        color = "semaforo-rojo";
+        texto = "BLOQUEADO - Ingresá un token";
+        icono = '<i class="fas fa-ban"></i>';
+      } else if(planEstado === "token") {
+        color = "semaforo-verde";
+        texto = "PRO ACTIVO - " + diasPruebaRestantes + " días";
+        icono = '<i class="fas fa-check-circle"></i>';
+      } else {
+        if(diasPruebaRestantes <= 1) {
+          color = "semaforo-rojo";
+          texto = "DEMO - ÚLTIMO DÍA";
+          icono = '<i class="fas fa-exclamation-triangle"></i>';
+        } else if(diasPruebaRestantes === 2) {
+          color = "semaforo-amarillo";
+          texto = "DEMO - 2 DÍAS";
+          icono = '<i class="fas fa-clock"></i>';
+        } else {
+          color = "semaforo-verde";
+          texto = "DEMO - " + diasPruebaRestantes + " DÍAS";
+          icono = '<i class="fas fa-gift"></i>';
+        }
+      }
+      
+      if(semaforoPerfil) {
+        semaforoPerfil.innerHTML = '<div class="semaforo ' + color + '" style="display:inline-flex;">' + icono + ' Estado: ' + texto + '</div>';
+      }
+    }
+    
+    function aplicarBloqueoApp() {
+      const bloqueoMsg = document.getElementById("bloqueoAppMsg");
+      if(planEstado === "bloqueado") {
+        if(!bloqueoMsg) {
+          const msg = document.createElement("div");
+          msg.id = "bloqueoAppMsg";
+          msg.className = "bloqueo-app-msg";
+          msg.innerHTML = '<i class="fas fa-lock"></i><strong>App bloqueada</strong><br>Tu período de prueba ha expirado o tu token ha vencido.<br>Ingresá un token en Ajustes o Mi Cuenta para continuar.<br><small>⚠️ Tus datos NO se perderán al ingresar un nuevo token.</small>';
+          const mainContent = document.getElementById("mainContent");
+          if(mainContent) mainContent.insertBefore(msg, mainContent.firstChild);
+        }
+        if(planEstado === "bloqueado") {
+          toast("Modo bloqueado: solo lectura. Ingresá un token para editar.");
+        }
+      } else {
+        if(bloqueoMsg) bloqueoMsg.remove();
+      }
+    }
+    
+    // ============ CRUD DE PERFILES ============
+    function checkAppLock() {
+      if(planEstado === "bloqueado") {
+        toast("❌ App bloqueada. Renová tu suscripción para realizar esta acción.");
+        return false;
+      }
+      if(!appDesbloqueada) {
+        toast("⚠️ Verificando suscripción... Por favor esperá un momento.");
+        return false;
+      }
+      return true;
+    }
+
+    async function venderPerfil(id, datos) {
+      if(!checkAppLock()) return;
+      const p = perfiles.find(p => p.id === id);
+      if(!p) return;
+      
+      // Actualizar el perfil con los datos editados en el modal
+      p.plataforma = datos.plataforma || p.plataforma;
+      p.cuentaId = datos.cuentaId || p.cuentaId;
+      p.perfilNombre = datos.perfilNombre || p.perfilNombre;
+      p.mail = datos.mail || p.mail;
+      p.password = datos.password || p.password;
+      p.pin = datos.pin || p.pin;
+      p.fechaVencimiento = datos.fechaVencimiento || p.fechaVencimiento;
+      p.proveedor = datos.proveedor || p.proveedor;
+      p.observaciones = datos.observaciones || p.observaciones;
+      
+      p.precioVenta = parseFloat(datos.precio);
+      p.whatsappCliente = datos.cliente || "";
+      p.fechaVenta = new Date().toISOString();
+      p.estado = "vendido";
+      
+      if(!p.fechaVencimiento) {
+        let nueva = new Date();
+        nueva.setDate(nueva.getDate() + 30);
+        p.fechaVencimiento = aInputDate(nueva);
+      }
+      p.estado = obtenerEstado(p.fechaVencimiento);
+      if(p.estado === "libre") p.estado = "vendido";
+      
+      await guardarPerfiles();
+      localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+      actualizarTodo();
+      
+      const mensaje = plantillaCliente(p, true);
+      if(datos.cliente && datos.cliente.trim() !== "") {
+        abrirWhatsApp(datos.cliente, mensaje);
+        toast("✅ Venta registrada. Redirigiendo a WhatsApp...");
+      } else {
+        toast("✅ Venta registrada. Plantilla copiada al portapapeles");
+        navigator.clipboard.writeText(mensaje);
+      }
+    }
+    
+    async function renovarPerfil(id) {
+      if(!checkAppLock()) return;
+      const p = perfiles.find(p => p.id === id);
+      if(p) {
+        let base = p.fechaVencimiento ? parseFecha(p.fechaVencimiento) : new Date();
+        base.setMonth(base.getMonth() + 1);
+        p.fechaVencimiento = aInputDate(base);
+        p.estado = obtenerEstado(p.fechaVencimiento);
+        await guardarPerfiles();
+        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+        actualizarTodo();
+        toast("Renovado hasta " + formatearFecha(p.fechaVencimiento));
+      }
+    }
+    
+    async function marcarLibre(id) {
+      if(!checkAppLock()) return;
+      const p = perfiles.find(p => p.id === id);
+      if(p && confirm("¿Marcar este perfil como libre?")) {
+        p.estado = "libre";
+        p.fechaVencimiento = null;
+        p.fechaVenta = null;
+        p.precioVenta = null;
+        p.whatsappCliente = "";
+        await guardarPerfiles();
+        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+        actualizarTodo();
+        toast("Perfil marcado como libre");
+      }
+    }
+    
+    async function eliminarPerfil(id) {
+      if(!checkAppLock()) return;
+      if(confirm("¿Eliminar este perfil permanentemente?")) {
+        perfiles = perfiles.filter(p => p.id !== id);
+        await guardarPerfiles();
+        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+        actualizarTodo();
+        toast("Perfil eliminado");
+      }
+    }
+    
+    async function duplicarPerfil(id) {
+      if(!checkAppLock()) return;
+      const orig = perfiles.find(p => p.id === id);
+      if(orig) {
+        const nombre = prompt("Nombre del nuevo perfil:", orig.perfilNombre + " (copia)");
+        if(nombre && nombre.trim()) {
+          const copia = { 
+            ...orig, 
+            id: generarIdUnico(), 
+            perfilNombre: nombre.trim(), 
+            estado: "libre", 
+            fechaVenta: null, 
+   
