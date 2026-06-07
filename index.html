@@ -282,19 +282,48 @@
             <div style="display:flex; justify-content:space-between; margin-top:0.4rem; font-size:0.55rem;"><span>Inicio</span><span id="fechaExpiracionTexto"></span><span>Fin</span></div>
           </div>
 
-          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;"> <!-- UI Refresh -->
-            <div class="card-title neon-text" style="font-size:0.8rem; margin-bottom:1rem;"><i class="fas fa-key"></i> Activar suscripción</div>
-            <div class="input-group">
-              <label>Ingresá tu token de 30 días</label>
-              <div style="display:grid; grid-template-columns: 1fr 60px; gap:0.5rem; align-items:center;">
-                <input type="text" id="tokenAcceso" placeholder="SF-XXXX-XXXX" style="width:100%; margin:0; background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.3); height:48px;">
-                <button id="btnValidarToken" class="btn btn-primary" style="width:60px; margin:0; padding:0; height:48px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-check"></i></button>
+          <div id="bloqueoAppMsg" class="bloqueo-app-msg" style="display:block;">
+            <div style="background:linear-gradient(145deg, #1e1e3f, #0f0c29); border: 2px solid #f5af19; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 520px; margin: 0 auto;">
+              <i class="fas fa-lock" style="font-size: 2.5rem; color: #f5af19; margin-bottom: 15px;"></i>
+              <h2 style="color: #fff; margin-bottom: 10px; font-size:1.3rem;">¡Acceso Restringido!</h2>
+              <p style="color: #bbb; font-size: 0.9rem; margin-bottom: 18px; line-height:1.5;">Tu período de acceso finalizó. Elegí un plan para desbloquear la app y seguir usando todas las herramientas profesionales.</p>
+              <div style="display:grid; gap:10px; text-align:left; margin-bottom:18px;">
+                <div style="background: rgba(245,175,25,0.10); padding:12px; border-radius:14px; border:1px solid rgba(245,175,25,0.25);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <strong style="color:#fff;">Plan Mensual</strong>
+                    <span style="background:#f5af19; color:#111; font-size:0.65rem; font-weight:800; padding:4px 8px; border-radius:999px;">Recomendado</span>
+                  </div>
+                  <div style="font-size:1.25rem; font-weight:800; color:#fff; margin-top:6px;">$5.000 <span style="font-size:0.75rem; color:#bbb; font-weight:600;">/ mes</span></div>
+                  <div style="font-size:0.75rem; color:#ddd; margin-top:8px; line-height:1.5;">
+                    ✓ Gestión Ilimitada de Perfiles<br>
+                    ✓ Plantillas Automáticas WhatsApp<br>
+                    ✓ Cálculo de Ganancias en Vivo<br>
+                    ✓ Recordatorios de Vencimiento<br>
+                    ✓ Soporte WhatsApp
+                  </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding:12px; border-radius:14px; border:1px solid rgba(255,255,255,0.10); position:relative;">
+                  <span style="position:absolute; top:-10px; right:12px; background:#f12711; color:#fff; font-size:0.62rem; font-weight:800; padding:4px 9px; border-radius:999px;">Ahorro 30%</span>
+                  <strong style="color:#fff;">Plan Anual</strong>
+                  <div style="font-size:1.25rem; font-weight:800; color:#f5af19; margin-top:6px;">$42.000 <span style="font-size:0.75rem; color:#bbb; font-weight:600;">/ año</span></div>
+                  <div style="font-size:0.75rem; color:#ddd; margin-top:8px; line-height:1.5;">
+                    ✓ Todo lo del plan mensual<br>
+                    ✓ Carga Masiva de Cuentas<br>
+                    ✓ Panel de Estadísticas<br>
+                    ✓ Acceso prioritario VIP
+                  </div>
+                </div>
               </div>
-              <div id="tokenEstado" style="font-size:0.6rem; margin-top:0.4rem;"></div>
+              <div style="display:grid; gap:10px;">
+                <button onclick="cambiarTab('micuenta')" class="btn btn-primary" style="width:100%; height:52px; font-weight:800; border-radius:18px;">
+                  <i class="fas fa-key"></i> Ingresar Token
+                </button>
+                <button id="btnWhatsAppToken" class="btn btn-outline" style="width:100%; height:50px; border-radius:18px; border-color:#25d366; color:#25d366; font-weight:700;">
+                  <i class="fab fa-whatsapp"></i> Comprar Token
+                </button>
+              </div>
+              <p style="font-size:0.72rem; opacity:0.75; margin-top:14px; line-height:1.5;">⚠️ Tus datos están seguros. Al ingresar el token se desbloquea todo al instante.</p>
             </div>
-            <button id="btnWhatsAppToken" class="btn btn-outline" style="width:100%; margin-top:0.5rem; border-color:#25d366; color:#25d366;">
-              <i class="fab fa-whatsapp"></i> Comprar token vía WhatsApp
-            </button>
           </div>
 
           <div class="stats-grid" style="margin-bottom:1rem;">
@@ -309,6 +338,39 @@
         </div>
       </div>
 
+
+      <!-- AJUSTES -->
+      <div id="tab-ajustes" class="tab-panel">
+        <div class="card">
+          <div class="card-title neon-text" style="margin-top:0;"><i class="fas fa-shield-alt"></i> Token de Acceso</div>
+          
+          <div style="background: rgba(245,175,25,0.1); border: 1px solid rgba(245,175,25,0.2); border-radius: 15px; padding: 15px; margin-bottom: 1.5rem;">
+            <div style="font-weight: 700; color: #f5af19; margin-bottom: 8px; font-size: 0.9rem;">¿Qué incluye la app?</div>
+            <ul style="font-size: 0.75rem; color: #ddd; list-style: none; padding: 0; margin: 0; line-height: 1.6;">
+              <li><i class="fas fa-check" style="color: #f5af19; margin-right: 6px;"></i> Gestión Ilimitada de Perfiles</li>
+              <li><i class="fas fa-check" style="color: #f5af19; margin-right: 6px;"></i> Plantillas Automáticas WhatsApp</li>
+              <li><i class="fas fa-check" style="color: #f5af19; margin-right: 6px;"></i> Cálculo de Ganancias en Vivo</li>
+              <li><i class="fas fa-check" style="color: #f5af19; margin-right: 6px;"></i> Recordatorios de Vencimiento</li>
+              <li><i class="fas fa-check" style="color: #f5af19; margin-right: 6px;"></i> Carga Masiva de Cuentas</li>
+              <li><i class="fas fa-check" style="color: #f5af19; margin-right: 6px;"></i> Soporte VIP Personalizado</li>
+            </ul>
+          </div>
+
+          <div class="input-group">
+            <label>Token de Cliente</label>
+            <div style="display:flex; gap:0.3rem;">
+              <input type="password" id="tokenAcceso" placeholder="SF-XXXX-XXXX-XXXX" style="flex:1;" autocomplete="off">
+              <button id="btnValidarToken" class="btn btn-primary" style="width:auto; margin-top:0;"><i class="fas fa-check-circle"></i> Validar</button>
+            </div>
+            <div id="tokenEstado" style="margin-top:0.5rem; font-size:0.75rem; font-weight:600;"></div>
+          </div>
+          
+          <hr>
+          <button id="btnAbrirManual" class="btn btn-outline" style="width:100%"><i class="fas fa-book-open"></i> Manual de Usuario</button>
+          <hr>
+          <button id="btnAcercaDe" class="btn btn-acerca" style="width:100%">Acerca de</button>
+        </div>
+      </div>
       
       <!-- AYUDA -->
       <div id="tab-ayuda" class="tab-panel">
