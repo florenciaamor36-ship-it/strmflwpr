@@ -1,0 +1,908 @@
+} - ${escapeHtml(p.perfilNombre || '')}</strong><br>
+            📧 ${escapeHtml(p.mail || '')}<br>
+            👤 ${escapeHtml(p.proveedor || '')}<br>
+            📅 ${fechaTexto}<br>
+            🔑 <span id="pass-${p.id}">${passOculto}</span>
+            <button class="toggle-password" data-id="${p.id}"><i class="fas fa-eye"></i></button>
+            ${p.whatsappCliente ? `<br>📱 Cliente: ${escapeHtml(p.whatsappCliente)}` : ''}
+            ${p.whatsappProveedor ? `<br>📱 Tu WhatsApp: ${escapeHtml(p.whatsappProveedor)}` : ''}
+          </div>
+          <div class="action-buttons">${botones}</div>
+        </div>
+      `;
+    }
+    
+    function agregarEventosBotones() {
+      document.querySelectorAll(".toggle-password").forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const p = perfiles.find(p => p.id === btn.dataset.id);
+          if(p) {
+            const span = document.getElementById(`pass-${p.id}`);
+            if(span.innerText === '•••••••') {
+              span.innerText = p.password;
+              btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+              span.innerText = '•••••••';
+              btn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+          }
+        };
+      });
+      
+      document.querySelectorAll(".action-btn").forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          const act = btn.dataset.act;
+          const p = perfiles.find(p => p.id === id);
+          if(!p) return;
+          if(act === "wa") {
+            if(p.whatsappProveedor) abrirWhatsApp(p.whatsappProveedor, plantillaProveedor(p));
+            else toast("Sin WhatsApp del proveedor");
+          } else if(act === "wacliente") {
+            if(p.whatsappCliente) abrirWhatsApp(p.whatsappCliente, plantillaCliente(p, false));
+            else toast("Sin WhatsApp del cliente");
+          } else if(act === "copy") {
+            navigator.clipboard.writeText(plantillaProveedor(p));
+            toast("Copiado");
+          } else if(act === "pass") {
+            cambiarPass(id);
+          } else if(act === "edit") {
+            editarPerfil(id);
+          } else if(act === "renew") {
+            renovarPerfil(id);
+          } else if(act === "free") {
+            marcarLibre(id);
+          } else if(act === "dup") {
+            duplicarPerfil(id);
+          } else if(act === "del") {
+            eliminarPerfil(id);
+          } else if(act === "sell") {
+            mostrarVentaModal(id);
+          } else if(act === "reassign") {
+            mostrarReasignarModal(id);
+          }
+        };
+      });
+    }
+    
+    function mostrarVentaModal(id) {
+      const p = perfiles.find(p => p.id === id);
+      if(!p) return;
+      pendingVentaId = id;
+      document.getElementById("ventaPerfilInfo").innerHTML = `<strong>${escapeHtml(p.plataforma)} - ${escapeHtml(p.perfilNombre)}</strong><br>Estado actual: ${estadoTexto(p.estado)}`;
+      document.getElementById("ventaPlataforma").value = p.plataforma || "Netflix";
+      document.getElementById("ventaCuentaId").value = p.cuentaId || "";
+      document.getElementById("ventaPerfilNombre").value = p.perfilNombre || "";
+      document.getElementById("ventaMail").value = p.mail || "";
+      document.getElementById("ventaPassword").value = p.password || "";
+      document.getElementById("ventaPin").value = p.pin || "";
+      document.getElementById("ventaFechaVencimiento").value = p.fechaVencimiento || "";
+      document.getElementById("ventaProveedor").value = p.proveedor || "";
+      document.getElementById("ventaPrecio").value = p.precio || 2500;
+      document.getElementById("ventaCliente").value = "";
+      document.getElementById("ventaObservaciones").value = p.observaciones || "";
+      document.getElementById("ventaModal").style.display = "flex";
+    }
+    
+    function mostrarReasignarModal(id) {
+      const p = perfiles.find(p => p.id === id);
+      if(p) {
+        document.getElementById("reasignarPerfilInfo").innerHTML = `${p.plataforma} - ${p.perfilNombre}`;
+        document.getElementById("reasignarFecha").value = p.fechaVencimiento || "";
+        document.getElementById("reasignarModal").style.display = "flex";
+        window.reasignarId = id;
+      }
+    }
+    
+    async function confirmarReasignar() {
+      const nuevaFecha = document.getElementById("reasignarFecha").value;
+      if(!nuevaFecha) {
+        toast("Seleccioná una fecha");
+        return;
+      }
+      const p = perfiles.find(p => p.id === window.reasignarId);
+      if(p) {
+        p.fechaVencimiento = nuevaFecha;
+        p.estado = obtenerEstado(nuevaFecha);
+        await guardarPerfiles();
+        actualizarTodo();
+        toast("Fecha reasignada");
+        document.getElementById("reasignarModal").style.display = "none";
+      }
+    }
+    
+    async function cambiarPass(id) {
+      const p = perfiles.find(p => p.id === id);
+      if(p) {
+        const nueva = prompt("Nueva contraseña (mínimo 6 caracteres):");
+        if(nueva && nueva.length >= 6) {
+          const confirmar = prompt("Confirmar nueva contraseña:");
+          if(confirmar === nueva) {
+            p.password = nueva;
+            await guardarPerfiles();
+            actualizarTodo();
+            toast("Contraseña actualizada");
+          } else {
+            toast("Las contraseñas no coinciden");
+          }
+        } else if(nueva) {
+          toast("La contraseña debe tener al menos 6 caracteres");
+        }
+      }
+    }
+    
+    function renderHistorial() {
+      const fp = document.getElementById("historialFiltroPlataforma").value;
+      const busqueda = document.getElementById("historialBuscar").value.toLowerCase();
+      let ventas = perfiles.filter(p => p.fechaVenta);
+      if(fp) ventas = ventas.filter(p => p.plataforma === fp);
+      if(busqueda) ventas = ventas.filter(p => p.perfilNombre.toLowerCase().includes(busqueda) || (p.whatsappCliente && p.whatsappCliente.toLowerCase().includes(busqueda)));
+      ventas.sort((a,b) => new Date(b.fechaVenta) - new Date(a.fechaVenta));
+      const container = document.getElementById("historialLista");
+      if(ventas.length === 0) {
+        container.innerHTML = '<div class="empty-state">No hay ventas registradas</div>';
+      } else {
+        container.innerHTML = ventas.map(p => `
+          <div class="profile-card">
+            <div class="profile-header"><span class="badge">${escapeHtml(p.plataforma)}</span><span class="badge badge-success">Vendido</span></div>
+            <div class="profile-info"><strong>${escapeHtml(p.perfilNombre)}</strong><br>💰 $${p.precioVenta}<br>📅 ${new Date(p.fechaVenta).toLocaleDateString()}<br>👤 Cliente: ${p.whatsappCliente || "No especificado"}</div>
+            <div class="action-buttons"><button class="action-btn reenviar-wa" data-numero="${p.whatsappCliente || ''}" data-mensaje="${escapeHtml(plantillaCliente(p, true))}"><i class="fab fa-whatsapp"></i> Reenviar plantilla</button></div>
+          </div>
+        `).join('');
+      }
+      document.querySelectorAll(".reenviar-wa").forEach(btn => {
+        btn.onclick = () => {
+          const numero = btn.dataset.numero;
+          const mensaje = btn.dataset.mensaje;
+          if(numero) abrirWhatsApp(numero, mensaje);
+          else toast("Sin número de cliente");
+        };
+      });
+    }
+    
+    function actualizarPanelMiCuenta() {
+      if(!currentUser) return;
+      document.getElementById("perfilEmail").innerHTML = currentUser.email || "-";
+      document.getElementById("perfilPlan").innerHTML = planEstado === "token" ? "PRO - PREMIUM" : (planEstado === "bloqueado" ? "BLOQUEADO" : "DEMO - PRUEBA");
+      document.getElementById("perfilDiasRestantes").innerHTML = planEstado === "token" ? "✅ Suscripción activa" : (planEstado === "bloqueado" ? "⚠️ Período expirado - Ingresá un token" : `🎯 ${diasPruebaRestantes} días restantes`);
+      document.getElementById("perfilTotalPerfiles").innerHTML = perfiles.length;
+      document.getElementById("perfilTotalVentas").innerHTML = perfiles.filter(p => p.fechaVenta).length;
+      document.getElementById("perfilGanado").innerHTML = "$" + perfiles.reduce((s,p) => s + (p.precioVenta || 0), 0).toLocaleString();
+      document.getElementById("perfilActivos").innerHTML = perfiles.filter(p => p.estado === "activo" || p.estado === "proximo").length;
+      
+      const progresoBarra = document.getElementById("progresoBarra");
+      const progresoTexto = document.getElementById("progresoTexto");
+      const fechaExpiracionSpan = document.getElementById("fechaExpiracionTexto");
+      if(planEstado === "token") {
+        const totalDias = DIAS_TOKEN;
+        const progreso = (diasPruebaRestantes / totalDias) * 100;
+        if(progresoBarra) progresoBarra.style.width = `${progreso}%`;
+        if(progresoTexto) progresoTexto.innerText = `${diasPruebaRestantes} días restantes del plan PRO`;
+        if(fechaExpiracionSpan) fechaExpiracionSpan.innerText = `+${diasPruebaRestantes} días`;
+      } else if(planEstado === "demo") {
+        const totalDias = DIAS_PRUEBA_GRATIS;
+        const progreso = (diasPruebaRestantes / totalDias) * 100;
+        if(progresoBarra) progresoBarra.style.width = `${progreso}%`;
+        if(progresoTexto) progresoTexto.innerText = `${diasPruebaRestantes} días restantes de prueba`;
+        if(fechaExpiracionSpan) fechaExpiracionSpan.innerText = `+${diasPruebaRestantes} días`;
+      } else {
+        if(progresoBarra) progresoBarra.style.width = "0%";
+        if(progresoTexto) progresoTexto.innerText = "Cuenta bloqueada";
+        if(fechaExpiracionSpan) fechaExpiracionSpan.innerText = "Expirado";
+      }
+    }
+    
+    function actualizarTodo() {
+      actualizarDashboard();
+      renderListaPerfiles();
+      renderResumenes();
+      renderHistorial();
+      actualizarPanelMiCuenta();
+      const emailEl = document.getElementById("emailEnPerfiles");
+      if(emailEl) emailEl.innerText = currentUser ? currentUser.email : "No logueado";
+    }
+    
+    function actualizarConDebounce() {
+      if(filtroTimeout) clearTimeout(filtroTimeout);
+      filtroTimeout = setTimeout(() => {
+        renderListaPerfiles();
+      }, 300);
+    }
+    
+    function cambiarTab(tabId) {
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+      const tp = document.getElementById(`tab-${tabId}`);
+      if(tp) tp.classList.add("active");
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      const navBtn = document.querySelector(`.nav-btn[data-nav="${tabId}"]`);
+      if(navBtn) navBtn.classList.add("active");
+      if(tabId === "micuenta") actualizarPanelMiCuenta();
+      if(tabId === "perfiles") renderListaPerfiles();
+      if(tabId === "dashboard") actualizarDashboard();
+      if(tabId === "historial") renderHistorial();
+      if(tabId === "stats") { actualizarDashboard(); renderResumenes(); }
+    }
+    
+    function limpiarFiltros() {
+      document.getElementById("filtroPlataforma").value = "";
+      document.getElementById("filtroEstado").value = "";
+      document.getElementById("buscarTexto").value = "";
+      document.getElementById("filtroProveedor").value = "";
+      document.getElementById("fechaDesde").value = "";
+      document.getElementById("fechaHasta").value = "";
+      document.getElementById("otraPlatFiltro").value = "";
+      document.getElementById("otraPlatFiltroDiv").style.display = "none";
+      renderListaPerfiles();
+      toast("Filtros limpiados");
+    }
+    
+    function ordenarPerfiles() {
+      perfiles.sort((a,b) => {
+        if(!a.fechaVencimiento && !b.fechaVencimiento) return 0;
+        if(!a.fechaVencimiento) return 1;
+        if(!b.fechaVencimiento) return -1;
+        const fa = parseFecha(a.fechaVencimiento);
+        const fb = parseFecha(b.fechaVencimiento);
+        if(!fa || !fb) return 0;
+        return ordenAsc ? fa - fb : fb - fa;
+      });
+      ordenAsc = !ordenAsc;
+      guardarPerfiles();
+      actualizarTodo();
+      toast(ordenAsc ? "Orden ascendente" : "Orden descendente");
+    }
+    
+    async function resetearVentas() {
+      if(confirm("¿Reiniciar todas las ventas? Los perfiles volverán a estado libre.")) {
+        perfiles.forEach(p => {
+          p.fechaVenta = null;
+          p.precioVenta = null;
+          p.whatsappCliente = "";
+          if(p.estado === "vendido") p.estado = "libre";
+        });
+        await guardarPerfiles();
+        actualizarTodo();
+        toast("Ventas reiniciadas");
+      }
+    }
+    
+    function exportarDatos() {
+      if(perfiles.length === 0) {
+        toast("Sin datos para exportar");
+        return;
+      }
+      const data = JSON.stringify(perfiles);
+      const blob = new Blob([data], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `streamflow_backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      toast("Backup exportado");
+    }
+    
+    function importarDatos() {
+      document.getElementById("archivoImportar").click();
+    }
+    
+    async function borrarTodosLosPerfiles() {
+      if(confirm("⚠️ ¿BORRAR TODOS LOS PERFILES? Esta acción no se puede deshacer.")) {
+        const confirmar = prompt("Escribí CONFIRMAR para borrar todo");
+        if(confirmar === "CONFIRMAR") {
+          perfiles = [];
+          await guardarPerfiles();
+          localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+          actualizarTodo();
+          toast("Todos los datos eliminados");
+        }
+      }
+    }
+    
+    function previsualizarCargaMasiva() {
+      const texto = document.getElementById("batchTexto").value;
+      if(!texto.trim()) {
+        toast("No hay datos para previsualizar");
+        return;
+      }
+      const lineas = texto.split(/\r?\n/);
+      let cuentaActual = {};
+      const cuentas = [];
+      for(const linea of lineas) {
+        const lineaTrim = linea.trim();
+        if(lineaTrim === "" || lineaTrim === "---") {
+          if(Object.keys(cuentaActual).length > 0) {
+            cuentas.push(cuentaActual);
+            cuentaActual = {};
+          }
+          continue;
+        }
+        const partes = lineaTrim.split(/[=:]/);
+        if(partes.length >= 2) {
+          const clave = partes[0].trim().toLowerCase();
+          const valor = partes.slice(1).join(":").trim();
+          if(clave.includes("mail") || clave.includes("email") || clave.includes("correo")) cuentaActual.mail = valor;
+          else if(clave.includes("contraseña") || clave.includes("password") || clave.includes("pass")) cuentaActual.password = valor;
+          else if(clave.includes("perfil") || clave.includes("usuario")) cuentaActual.perfilNombre = valor;
+          else if(clave.includes("proveedor") || clave.includes("vendedor")) cuentaActual.proveedor = valor;
+          else if(clave.includes("vencimiento") || clave.includes("fecha")) cuentaActual.fechaVencimiento = valor;
+          else if(clave.includes("whatsapp") || clave.includes("wa")) cuentaActual.whatsapp = valor;
+        }
+      }
+      if(Object.keys(cuentaActual).length > 0) cuentas.push(cuentaActual);
+      const resultadosDiv = document.getElementById("batchResultados");
+      resultadosDiv.style.display = "block";
+      resultadosDiv.innerHTML = `<strong>📋 Previsualización (${cuentas.length} cuentas encontradas)</strong><br>${cuentas.map((c, i) => `${i+1}. ${c.perfilNombre || "Sin nombre"} - ${c.mail || "Sin email"} - ${c.proveedor || "Sin proveedor"}`).join('<br>')}<br><small>✅ Verifica que los datos sean correctos antes de cargar.</small>`;
+    }
+    
+    async function cargarMasiva() {
+      const texto = document.getElementById("batchTexto").value;
+      if(!texto.trim()) {
+        toast("No hay datos para cargar");
+        return;
+      }
+      const lineas = texto.split(/\r?\n/);
+      let cuentaActual = {};
+      let agregadas = 0;
+      for(const linea of lineas) {
+        const lineaTrim = linea.trim();
+        if(lineaTrim === "" || lineaTrim === "---") {
+          if(Object.keys(cuentaActual).length > 0 && cuentaActual.mail && cuentaActual.password && cuentaActual.perfilNombre && cuentaActual.proveedor) {
+            perfiles.push({
+              id: generarIdUnico(),
+              plataforma: "Carga masiva",
+              cuentaId: "MASIVA_" + Date.now(),
+              perfilNombre: cuentaActual.perfilNombre,
+              mail: cuentaActual.mail,
+              password: cuentaActual.password,
+              pin: "",
+              fechaVencimiento: cuentaActual.fechaVencimiento || null,
+              proveedor: cuentaActual.proveedor,
+              whatsappProveedor: cuentaActual.whatsapp || "",
+              observaciones: "",
+              precio: null,
+              estado: cuentaActual.fechaVencimiento ? obtenerEstado(cuentaActual.fechaVencimiento) : "libre",
+              fechaVenta: null,
+              precioVenta: null,
+              whatsappCliente: ""
+            });
+            agregadas++;
+          }
+          cuentaActual = {};
+          continue;
+        }
+        const partes = lineaTrim.split(/[=:]/);
+        if(partes.length >= 2) {
+          const clave = partes[0].trim().toLowerCase();
+          const valor = partes.slice(1).join(":").trim();
+          if(clave.includes("mail") || clave.includes("email") || clave.includes("correo")) cuentaActual.mail = valor;
+          else if(clave.includes("contraseña") || clave.includes("password") || clave.includes("pass")) cuentaActual.password = valor;
+          else if(clave.includes("perfil") || clave.includes("usuario")) cuentaActual.perfilNombre = valor;
+          else if(clave.includes("proveedor") || clave.includes("vendedor")) cuentaActual.proveedor = valor;
+          else if(clave.includes("vencimiento") || clave.includes("fecha")) cuentaActual.fechaVencimiento = valor;
+          else if(clave.includes("whatsapp") || clave.includes("wa")) cuentaActual.whatsapp = valor;
+        }
+      }
+      if(Object.keys(cuentaActual).length > 0 && cuentaActual.mail && cuentaActual.password && cuentaActual.perfilNombre && cuentaActual.proveedor) {
+        perfiles.push({
+          id: generarIdUnico(),
+          plataforma: "Carga masiva",
+          cuentaId: "MASIVA_" + Date.now(),
+          perfilNombre: cuentaActual.perfilNombre,
+          mail: cuentaActual.mail,
+          password: cuentaActual.password,
+          pin: "",
+          fechaVencimiento: cuentaActual.fechaVencimiento || null,
+          proveedor: cuentaActual.proveedor,
+          whatsappProveedor: cuentaActual.whatsapp || "",
+          observaciones: "",
+          precio: null,
+          estado: cuentaActual.fechaVencimiento ? obtenerEstado(cuentaActual.fechaVencimiento) : "libre",
+          fechaVenta: null,
+          precioVenta: null,
+          whatsappCliente: ""
+        });
+        agregadas++;
+      }
+      if(agregadas > 0) {
+        await guardarPerfiles();
+        actualizarTodo();
+        toast(`✅ ${agregadas} perfiles cargados correctamente`);
+        document.getElementById("batchTexto").value = "";
+        document.getElementById("batchResultados").style.display = "none";
+      } else {
+        toast("No se encontraron perfiles válidos para cargar");
+      }
+    }
+    
+    // ============ CONFIGURACIÓN LOCAL ============
+    function guardarConfigLocal() {
+      localStorage.setItem("streamflow_config", JSON.stringify({
+        tema: document.body.classList.contains("light") ? "light" : "dark",
+        kiosco: kioscoMode,
+        notifications: notificationsEnabled,
+        diasProximo: DIAS_PROXIMO
+      }));
+    }
+    
+    function cargarConfigLocal() {
+      const saved = localStorage.getItem("streamflow_config");
+      if(saved) {
+        try {
+          const cfg = JSON.parse(saved);
+          if(cfg.tema === "light") document.body.classList.add("light");
+          document.getElementById("themeToggle").checked = cfg.tema === "light";
+          kioscoMode = cfg.kiosco || false;
+          document.getElementById("kioscoToggle").checked = kioscoMode;
+          notificationsEnabled = cfg.notifications !== false;
+          document.getElementById("notificationsToggle").checked = notificationsEnabled;
+          DIAS_PROXIMO = cfg.diasProximo || 3;
+          document.getElementById("diasProximoConfig").value = DIAS_PROXIMO;
+        } catch(e) {}
+      }
+    }
+    
+    // ============ NOTIFICACIONES DE VENCIMIENTO ============
+    function mostrarAvisoVencimientos() {
+      if(!notificationsEnabled) return;
+      const hoy = new Date();
+      hoy.setHours(0,0,0,0);
+      const vencidos = [];
+      const proximos = [];
+      perfiles.forEach(p => {
+        if(!p.fechaVencimiento || p.estado === "libre" || p.estado === "vendido" || !p.whatsappCliente) return;
+        const f = parseFecha(p.fechaVencimiento);
+        if(!f) return;
+        f.setHours(0,0,0,0);
+        const diff = Math.round((f - hoy) / 86400000);
+        if(diff < 0) {
+          vencidos.push(p);
+        } else if(diff <= DIAS_PROXIMO) {
+          proximos.push(p);
+        }
+      });
+      if(vencidos.length > 0 || proximos.length > 0) {
+        let html = "<strong>📢 RECORDATORIO DE VENCIMIENTOS</strong><br><br>";
+        if(vencidos.length > 0) {
+          html += '<span style="color:#ef4444;">🔴 VENCIDOS:</span><br>';
+          vencidos.forEach(p => html += `❌ ${p.plataforma} - ${p.perfilNombre}<br>`);
+        }
+        if(proximos.length > 0) {
+          html += '<br><span style="color:#f5af19;">🟡 PRÓXIMOS A VENCER:</span><br>';
+          proximos.forEach(p => {
+            html += `⚠️ ${p.plataforma} - ${p.perfilNombre} (${formatearFecha(p.fechaVencimiento)})`;
+            if(p.whatsappCliente) {
+              html += ` <button onclick="avisarClienteVencimiento('${p.id}')" style="background:#25D366; color:#fff; border:none; border-radius:1rem; padding:0.2rem 0.6rem; font-size:0.65rem; cursor:pointer;"><i class="fab fa-whatsapp"></i> Avisar</button>`;
+            }
+            html += "<br>";
+          });
+        }
+        document.getElementById("vencimientoModalMensaje").innerHTML = html;
+        document.getElementById("vencimientoModal").style.display = "flex";
+      }
+    }
+    
+    window.avisarClienteVencimiento = function(perfilId) {
+      const p = perfiles.find(p => p.id === perfilId);
+      if(p && p.whatsappCliente) {
+        const fechaVence = p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : "próximamente";
+        const mensaje = `🔔 *AVISO DE VENCIMIENTO* 🔔\n\nHola,\n\nTu cuenta de *${p.plataforma}* (Perfil: ${p.perfilNombre}) está próxima a vencer.\n\n📅 *Vence el:* ${fechaVence}\n\nPor favor, contactanos para renovarla y seguir disfrutando del servicio sin interrupciones.\n\n¡Gracias por confiar en nosotros! 🙏`;
+        abrirWhatsApp(p.whatsappCliente, mensaje);
+      } else {
+        toast("No hay WhatsApp del cliente registrado");
+      }
+    };
+    
+    // ============ EVENT LISTENERS ============
+    document.getElementById("platCompleta")?.addEventListener("change", function() {
+      document.getElementById("otraPlatCompletaDiv").style.display = this.value === "Otros" ? "block" : "none";
+    });
+    
+    document.getElementById("platIndividual")?.addEventListener("change", function() {
+      document.getElementById("otraPlatIndividualDiv").style.display = this.value === "Otros" ? "block" : "none";
+    });
+    
+    document.getElementById("filtroPlataforma")?.addEventListener("change", function() {
+      if(this.value === "Otros") {
+        document.getElementById("otraPlatFiltroDiv").style.display = "block";
+      } else {
+        document.getElementById("otraPlatFiltroDiv").style.display = "none";
+        renderListaPerfiles();
+      }
+    });
+    
+    document.getElementById("otraPlatFiltro")?.addEventListener("input", renderListaPerfiles);
+    
+    document.getElementById("showRegister")?.addEventListener("click", () => {
+      document.getElementById("loginPanel").style.display = "none";
+      document.getElementById("registerPanel").style.display = "block";
+    });
+    
+    document.getElementById("showLogin")?.addEventListener("click", () => {
+      document.getElementById("registerPanel").style.display = "none";
+      document.getElementById("loginPanel").style.display = "block";
+    });
+    
+    document.getElementById("forgotPasswordBtn")?.addEventListener("click", () => {
+      document.getElementById("resetPasswordModal").style.display = "flex";
+    });
+    
+    document.getElementById("modalCancelBtn")?.addEventListener("click", () => {
+      document.getElementById("resetPasswordModal").style.display = "none";
+    });
+    
+    document.getElementById("modalSendBtn")?.addEventListener("click", async () => {
+      const email = document.getElementById("resetEmail").value;
+      if(!email) {
+        toast("Ingresá un email");
+        return;
+      }
+      try {
+        await auth.sendPasswordResetEmail(email);
+        toast("✅ Correo enviado");
+        document.getElementById("resetPasswordModal").style.display = "none";
+      } catch(e) {
+        toast("❌ Error: " + e.message);
+      }
+    });
+    
+    document.getElementById("btnLoginSubmit")?.addEventListener("click", async () => {
+      const email = document.getElementById("loginEmail").value;
+      const pass = document.getElementById("loginPassword").value;
+      if(!email || !pass) {
+        document.getElementById("authError").innerText = "Completá todos los campos";
+        return;
+      }
+      const btn = document.getElementById("btnLoginSubmit");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Entrando...';
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        if(document.getElementById("rememberMeCheckbox").checked) {
+          localStorage.setItem("recordarEmail", email);
+        }
+        toast("✅ Bienvenido");
+      } catch(e) {
+        document.getElementById("authError").innerText = e.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Iniciar sesión";
+      }
+    });
+    
+    document.getElementById("btnRegisterSubmit")?.addEventListener("click", async () => {
+      const email = document.getElementById("regEmail").value;
+      const pass = document.getElementById("regPassword").value;
+      const confirm = document.getElementById("regPasswordConfirm").value;
+      if(pass !== confirm) {
+        document.getElementById("authError").innerText = "Las contraseñas no coinciden";
+        return;
+      }
+      if(pass.length < 6) {
+        document.getElementById("authError").innerText = "La contraseña debe tener al menos 6 caracteres";
+        return;
+      }
+      const btn = document.getElementById("btnRegisterSubmit");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Registrando...';
+      try {
+        await auth.createUserWithEmailAndPassword(email, pass);
+        toast("✅ Registro exitoso");
+      } catch(e) {
+        document.getElementById("authError").innerText = e.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Registrarse";
+      }
+    });
+    
+    document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+      await auth.signOut();
+      toast("Sesión cerrada");
+    });
+    
+    document.getElementById("btnGuardarCompleta")?.addEventListener("click", guardarCuentaCompleta);
+    
+    document.getElementById("btnGuardarIndividual")?.addEventListener("click", () => {
+      if(editandoId) {
+        guardarPerfilEditado();
+      } else {
+        guardarPerfilIndividual();
+      }
+    });
+    
+    document.getElementById("btnCancelarEdicion")?.addEventListener("click", () => {
+      editandoId = null;
+      limpiarFormularioIndividual();
+      document.getElementById("btnCancelarEdicion").style.display = "none";
+      document.getElementById("btnGuardarIndividual").textContent = "Guardar perfil";
+      toast("Edición cancelada");
+    });
+    
+    document.getElementById("btnExportar")?.addEventListener("click", exportarDatos);
+    document.getElementById("btnImportar")?.addEventListener("click", importarDatos);
+    document.getElementById("btnBorrarTodo")?.addEventListener("click", borrarTodosLosPerfiles);
+    document.getElementById("btnOrdenar")?.addEventListener("click", ordenarPerfiles);
+    document.getElementById("btnLimpiarFiltros")?.addEventListener("click", limpiarFiltros);
+    document.getElementById("btnResetVentas")?.addEventListener("click", resetearVentas);
+    document.getElementById("btnPrevisualizar")?.addEventListener("click", previsualizarCargaMasiva);
+    document.getElementById("btnCargarMasivo")?.addEventListener("click", cargarMasiva);
+    
+    document.getElementById("btnValidarToken")?.addEventListener("click", async () => {
+      const token = document.getElementById("tokenAcceso").value;
+      if(!token) {
+        toast("Ingresá un token");
+        return;
+      }
+      if(!currentUser) {
+        toast("Iniciá sesión primero");
+        return;
+      }
+      showLoader("Validando token...");
+      const resultado = await validarToken(token, currentUser.uid);
+      hideLoader();
+      toast(resultado.mensaje);
+      if(resultado.valido) {
+        document.getElementById("tokenAcceso").value = "";
+        document.getElementById("tokenEstado").innerHTML = `<span style="color:#10b981;">✅ ${resultado.mensaje}</span>`;
+        actualizarPanelMiCuenta();
+        aplicarBloqueoApp();
+      } else {
+        document.getElementById("tokenEstado").innerHTML = `<span style="color:#ef4444;">❌ ${resultado.mensaje}</span>`;
+      }
+    });
+    
+    document.getElementById("btnWhatsAppToken")?.addEventListener("click", () => {
+      abrirWhatsApp(WHATSAPP_TOKEN_NUMBER, "Hola, quiero comprar un token para StreamFlow Pro. ¿Me ayudas?");
+    });
+    
+    document.getElementById("btnCerrarSesion")?.addEventListener("click", async () => {
+      await auth.signOut();
+    });
+    document.getElementById("btnAbrirManual")?.addEventListener("click", () => cambiarTab("ayuda"));
+    document.getElementById("btnVolverDeAyuda")?.addEventListener("click", () => cambiarTab("ajustes"));
+    document.getElementById("btnAcercaDe")?.addEventListener("click", () => {
+      document.getElementById("acercaModal").style.display = "flex";
+    });
+    document.getElementById("acercaCerrar")?.addEventListener("click", () => {
+      document.getElementById("acercaModal").style.display = "none";
+    });
+    
+    document.getElementById("ventaConfirmar")?.addEventListener("click", async () => {
+      if(pendingVentaId) {
+        await venderPerfil(pendingVentaId, {
+          plataforma: document.getElementById("ventaPlataforma").value,
+          cuentaId: document.getElementById("ventaCuentaId").value,
+          perfilNombre: document.getElementById("ventaPerfilNombre").value,
+          mail: document.getElementById("ventaMail").value,
+          password: document.getElementById("ventaPassword").value,
+          pin: document.getElementById("ventaPin").value,
+          fechaVencimiento: document.getElementById("ventaFechaVencimiento").value,
+          proveedor: document.getElementById("ventaProveedor").value,
+          precio: document.getElementById("ventaPrecio").value,
+          cliente: document.getElementById("ventaCliente").value,
+          observaciones: document.getElementById("ventaObservaciones").value
+        });
+        document.getElementById("ventaModal").style.display = "none";
+        pendingVentaId = null;
+      }
+    });
+    
+    document.getElementById("ventaCancelar")?.addEventListener("click", () => {
+      document.getElementById("ventaModal").style.display = "none";
+      pendingVentaId = null;
+    });
+    
+    document.getElementById("reasignarConfirmar")?.addEventListener("click", confirmarReasignar);
+    document.getElementById("reasignarCancelar")?.addEventListener("click", () => {
+      document.getElementById("reasignarModal").style.display = "none";
+    });
+    
+    document.getElementById("themeToggle")?.addEventListener("change", (e) => {
+      if(e.target.checked) document.body.classList.add("light");
+      else document.body.classList.remove("light");
+      guardarConfigLocal();
+    });
+    
+    document.getElementById("kioscoToggle")?.addEventListener("change", (e) => {
+      kioscoMode = e.target.checked;
+      guardarConfigLocal();
+      actualizarTodo();
+      if(kioscoMode) toast("Modo kiosco activado - edición deshabilitada");
+      else toast("Modo kiosco desactivado");
+    });
+    
+    document.getElementById("notificationsToggle")?.addEventListener("change", (e) => {
+      notificationsEnabled = e.target.checked;
+      guardarConfigLocal();
+      if(notificationsEnabled) mostrarAvisoVencimientos();
+    });
+    
+    document.getElementById("diasProximoConfig")?.addEventListener("change", (e) => {
+      DIAS_PROXIMO = parseInt(e.target.value) || 3;
+      guardarConfigLocal();
+      actualizarTodo();
+    });
+    
+    document.getElementById("btnExportConfig")?.addEventListener("click", () => {
+      const config = {
+        tema: document.body.classList.contains("light") ? "light" : "dark",
+        kiosco: kioscoMode,
+        notifications: notificationsEnabled,
+        diasProximo: DIAS_PROXIMO
+      };
+      const blob = new Blob([JSON.stringify(config)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.download = "streamflow_config.json";
+      a.href = URL.createObjectURL(blob);
+      a.click();
+      toast("Configuración exportada");
+    });
+    
+    document.getElementById("btnImportConfig")?.addEventListener("click", () => {
+      document.getElementById("archivoConfig").click();
+    });
+    
+    document.getElementById("archivoConfig")?.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const cfg = JSON.parse(ev.target.result);
+          if(cfg.tema === "light") document.body.classList.add("light");
+          else document.body.classList.remove("light");
+          document.getElementById("themeToggle").checked = cfg.tema === "light";
+          kioscoMode = cfg.kiosco || false;
+          document.getElementById("kioscoToggle").checked = kioscoMode;
+          notificationsEnabled = cfg.notifications !== false;
+          document.getElementById("notificationsToggle").checked = notificationsEnabled;
+          DIAS_PROXIMO = cfg.diasProximo || 3;
+          document.getElementById("diasProximoConfig").value = DIAS_PROXIMO;
+          guardarConfigLocal();
+          toast("Configuración importada");
+        } catch(err) { toast("Archivo inválido"); }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    });
+    
+    document.getElementById("btnResetConfig")?.addEventListener("click", () => {
+      DIAS_PROXIMO = 3;
+      kioscoMode = false;
+      notificationsEnabled = true;
+      document.body.classList.remove("light");
+      document.getElementById("themeToggle").checked = false;
+      document.getElementById("kioscoToggle").checked = false;
+      document.getElementById("notificationsToggle").checked = true;
+      document.getElementById("diasProximoConfig").value = 3;
+      guardarConfigLocal();
+      actualizarTodo();
+      toast("Configuración restablecida");
+    });
+    
+    document.getElementById("archivoImportar")?.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if(Array.isArray(data) && confirm("¿Reemplazar todos los datos actuales?")) {
+            perfiles = data;
+            await guardarPerfiles();
+            localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+            actualizarTodo();
+            toast("Datos importados");
+          } else {
+            toast("Archivo inválido");
+          }
+        } catch(err) { toast("Error al leer archivo"); }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    });
+    
+    document.getElementById("vencimientoModalCerrar")?.addEventListener("click", () => {
+      document.getElementById("vencimientoModal").style.display = "none";
+    });
+    
+    document.getElementById("syncStatus")?.addEventListener("click", async () => {
+      if(currentUser) {
+        await guardarPerfiles();
+        toast("Sincronización manual completada");
+      } else {
+        toast("No hay usuario logueado");
+      }
+    });
+    
+    document.getElementById("filtroPlataforma")?.addEventListener("change", actualizarConDebounce);
+    document.getElementById("filtroEstado")?.addEventListener("change", actualizarConDebounce);
+    document.getElementById("buscarTexto")?.addEventListener("input", actualizarConDebounce);
+    document.getElementById("filtroProveedor")?.addEventListener("input", actualizarConDebounce);
+    document.getElementById("fechaDesde")?.addEventListener("change", actualizarConDebounce);
+    document.getElementById("fechaHasta")?.addEventListener("change", actualizarConDebounce);
+    document.getElementById("historialFiltroPlataforma")?.addEventListener("change", renderHistorial);
+    document.getElementById("historialBuscar")?.addEventListener("input", () => setTimeout(renderHistorial, 300));
+    
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => cambiarTab(btn.dataset.nav));
+    });
+    
+    document.querySelectorAll(".carga-tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".carga-tab").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const mod = btn.dataset.mod;
+        document.getElementById("modo-completa").style.display = mod === "completa" ? "block" : "none";
+        document.getElementById("modo-individual").style.display = mod === "individual" ? "block" : "none";
+        document.getElementById("modo-masiva").style.display = mod === "masiva" ? "block" : "none";
+        editandoId = null;
+        document.getElementById("btnCancelarEdicion").style.display = "none";
+        document.getElementById("btnGuardarIndividual").textContent = "Guardar perfil";
+      });
+    });
+    
+    document.querySelectorAll("#manualQuickNav .quick-link").forEach(link => {
+      link.addEventListener("click", () => {
+        const section = link.dataset.section;
+        const target = document.getElementById(`manual-${section}`);
+        if(target) {
+          target.scrollIntoView({ behavior: "smooth" });
+          target.querySelector(".manual-section-body")?.classList.add("open");
+        }
+      });
+    });
+    
+    document.querySelectorAll(".manual-section-header").forEach(header => {
+      header.addEventListener("click", () => {
+        const body = header.nextElementSibling;
+        const icon = header.querySelector("i");
+        body.classList.toggle("open");
+        if(body.classList.contains("open")) {
+          icon.classList.remove("fa-chevron-right");
+          icon.classList.add("fa-chevron-down");
+        } else {
+          icon.classList.remove("fa-chevron-down");
+          icon.classList.add("fa-chevron-right");
+        }
+      });
+    });
+    
+    document.getElementById("manualSearch")?.addEventListener("input", function() {
+      const query = this.value.toLowerCase().trim();
+      const secciones = document.querySelectorAll(".manual-section");
+      let found = 0;
+      secciones.forEach(seccion => {
+        if(!query || seccion.textContent.toLowerCase().includes(query)) {
+          seccion.style.display = "block";
+          found++;
+        } else {
+          seccion.style.display = "none";
+        }
+      });
+      const resultsDiv = document.getElementById("manualSearchResults");
+      if(query) {
+        resultsDiv.style.display = "block";
+        resultsDiv.innerHTML = `🔍 ${found} resultado(s) para "<strong>${escapeHtml(query)}</strong>"`;
+      } else {
+        resultsDiv.style.display = "none";
+      }
+    });
+    
+    // ============ INICIALIZACIÓN ============
+    cargarConfigLocal();
+    
+    const emailGuardado = localStorage.getItem("recordarEmail");
+    if(emailGuardado) {
+      document.getElementById("loginEmail").value = emailGuardado;
+      document.getElementById("rememberMeCheckbox").checked = true;
+    }
+    
+    auth.onAuthStateChanged(async (user) => {
+      if(user) {
+        currentUser = user;
+        document.getElementById("loginWrapper").style.display = "none";
+        document.getElementById("appContainer").style.display = "flex";
+        document.body.style.overflow = "hidden";
+        document.body.style.height = "100vh";
+        document.body.style.pos
