@@ -282,6 +282,21 @@
             <div style="display:flex; justify-content:space-between; margin-top:0.4rem; font-size:0.55rem;"><span>Inicio</span><span id="fechaExpiracionTexto"></span><span>Fin</span></div>
           </div>
 
+          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;"> <!-- UI Refresh -->
+            <div class="card-title neon-text" style="font-size:0.8rem; margin-bottom:1rem;"><i class="fas fa-key"></i> Activar suscripción</div>
+            <div class="input-group">
+              <label>Ingresá tu token de 30 días</label>
+              <div style="display:flex; gap:0.5rem;">
+                <input type="text" id="tokenAcceso" placeholder="SF-XXXX-XXXX" style="flex:1;">
+                <button id="btnValidarToken" class="btn btn-primary" style="padding:0 1rem;"><i class="fas fa-check"></i></button>
+              </div>
+              <div id="tokenEstado" style="font-size:0.6rem; margin-top:0.4rem;"></div>
+            </div>
+            <button id="btnWhatsAppToken" class="btn btn-outline" style="width:100%; margin-top:0.5rem; border-color:#25d366; color:#25d366;">
+              <i class="fab fa-whatsapp"></i> Comprar token vía WhatsApp
+            </button>
+          </div>
+
           <div class="stats-grid" style="margin-bottom:1rem;">
             <div class="stat-card"><div class="stat-number" id="perfilTotalPerfiles">0</div><div class="stat-label">Mis perfiles</div></div>
             <div class="stat-card"><div class="stat-number" id="perfilTotalVentas">0</div><div class="stat-label">Mis ventas</div></div>
