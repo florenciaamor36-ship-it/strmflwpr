@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#0f0c29">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="StreamFlow Pro">
+  <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f5af19'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%23000'%3E🎬%3C/text%3E%3C/svg%3E">
+  <title>StreamFlow Pro | Gestión Profesional de Streaming</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <!-- Firebase Compat (sin import maps, funciona en celular) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  
+  <style>
+    /* ============================================ */
+    /* RESET Y ESTILOS BASE */
+    /* ============================================ */
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html { font-size:15px; height:100%; overflow:hidden; }
+    body {
+      font-family:'Inter',system-ui,sans-serif;
+      background: #0f0c29;
+      background-image: 
+        radial-gradient(ellipse at 20% 50%, rgba(48, 43, 99, 0.8) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(36, 36, 62, 0.9) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(245, 175, 25, 0.08) 0%, transparent 50%),
+        repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px),
+        repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(255,255,255,0.005) 2px, rgba(255,255,255,0.005) 4px),
+        linear-gradient(180deg, #0f0c29 0%, #1a1a3e 30%, #0f0c29 60%, #1a1a3e 100%);
+      color:#fff;
+      transition:background 0.5s,color 0.2s;
+      height:100vh;
+      height:100dvh;
+      overflow:hidden;
+      position:fixed;
+      width:100%;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 30% 40%, rgba(245,175,25,0.03) 0%, transparent 60%),
+        radial-gradient(circle at 70% 60%, rgba(241,39,17,0.03) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body.light {
+      background: #f5f7fa;
+      background-image: 
+        radial-gradient(ellipse at 20% 50%, rgba(102, 126, 234, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(245, 175, 25, 0.06) 0%, transparent 50%),
+        repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.01) 3px, rgba(0,0,0,0.01) 6px),
+        linear-gradient(180deg, #f5f7fa 0%, #e8ecf1 50%, #f5f7fa 100%);
+      color:#1e293b;
+    }
+    body.light::before {
+      background: 
+        radial-gradient(circle at 30% 40%, rgba(245,175,25,0.04) 0%, transparent 60%),
+        radial-gradient(circle at 70% 60%, rgba(241,39,17,0.03) 0%, transparent 60%);
+    }
+    body.light .app-container,body.light .login-wrapper { background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); }
+    body.light .app-header { background:rgba(255,255,255,0.9); border-bottom-color:rgba(0,0,0,0.1); }
+    body.light .logo-text h1 { background:linear-gradient(135deg,#1e293b,#f5af19); -webkit-background-clip:text; background-clip:text; }
+    body.light .sync-status { background:rgba(0,0,0,0.1); }
+    body.light .auto-save-indicator { background:rgba(0,0,0,0.1); color:#1e293b; }
+    body.light .card { background:rgba(255,255,255,0.7); border-color:rgba(0,0,0,0.05); }
+    body.light .stat-card { background:linear-gradient(145deg,#ffffff,#f1f5f9); color:#1e293b; }
+    body.light .stat-number { background:linear-gradient(135deg,#f5af19,#f12711); -webkit-background-clip:text; background-clip:text; }
+    body.light .btn { background:linear-gradient(145deg,#e2e8f0,#cbd5e1); color:#1e293b; box-shadow:0 4px 0 #94a3b8; }
+    body.light .btn-primary { background:linear-gradient(145deg,#f5af19,#f12711); color:#fff; }
+    body.light .btn-success { background:linear-gradient(145deg,#11998e,#38ef7d); color:#fff; }
+    body.light .btn-danger { background:linear-gradient(145deg,#eb3349,#f45c43); color:#fff; }
+    body.light input,body.light select,body.light textarea { background:#fff; color:#1e293b; border:1px solid #cbd5e1; }
+    body.light .profile-card { background:#fff; }
+    body.light .badge { background:rgba(0,0,0,0.05); color:#1e293b; }
+    body.light .bottom-nav-bar { background:rgba(255,255,255,0.95); border-top-color:rgba(0,0,0,0.1); }
+    body.light .bottom-nav-bar .nav-btn { color:#1e293b; }
+    body.light .bottom-nav-bar .nav-btn.active { background:linear-gradient(145deg,#f5af19,#f12711); color:#fff; }
+    body.light .modal-content { background:#fff; color:#1e293b; }
+    body.light .toast { background:#fff; color:#f5af19; border-color:#f5af19; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    body.light .loader-overlay { background:rgba(255,255,255,0.9); }
+    body.light .loader-text { color:#f5af19; }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:active {
+      -webkit-box-shadow:0 0 0px 1000px rgba(0,0,0,0.85) inset !important;
+      -webkit-text-fill-color:#fff !important;
+      transition:background-color 5000s ease-in-out 0s;
+      caret-color:#fff;
+    }
+    body.light input:-webkit-autofill { -webkit-box-shadow:0 0 0px 1000px #fff inset !important; -webkit-text-fill-color:#1e293b !important; }
+
+    /* ============================================ */
+    /* APP CONTAINER Y LOGIN */
+    /* ============================================ */
+    .app-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: rgba(15, 25, 35, 0.45);
+      backdrop-filter: blur(12px);
+      height: 100vh;
+      height: 100dvh;
+      display: none;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .login-wrapper {
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      min-height:100dvh;
+      padding:1rem;
+      z-index: 1;
+    }
+    .form {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      background: linear-gradient(160deg, rgba(15,12,41,0.9) 0%, rgba(48,43,99,0.8) 50%, rgba(36,36,62,0.9) 100%);
+      backdrop-filter: blur(20px);
+      padding:2rem;
+      width:100%;
+      max-width:450px;
+      border-radius:2rem;
+      font-family:'Inter',sans-serif;
+      transition:background 0.3s ease;
+      box-shadow:0 25px 45px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .form::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 20%, rgba(245,175,25,0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    body.light .form { 
+      background: linear-gradient(160deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.12) 50%, rgba(255,255,255,0.9) 100%);
+      backdrop-filter: blur(20px);
+      border:1px solid rgba(0,0,0,0.08);
+    }
+    .flex-column>label { color:#fff; font-weight:600; font-size:0.8rem; position:relative; z-index:1; }
+    body.light .flex-column>label { color:#1e293b; }
+    .inputForm {
+      border:1.5px solid rgba(255,255,255,0.25);
+      border-radius:3rem;
+      height:50px;
+      display:flex;
+      align-items:center;
+      padding-left:1rem;
+      transition:0.2s ease-in-out;
+      background:rgba(255,255,255,0.08);
+      overflow:visible;
+      padding:0 4px;
+      position:relative;
+      z-index:1;
+    }
+    body.light .inputForm { border-color:rgba(0,0,0,0.15); background:rgba(0,0,0,0.03); }
+    .inputForm svg { fill:#fff; }
+    body.light .inputForm svg { fill:#1e293b; }
+    .input {
+      margin-left:10px;
+      border:none;
+      background:transparent;
+      width:100%;
+      height:100%;
+      color:#fff;
+      font-size:0.9rem;
+    }
+    body.light .input { color:#1e293b; }
+    .input:focus { outline:none; }
+    .input::placeholder { color:rgba(255,255,255,0.5); }
+    body.light .input::placeholder { color:rgba(0,0,0,0.4); }
+    .inputForm:focus-within { border-color:#f5af19; }
+    .flex-row { display:flex; gap:10px; justify-content:space-between; align-items:center; }
+    .span { font-size:0.7rem; color:#f5af19; font-weight:500; cursor:pointer; }
+    .button-submit {
+      position:relative;
+      padding:12px 30px;
+      text-align:center;
+      background:transparent;
+      transition:ease-out 0.5s;
+      border:2px solid #f5af19;
+      border-radius:3rem;
+      box-shadow:inset 0 0 0 0 #f5af19;
+      margin:20px 0 10px 0;
+      color:#fff;
+      font-size:0.9rem;
+      font-weight:700;
+      height:50px;
+      width:100%;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      z-index:1;
+    }
+    .button-submit:disabled { opacity:0.6; cursor:not-allowed; }
+    .button-submit:hover:not(:disabled) { color:#0f0c29; box-shadow:inset 0 -100px 0 0 #f5af19; }
+    .p { text-align:center; color:rgba(255,255,255,0.8); font-size:0.7rem; margin:5px 0; }
+    body.light .p { color:rgba(0,0,0,0.6); }
+    .btn {
+      margin-top:10px;
+      width:100%;
+      height:50px;
+      border-radius:3rem;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-weight:600;
+      gap:10px;
+      border:1px solid rgba(255,255,255,0.3);
+      background:rgba(255,255,255,0.2);
+      color:#fff;
+      cursor:pointer;
+      transition:0.2s ease-in-out;
+    }
+    .btn:hover { background:rgba(255,255,255,0.4); border-color:#f5af19; }
+    .btn svg { fill:#fff; width:20px; }
+    .spinner {
+      display:inline-block;
+      width:16px;
+      height:16px;
+      border:2px solid rgba(255,255,255,0.3);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ============================================ */
+    /* MODALES */
+    /* ============================================ */
+    .modal {
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      height:100dvh;
+      background:rgba(0,0,0,0.6);
+      backdrop-filter:blur(4px);
+      z-index:2001;
+      align-items:center;
+      justify-content:center;
+    }
+    .modal-content {
+      background:rgba(0,0,0,0.9);
+      border-radius:2rem;
+      padding:2rem;
+      width:90%;
+      max-width:400px;
+      text-align:center;
+      border:1px solid rgba(255,255,255,0.2);
+      animation:modalFadeIn 0.2s ease;
+      max-height:80vh;
+      overflow-y:auto;
+    }
+    .modal-content-wide {
+      max-width:550px;
+    }
+    body.light .modal-content { background:#fff; box-shadow:0 10px 25px rgba(0,0,0,0.1); }
+    @keyframes modalFadeIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
+    .modal-content h3 { margin-bottom:1rem; color:#f5af19; }
+    .modal-content input, .modal-content select, .modal-content textarea {
+      width:100%;
+      padding:0.8rem;
+      margin:0.5rem 0;
+      border-radius:2rem;
+      border:1px solid rgba(255,255,255,0.3);
+      background:rgba(255,255,255,0.1);
+      color:#fff;
+      font-size:0.8rem;
+    }
+    .modal-content textarea {
+      border-radius:1rem;
+      resize:vertical;
+    }
+    body.light .modal-content input, body.light .modal-content select, body.light .modal-content textarea { background:#f1f5f9; color:#1e293b; border-color:#cbd5e1; }
+    .modal-buttons { display:flex; gap:1rem; justify-content:center; margin-top:1rem; flex-wrap:wrap; }
+    .modal-buttons button {
+      padding:0.5rem 1.2rem;
+      border-radius:2rem;
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .modal-buttons button:first-child { background:#f5af19; color:#0f0c29; }
+    .modal-buttons button:last-child { background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; }
+    body.light .modal-buttons button:last-child { color:#1e293b; border-color:#cbd5e1; }
+
+    /* ============================================ */
+    /* APP HEADER */
+    /* ============================================ */
+    .app-header {
+      background:linear-gradient(135deg,rgba(0,0,0,0.6),rgba(0,0,0,0.4));
+      backdrop-filter:blur(10px);
+      padding:0.7rem 1rem;
+      border-bottom:1px solid rgba(255,255,255,0.1);
+      z-index:110;
+      flex-shrink: 0;
+    }
+    .header-content { display:flex; justify-content:space-between; align-items:center; }
+    .logo { display:flex; align-items:center; gap:0.6rem; }
+    .logo-icon { 
+      width:38px; height:38px; 
+      background:linear-gradient(145deg,#ff7e5f,#feb47b); 
+      border-radius:12px; 
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 2px 8px rgba(255,126,95,0.3);
+    }
+    .logo-icon i { font-size:1.1rem; color:#fff; }
+    .logo-text h1 { font-size:1rem; font-weight:800; background:linear-gradient(135deg,#fff,#ffb347); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .logo-text p { font-size:0.5rem; opacity:0.7; }
+    .header-actions { display:flex; gap:0.5rem; align-items:center; }
+    .logout-btn { background:rgba(255,255,255,0.1); border:none; width:34px; height:34px; border-radius:25px; cursor:pointer; color:#fff; font-size:0.9rem; }
+    .sync-status { 
+      border:none;
+      width:34px; 
+      height:34px; 
+      border-radius:25px; 
+      cursor:pointer; 
+      font-size:0.9rem;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition: all 0.3s ease;
+    }
+    .sync-status.sincronizado { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .sync-status.esperando { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .sync-status.error { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .auto-save { display:flex; justify-content:flex-end; margin-top:0.4rem; }
+    .auto-save-indicator { background:rgba(0,255,0,0.15); padding:3px 8px; border-radius:30px; font-size:0.55rem; display:inline-flex; align-items:center; gap:4px; }
+    
+    /* ============================================ */
+    /* PLAN BADGE - UNO SOLO (corregido) */
+    /* ============================================ */
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.6rem;
+      font-weight: 700;
+    }
+    .plan-badge.pro { background: linear-gradient(135deg, #f5af19, #f12711); color: #fff; }
+    .plan-badge.demo { background: rgba(245,175,25,0.2); color: #f5af19; border: 1px solid rgba(245,175,25,0.4); }
+    .plan-badge.blocked { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+
+    /* ============================================ */
+    /* MAIN CONTENT Y TABS */
+    /* ============================================ */
+    .main-content {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 80px;
+    }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; animation:fadeSlide 0.25s ease; }
+    @keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    
+    /* ============================================ */
+    /* CARDS Y STATS */
+    /* ============================================ */
+    .card { 
+      background:rgba(0,0,0,0.35); 
+      backdrop-filter:blur(8px); 
+      border-radius:1.2rem; 
+      padding:1rem; 
+      margin-bottom:1rem; 
+      border:1px solid rgba(255,255,255,0.08); 
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    body.light .card { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .card-title { font-size:0.75rem; font-weight:700; text-transform:uppercase; background:linear-gradient(135deg,#f5af19,#f12711); -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:0.8rem; display:flex; align-items:center; gap:0.5rem; }
+    .stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:0.6rem; margin-bottom:1rem; }
+    @media (min-width:500px) { .stats-grid { grid-template-columns:repeat(4,1fr); } }
+    .stat-card { 
+      background:linear-gradient(145deg,rgba(26,31,44,0.8),rgba(14,18,28,0.8)); 
+      border-radius:1rem; 
+      padding:0.7rem; 
+      text-align:center;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stat-number { font-size:1.3rem; font-weight:800; background:linear-gradient(135deg,#f5af19,#f12711); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    
+    /* ============================================ */
+    /* BOTONES */
+    /* ============================================ */
+    .btn {
+      border:none;
+      border-radius:2rem;
+      padding:0.5rem 0.9rem;
+      font-weight:700;
+      font-size:0.7rem;
+      cursor:pointer;
+      background:linear-gradient(145deg,#2a2f3f,#1a1f2c);
+      color:#fff;
+      box-shadow:0 4px 0 #0b0e14;
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      min-height:42px;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .btn:active { transform: translateY(2px); box-shadow:0 2px 0 #0b0e14; }
+    .btn-primary { background:linear-gradient(145deg,#f5af19,#f12711); box-shadow:0 4px 0 #8a2e0e; }
+    .btn-primary:active { box-shadow:0 2px 0 #8a2e0e; }
+    .btn-success { background:linear-gradient(145deg,#11998e,#38ef7d); box-shadow:0 4px 0 #0b5e3f; }
+    .btn-success:active { box-shadow:0 2px 0 #0b5e3f; }
+    .btn-danger { background:linear-gradient(145deg,#eb3349,#f45c43); box-shadow:0 4px 0 #8c1c1c; }
+    .btn-danger:active { box-shadow:0 2px 0 #8c1c1c; }
+    .btn-outline { background:transparent; border:1px solid rgba(255,255,255,0.3); box-shadow:none; }
+    .btn-outline:active { background:rgba(255,255,255,0.1); }
+    .btn-acerca {
+      background:linear-gradient(145deg,#6366f1,#8b5cf6);
+      color:#fff;
+      box-shadow:0 4px 0 #4338ca;
+    }
+    .btn-acerca:active { box-shadow:0 2px 0 #4338ca; }
+    
+    /* ============================================ */
+    /* PERFILES Y TARJETAS */
+    /* ============================================ */
+    .profile-card { 
+      background:rgba(0,0,0,0.4); 
+      border-radius:1rem; 
+      padding:0.7rem; 
+      margin-bottom:0.7rem;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .profile-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:0.5rem; }
+    .badge { background:rgba(0,0,0,0.6); padding:0.2rem 0.6rem; border-radius:1.5rem; font-size:0.55rem; font-weight:600; }
+    .badge-success { background:#10b98130; color:#34d399; }
+    .badge-warning { background:#f59e0b30; color:#fbbf24; }
+    .badge-danger { background:#ef444430; color:#f87171; }
+    .badge-info { background:#6366f130; color:#a78bfa; }
+    .badge-vendido { background:#8b5cf630; color:#a78bfa; border:1px solid #8b5cf6; }
+    .profile-info { font-size:0.65rem; margin-bottom:0.6rem; opacity:0.9; line-height:1.4; word-break:break-word; }
+    .toggle-password { background:transparent; border:none; color:#f5af19; cursor:pointer; font-size:0.65rem; margin-left:0.3rem; }
+    .action-buttons { display:flex; flex-wrap:wrap; gap:0.3rem; margin-top:0.5rem; }
+    .action-btn { background:rgba(0,0,0,0.5); border:none; border-radius:1.5rem; padding:0.3rem 0.7rem; font-size:0.6rem; font-weight:600; color:#fff; cursor:pointer; transition:transform 0.1s; }
+    .action-btn:active { transform:scale(0.95); }
+    
+    /* ============================================ */
+    /* FILTROS Y BÚSQUEDA */
+    /* ============================================ */
+    .filters-bar { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.8rem; }
+    .filters-bar select,.filters-bar input { flex:1; min-width:90px; padding:0.5rem; border-radius:1rem; border:1px solid rgba(255,255,255,0.2); background:rgba(0,0,0,0.3); color:#fff; font-size:0.7rem; }
+    body.light .filters-bar select, body.light .filters-bar input { background:#fff; color:#1e293b; border-color:#cbd5e1; }
+    
+    /* ============================================ */
+    /* INPUTS Y FORMULARIOS */
+    /* ============================================ */
+    .input-group { margin-bottom:0.8rem; }
+    label { display:block; font-size:0.6rem; font-weight:600; margin-bottom:4px; color:#ffb347; }
+    input,select,textarea { 
+      width:100%; 
+      padding:0.65rem 0.8rem; 
+      border-radius:1.2rem; 
+      border:1px solid rgba(255,255,255,0.1); 
+      background:rgba(0,0,0,0.4); 
+      color:#fff; 
+      font-size:0.8rem;
+      backdrop-filter: blur(4px);
+    }
+    body.light input,body.light select,body.light textarea { background:#fff; color:#1e293b; border-color:#cbd5e1; }
+    .row { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.8rem; }
+    .row > * { flex:1; min-width:80px; }
+    hr { border-color:rgba(255,255,255,0.08); margin:0.8rem 0; }
+    .tip { background:rgba(245,175,25,0.12); padding:0.6rem; border-radius:0.9rem; font-size:0.6rem; border-left:3px solid #f5af19; margin-top:0.7rem; }
+    
+    /* ============================================ */
+    /* SWITCH (TOGGLE) */
+    /* ============================================ */
+    .switch-group { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:0.4rem; }
+    .switch { position:relative; display:inline-block; width:40px; height:20px; }
+    .switch input { opacity:0; width:0; height:0; }
+    .slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:0.3s; border-radius:20px; }
+    .slider:before { position:absolute; content:""; height:16px; width:16px; left:2px; bottom:2px; background-color:#fff; transition:0.3s; border-radius:50%; }
+    input:checked + .slider { background:linear-gradient(145deg,#f5af19,#f12711); }
+    input:checked + .slider:before { transform:translateX(20px); }
+    
+    /* ============================================ */
+    /* CARGA TABS */
+    /* ============================================ */
+    .carga-tabs {
+      display:flex; gap:0; margin-bottom:1.2rem;
+      background:rgba(0,0,0,0.25); border-radius:2rem; padding:0.3rem; overflow:hidden;
+    }
+    .carga-tab {
+      flex:1; padding:0.6rem 0.4rem; border:none; background:transparent;
+      color:rgba(255,255,255,0.6); font-size:0.7rem; font-weight:600; cursor:pointer;
+      border-radius:2rem; transition:all 0.25s ease; text-align:center; white-space:nowrap;
+    }
+    .carga-tab.active { background:linear-gradient(145deg,#f5af19,#f12711); color:#fff; box-shadow:0 4px 12px rgba(245,175,25,0.3); }
+    body.light .carga-tabs { background:rgba(0,0,0,0.05); }
+    body.light .carga-tab { color:rgba(0,0,0,0.5); }
+    body.light .carga-tab.active { color:#fff; }
+    
+    /* ============================================ */
+    /* BOTTOM NAVIGATION */
+    /* ============================================ */
+    .bottom-nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 600px;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0.5rem 0.5rem;
+      padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+      min-height: 65px;
+    }
+    .bottom-nav-bar .nav-btn {
+      flex:1; display:flex; flex-direction:column; align-items:center; gap:0.2rem;
+      background:transparent; border:none; border-radius:2rem; padding:0.4rem 0.2rem;
+      font-size:0.6rem; font-weight:600; color:rgba(255,255,255,0.7); cursor:pointer;
+    }
+    .bottom-nav-bar .nav-btn i { font-size:1.2rem; }
+    .bottom-nav-bar .nav-btn.active { background:linear-gradient(145deg,#f5af19,#f12711); color:#fff; }
+    
+    /* ============================================ */
+    /* SEMÁFORO (UNO SOLO, en Mi Cuenta) */
+    /* ============================================ */
+    .semaforo {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 700;
+    }
+    .semaforo-verde { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #34d399; }
+    .semaforo-amarillo { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #fbbf24; }
+    .semaforo-rojo { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #f87171; }
+    .semaforo i { font-size: 0.7rem; }
+    
+    /* ============================================ */
+    /* OTROS COMPONENTES */
+    /* ============================================ */
+    .toast {
+      position:fixed;
+      bottom: 85px;
+      left:50%;
+      transform:translateX(-50%);
+      background:rgba(0,0,0,0.9);
+      color:#ffb347;
+      padding:0.4rem 0.9rem;
+      border-radius:2rem;
+      font-size:0.65rem;
+      z-index:2000;
+      animation:fadeOut 2.5s forwards;
+      border:1px solid #f5af19;
+      white-space:nowrap;
+      max-width:90%;
+      text-align:center;
+    }
+    @media (max-width:600px) { .toast { white-space:normal; } }
+    @keyframes fadeOut { 0% { opacity:1; } 70% { opacity:1; } 100% { opacity:0; visibility:hidden; } }
+    .empty-state { text-align:center; padding:1.5rem; background:rgba(0,0,0,0.3); border-radius:1rem; }
+    .combo-card { background:rgba(0,0,0,0.3); border-radius:0.8rem; padding:0.5rem 0.8rem; margin-bottom:0.5rem; border-left:3px solid #f5af19; cursor:pointer; }
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1rem;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0.2s, opacity 0.2s;
+    }
+    .loader-overlay.active { visibility: visible; opacity: 1; }
+    .loader-spinner {
+      width: 48px; height: 48px;
+      border: 3px solid rgba(245,175,25,0.2);
+      border-top-color: #f5af19;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    .loader-text { color: #f5af19; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; }
+    .bloqueo-app-msg {
+      background:linear-gradient(135deg,rgba(239,68,68,0.9),rgba(220,38,38,0.9));
+      color:#fff; text-align:center; padding:1.2rem; margin:0 0 1rem 0;
+      border-radius:1rem; font-size:0.75rem; font-weight:600;
+      border: 1px solid rgba(239,68,68,0.3);
+    }
+    .bloqueo-app-msg i { font-size:1.8rem; display:block; margin-bottom:0.5rem; }
+    .venta-field-group { text-align:left; margin-bottom:0.5rem; }
+    .venta-field-group label { display:block; font-size:0.6rem; font-weight:600; margin-bottom:3px; color:#f5af19; }
+    .venta-field-group input, .venta-field-group select {
+      width:100%;
+      padding:0.55rem 0.7rem;
+      border-radius:1.2rem;
+      border:1px solid rgba(255,255,255,0.2);
+      background:rgba(255,255,255,0.08);
+      color:#fff;
+      font-size:0.7rem;
+    }
+    body.light .venta-field-group input, body.light .venta-field-group select {
+      background:#f1f5f9;
+      color:#1e293b;
+      border-color:#cbd5e1;
+    }
+    .manual-section {
+      background:rgba(0,0,0,0.25);
+      border-radius:1rem;
+      margin-bottom:0.8rem;
+      border:1px solid rgba(255,255,255,0.06);
+      overflow:hidden;
+    }
+    .manual-section-header {
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      padding:0.7rem 1rem;
+      background:rgba(0,0,0,0.3);
+      cursor:pointer;
+      font-weight:700;
+      font-size:0.75rem;
+    }
+    .manual-section-header i { color:#f5af19; width:20px; text-align:center; }
+    .manual-section-body {
+      padding:0.8rem 1rem;
+      font-size:0.7rem;
+      line-height:1.6;
+      display:none;
+    }
+    .manual-section-body.open { display:block; }
+    .manual-section-body strong { color:#f5af19; }
+    .manual-search { margin-bottom:1rem; }
+    .manual-search input {
+      width:100%;
+      padding:0.6rem 1rem;
+      border-radius:2rem;
+      border:1px solid rgba(255,255,255,0.15);
+      background:rgba(0,0,0,0.3);
+      color:#fff;
+      font-size:0.7rem;
+    }
+    .quick-nav { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1rem; }
+    .quick-link { background:rgba(0,0,0,0.4); padding:0.25rem 0.8rem; border-radius:1.5rem; font-size:0.6rem; cursor:pointer; }
+    .quick-link:hover { background:rgba(245,175,25,0.2); }
+    .manual-step { display:flex; gap:0.7rem; margin-bottom:0.8rem; background:rgba(0,0,0,0.25); border-radius:1rem; padding:0.6rem; }
+    .step-number { width:28px; height:28px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:14px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.7rem; flex-shrink:0; }
+    .step-text { flex:1; font-size:0.7rem; line-height:1.4; }
+    .step-text strong { color:#f5af19; }
+    .acerca-container { text-align:center; padding:1.5rem 1rem; }
+    .acerca-logo {
+      width:70px;
+      height:70px;
+      background:linear-gradient(145deg,#ff7e5f,#feb47b);
+      border-radius:20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 auto 1rem auto;
+      box-shadow: 0 4px 15px rgba(255,126,95,0.4);
+    }
+    .acerca-logo i { font-size:2rem; color:#fff; }
+    .acerca-container h3 {
+      font-size:1.2rem;
+      font-weight:800;
+      background:linear-gradient(135deg,#f5af19,#f12711);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      margin-bottom:0.3rem;
+    }
+    .acerca-version { font-size:0.7rem; color:#f5af19; margin-bottom:1rem; font-weight:600; }
+    .acerca-info { font-size:0.7rem; line-height:1.6; opacity:0.85; margin-bottom:1.5rem; }
+    .acerca-info strong { color:#f5af19; }
+    .acerca-legal { font-size:0.55rem; opacity:0.6; line-height:1.5; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem; margin-top:1rem; }
+    body.light .acerca-legal { border-top-color:rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <div id="loaderOverlay" class="loader-overlay">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Cargando...</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="login-wrapper" id="loginWrapper">
+    <div class="form">
+      <div style="text-align:center; margin-bottom:1rem;">
+        <div style="width:55px; height:55px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:18px; display:flex; align-items:center; justify-content:center; margin:0 auto 0.6rem auto;">
+          <i class="fas fa-gem" style="font-size:1.8rem; color:#fff;"></i>
+        </div>
+        <h2 style="font-size:1.4rem; font-weight:800; background:linear-gradient(135deg,#f5af19,#f12711); -webkit-background-clip:text; background-clip:text; color:transparent;">StreamFlow Pro</h2>
+        <p style="font-size:0.6rem; opacity:0.7; margin-top:0.2rem;">Gestión Profesional de Streaming</p>
+      </div>
+
+      <div id="loginPanel">
+        <div class="flex-column"><label>Email</label></div>
+        <div class="inputForm"><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 32 32" height="20"><g><path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path></g></svg><input type="email" id="loginEmail" class="input" placeholder="correo@ejemplo.com"></div>
+        
+        <div class="flex-column"><label>Contraseña</label></div>
+        <div class="inputForm" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="-64 0 512 512" height="20"><path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path><path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path></svg>
+          <input type="password" id="loginPassword" class="input" placeholder="contraseña" style="flex:1;">
+          <button type="button" id="toggleLoginPassword" style="background:transparent; border:none; color:#f5af19; cursor:pointer; padding:0 12px; font-size:0.8rem;"><i class="fas fa-eye"></i></button>
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:5px 0;">
+          <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-size:0.65rem;">
+            <input type="checkbox" id="rememberMeCheckbox" style="width:16px; height:16px; margin:0;"> Recordarme
+          </label>
+          <span class="span" id="forgotPasswordBtn">¿Olvidaste tu contraseña?</span>
+        </div>
+        
+        <button class="button-submit" id="btnLoginSubmit">Iniciar sesión</button>
+        <p class="p">¿No tienes cuenta? <span class="span" id="showRegister">Regístrate aquí</span></p>
+      </div>
+      
+      <div id="registerPanel" style="display: none;">
+        <div class="flex-column"><label>Email</label></div>
+        <div class="inputForm"><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 32 32" height="20"><path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path></svg><input type="email" id="regEmail" class="input" placeholder="correo@ejemplo.com"></div>
+        
+        <div class="flex-column"><label>Contraseña</label></div>
+        <div class="inputForm" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="-64 0 512 512" height="20"><path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path><path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path></svg>
+          <input type="password" id="regPassword" class="input" placeholder="mínimo 6 caracteres" style="flex:1;">
+          <button type="button" id="toggleRegPassword" style="background:transparent; border:none; color:#f5af19; cursor:pointer; padding:0 12px; font-size:0.8rem;"><i class="fas fa-eye"></i></button>
+        </div>
+        
+        <div class="flex-column"><label>Confirmar contraseña</label></div>
+        <div class="inputForm" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="-64 0 512 512" height="20"><path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path><path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path></svg>
+          <input type="password" id="regPasswordConfirm" class="input" placeholder="repite la contraseña" style="flex:1;">
+          <button type="button" id="toggleRegConfirmPassword" style="background:transparent; border:none; color:#f5af19; cursor:pointer; padding:0 12px; font-size:0.8rem;"><i class="fas fa-eye"></i></button>
+        </div>
+        
+        <button class="button-submit" id="btnRegisterSubmit">Registrarse</button>
+        <p class="p">¿Ya tienes cuenta? <span class="span" id="showLogin">Inicia sesión</span></p>
+      </div>
+      
+      <div id="authError" style="color:#ff6b6b; text-align:center; margin-top:10px; font-size:0.7rem;"></div>
+      
+      <div style="text-align:center; margin-top:1rem; padding-top:0.8rem; border-top:1px solid rgba(255,255,255,0.1); font-size:0.55rem; opacity:0.6;">
+        by La Clave Argentina & Tienda SSH
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES GLOBALES -->
+  <div id="resetPasswordModal" class="modal"><div class="modal-content"><h3><i class="fas fa-key"></i> Restablecer contraseña</h3><p>Ingresa tu correo electrónico y te enviaremos un enlace.</p><input type="email" id="resetEmail" placeholder="tu@email.com"><div class="modal-buttons"><button id="modalSendBtn">Enviar</button><button id="modalCancelBtn">Cancelar</button></div><div id="modalMessage" style="margin-top:1rem; font-size:0.7rem; color:#f5af19;"></div></div></div>
+  <div id="vencimientoModal" class="modal"><div class="modal-content modal-content-wide"><h3><i class="fas fa-bell"></i> Recordatorio de vencimientos</h3><div id="vencimientoModalMensaje" style="text-align:left; margin:1rem 0;"></div><div class="modal-buttons"><button id="vencimientoModalCerrar">Cerrar</button></div></div></div>
+  
+  <!-- VENTA MODAL - CORREGIDO: se autocompleta con los datos del perfil -->
+  <div id="ventaModal" class="modal">
+    <div class="modal-content modal-content-wide">
+      <h3><i class="fas fa-tag"></i> Vender perfil</h3>
+      <p style="font-size:0.6rem; opacity:0.7; margin-bottom:0.8rem;">Verificá y editá los datos antes de enviar.</p>
+      <div id="ventaPerfilInfo" style="margin-bottom:0.5rem; font-size:0.65rem;"></div>
+      <div class="venta-field-group"><label>Plataforma</label><select id="ventaPlataforma"><option value="Netflix">Netflix</option><option value="Netflix indiv">Netflix indiv</option><option value="Disney">Disney</option><option value="HBO Max">HBO Max</option><option value="Paramount">Paramount</option><option value="Crunchyroll">Crunchyroll</option><option value="Prime video">Prime video</option><option value="Spoty">Spoty</option><option value="YouTube">YouTube</option><option value="Otros">Otros</option></select></div>
+      <div class="row"><div class="venta-field-group"><label>Cuenta N°</label><input type="text" id="ventaCuentaId"></div><div class="venta-field-group"><label>Perfil</label><input type="text" id="ventaPerfilNombre"></div></div>
+      <div class="row"><div class="venta-field-group"><label>Correo</label><input type="email" id="ventaMail"></div><div class="venta-field-group"><label>Contraseña</label><input type="text" id="ventaPassword"></div></div>
+      <div class="row"><div class="venta-field-group"><label>PIN</label><input type="text" id="ventaPin"></div><div class="venta-field-group"><label>Vencimiento</label><input type="date" id="ventaFechaVencimiento"></div></div>
+      <div class="row"><div class="venta-field-group"><label>Proveedor (tuyo, el que le mostrás al cliente)</label><input type="text" id="ventaProveedor" placeholder="Tu nombre o empresa"></div><div class="venta-field-group"><label>Precio ($)</label><input type="number" id="ventaPrecio" step="1" min="1"></div></div>
+      <div class="venta-field-group"><label>WhatsApp cliente</label><input type="tel" id="ventaCliente"></div>
+      <div class="venta-field-group"><label>Observaciones</label><textarea id="ventaObservaciones" rows="2"></textarea></div>
+      <div class="tip" style="margin-bottom:0.8rem; text-align:left;">
+        <strong><i class="fas fa-shield-alt"></i> La plantilla incluirá:</strong><br>
+        ✅ Datos de acceso completos<br>
+        ✅ Reglas de uso y seguridad<br>
+        ✅ Garantía por el tiempo contratado<br>
+        ✅ Tus datos de contacto
+      </div>
+      <div class="modal-buttons"><button id="ventaConfirmar"><i class="fas fa-check-circle"></i> Vender y enviar plantilla</button><button id="ventaCancelar"><i class="fas fa-times"></i> Cancelar</button></div>
+      <div id="ventaMessage" style="margin-top:1rem; font-size:0.7rem;"></div>
+    </div>
+  </div>
+
+  <div id="reasignarModal" class="modal"><div class="modal-content"><h3><i class="fas fa-calendar-alt"></i> Reasignar fecha</h3><div id="reasignarPerfilInfo"></div><input type="date" id="reasignarFecha"><div class="modal-buttons"><button id="reasignarConfirmar">Reasignar</button><button id="reasignarCancelar">Cancelar</button></div><div id="reasignarMessage" style="margin-top:1rem; font-size:0.7rem;"></div></div></div>
+  
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <div style="text-align:center; margin-bottom:0.8rem;"><div style="width:50px; height:50px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 0.5rem auto;"><i class="fas fa-gem" style="font-size:1.5rem; color:#fff;"></i></div></div>
+      <h3 id="confirmModalTitle" style="color:#f5af19; font-size:1rem; margin-bottom:0.5rem;"><i class="fab fa-whatsapp"></i> StreamFlow Pro</h3>
+      <p id="confirmModalMessage" style="color:rgba(255,255,255,0.9); font-size:0.8rem; margin-bottom:1rem;">¿Estás seguro?</p>
+      <div class="modal-buttons"><button id="confirmModalOk" style="background:linear-gradient(145deg,#f5af19,#f12711); color:#fff; border:none; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:700; cursor:pointer;">Aceptar</button><button id="confirmModalCancel" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:600; cursor:pointer;">Cancelar</button></div>
+    </div>
+  </div>
+
+  <div id="promptModal" class="modal">
+    <div class="modal-content">
+      <div style="text-align:center; margin-bottom:0.8rem;"><div style="width:50px; height:50px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 0.5rem auto;"><i class="fas fa-gem" style="font-size:1.5rem; color:#fff;"></i></div></div>
+      <h3 id="promptModalTitle" style="color:#f5af19; font-size:1rem; margin-bottom:0.5rem;"><i class="fas fa-edit"></i> StreamFlow Pro</h3>
+      <p id="promptModalMessage" style="color:rgba(255,255,255,0.9); font-size:0.8rem; margin-bottom:0.8rem;"></p>
+      <input type="text" id="promptModalInput" placeholder="" style="width:100%; margin:0.5rem 0; padding:0.8rem; border-radius:2rem; border:1px solid rgba(245,175,25,0.4); background:rgba(255,255,255,0.08); color:#fff; font-size:0.8rem;">
+      <div class="modal-buttons"><button id="promptModalOk" style="background:linear-gradient(145deg,#f5af19,#f12711); color:#fff; border:none; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:700; cursor:pointer;">Aceptar</button><button id="promptModalCancel" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:600; cursor:pointer;">Cancelar</button></div>
+    </div>
+  </div>
+
+  <div id="acercaModal" class="modal"><div class="modal-content"><div class="acerca-container"><div class="acerca-logo"><i class="fas fa-gem"></i></div><h3>StreamFlow Pro</h3><div class="acerca-version">Versión 2.0 · Build 2026</div><div class="acerca-info"><strong>Desarrollado y creado por</strong><br><span style="font-size:1rem; font-weight:700; color:#f5af19;">La Clave Argentina & Tienda SSH</span><br><br>Soluciones digitales profesionales para gestión de streaming.<br>Plataforma integral de administración, venta y control de cuentas.<br><br><strong>Tecnologías:</strong> Firebase, HTML5, CSS3, JavaScript ES6+, PWA<br><strong>Arquitectura:</strong> SPA con sincronización en tiempo real</div><div class="acerca-legal">© 2026 La Clave Argentina & Tienda SSH. Todos los derechos reservados.<br><br>Este software está protegido por las leyes de propiedad intelectual de la República Argentina (Ley 11.723) y tratados internacionales de copyright. Queda expresamente prohibida la reproducción, distribución, modificación o ingeniería inversa del código sin autorización expresa por escrito.<br><br>Desarrollado bajo normas de calidad ISO 9001:2015 e ISO/IEC 25010 para calidad de software. Cumple con los estándares de seguridad de datos GDPR y Ley de Protección de Datos Personales 25.326.<br><br><i class="fas fa-shield-alt"></i> Todos los datos se transmiten cifrados mediante protocolos seguros. La información del usuario es confidencial y no se comparte con terceros.</div><div class="modal-buttons" style="margin-top:1rem;"><button id="acercaCerrar"><i class="fas fa-check"></i> Cerrar</button></div></div></div></div>
+
+  <!-- APP PRINCIPAL -->
+  <div class="app-container" id="appContainer">
+    <div class="app-header">
+      <div class="header-content">
+        <div class="logo"><div class="logo-icon"><i class="fas fa-gem"></i></div><div class="logo-text"><h1>StreamFlow Pro</h1><p>GESTIÓN PROFESIONAL</p></div></div>
+        <div class="header-actions">
+          <div id="planBadge" class="plan-badge demo"><i class="fas fa-gift"></i> DEMO 3d</div>
+          <button class="sync-status sincronizado" id="syncStatus" title="Sincronización"><i class="fas fa-cloud"></i></button>
+          <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+      </div>
+      <div class="auto-save">
+        <div class="auto-save-indicator" id="saveIndicator">
+          <i class="fas fa-database"></i> <span id="saveText">Sincronizado en la nube</span>
+          <span id="syncIndicator" class="sync-indicator synced" style="display:none;"><i class="fas fa-check-circle"></i> Sincronizado</span>
+        </div>
+      </div>
+    </div>
+    <div class="main-content" id="mainContent">
+      <!-- DASHBOARD -->
+      <div id="tab-dashboard" class="tab-panel active">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-number neon-text" id="totalPerfiles">0</div><div class="stat-label">Total</div></div>
+          <div class="stat-card"><div class="stat-number neon-text" id="libresHoy">0</div><div class="stat-label">Disponibles</div></div>
+          <div class="stat-card"><div class="stat-number neon-text" id="vencenHoy">0</div><div class="stat-label">Próximos</div></div>
+          <div class="stat-card"><div class="stat-number neon-text" id="ventasHoy">0</div><div class="stat-label">Ventas hoy</div></div>
+        </div>
+        <div class="card"><div class="card-title neon-text"><i class="fas fa-fire"></i> Tendencias</div><div id="menosVendido"></div></div>
+        <div class="card"><div class="card-title neon-text"><i class="fas fa-chart-line"></i> Combos del día</div><div id="combosContainer"></div></div>
+        <div class="card"><div class="card-title neon-text"><i class="fas fa-chart-pie"></i> Resumen rápido</div><div id="resumenRapido" style="display:flex; flex-wrap:wrap; gap:0.4rem;"></div></div>
+      </div>
+
+      <!-- PERFILES - CON BÚSQUEDA MEJORADA -->
+      <div id="tab-perfiles" class="tab-panel">
+        <div class="card">
+          <div class="row" style="margin-bottom:0.8rem"><button id="btnExportar" class="btn btn-success"><i class="fas fa-download"></i> Exportar</button><button id="btnImportar" class="btn btn-outline"><i class="fas fa-upload"></i> Importar</button><input type="file" id="archivoImportar" accept=".json" style="display:none"><button id="btnBorrarTodo" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Borrar</button></div>
+          <div class="filters-bar">
+            <select id="filtroPlataforma">
+              <option value="">Todas</option>
+              <option value="Netflix">Netflix</option>
+              <option value="Netflix indiv">Netflix indiv</option>
+              <option value="Disney">Disney+</option>
+              <option value="HBO Max">HBO Max</option>
+              <option value="Prime video">Prime Video</option>
+              <option value="Spoty">Spotify</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Crunchyroll">Crunchyroll</option>
+              <option value="Paramount">Paramount+</option>
+              <option value="Otros">📝 OTROS</option>
+            </select>
+            <input type="text" id="buscarTexto" placeholder="Buscar por nombre, correo, cuenta, proveedor, teléfono...">
+            <select id="filtroEstado"><option value="">Todos</option><option value="activo">Activos</option><option value="proximo">Próximos</option><option value="vencido">Vencidos</option><option value="libre">Libres</option><option value="vendido">Vendidos</option></select>
+            <input type="text" id="filtroProveedor" placeholder="Filtrar por proveedor">
+            <input type="date" id="fechaDesde" placeholder="Desde">
+            <input type="date" id="fechaHasta" placeholder="Hasta">
+          </div>
+          <div id="otraPlatFiltroDiv" style="display:none; margin-bottom:0.5rem;"><input type="text" id="otraPlatFiltro" placeholder="Nombre de plataforma personalizada"></div>
+          <div class="row" style="margin-bottom:0.8rem"><button id="btnOrdenar" class="btn btn-outline"><i class="fas fa-sort-amount-down"></i> Ordenar</button><button id="btnLimpiarFiltros" class="btn btn-outline"><i class="fas fa-eraser"></i> Limpiar</button></div>
+          <div class="card-title neon-text"><i class="fas fa-check-circle"></i> Perfiles activos</div><div id="listaActivos"></div>
+          <div class="card-title neon-text"><i class="fas fa-circle"></i> Perfiles libres</div><div id="listaLibres"></div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div id="tab-stats" class="tab-panel">
+        <div class="card"><div class="card-title neon-text"><i class="fas fa-chart-bar"></i> Por plataforma</div><div id="resumenStreaming"></div><hr><div class="card-title neon-text"><i class="fas fa-users"></i> Por proveedor</div><div id="resumenProveedores"></div><hr><div class="card-title neon-text"><i class="fas fa-coins"></i> Ganancias</div><div class="row"><div class="stat-card"><div class="stat-number neon-text" id="totalGanado">$0</div><div class="stat-label">Total</div></div><div class="stat-card"><div class="stat-number neon-text" id="cantidadVendidos">0</div><div class="stat-label">Vendidos</div></div></div><hr><button id="btnResetVentas" class="btn btn-danger" style="width:100%"><i class="fas fa-sync-alt"></i> Reiniciar ventas</button></div>
+      </div>
+
+      <!-- HISTORIAL -->
+      <div id="tab-historial" class="tab-panel">
+        <div class="card"><div class="card-title neon-text"><i class="fas fa-list"></i> Historial de ventas</div><div class="filters-bar"><select id="historialFiltroPlataforma"><option value="">Todas</option><option value="Netflix">Netflix</option><option value="Disney">Disney+</option><option value="HBO Max">HBO Max</option><option value="Prime video">Prime Video</option><option value="Spoty">Spotify</option></select><input type="text" id="historialBuscar" placeholder="Buscar por cliente o perfil"><input type="date" id="historialFechaInicio" placeholder="Desde"><input type="date" id="historialFechaFin" placeholder="Hasta"></div><div id="historialLista"></div></div>
+      </div>
+
+      <!-- CARGA -->
+      <div id="tab-carga" class="tab-panel">
+        <div class="card">
+          <div class="card-title neon-text"><i class="fas fa-plus-circle"></i> Cargar datos</div>
+          <div class="carga-tabs">
+            <button class="carga-tab active" data-mod="completa">📦 Cuenta</button>
+            <button class="carga-tab" data-mod="individual">🎭 Individual</button>
+            <button class="carga-tab" data-mod="masiva">📋 Masiva</button>
+          </div>
+          <div id="modo-completa">
+            <div class="row"><div class="input-group"><label>Plataforma</label><select id="platCompleta"><option value="">Seleccionar...</option><option value="Netflix">Netflix (5)</option><option value="Netflix indiv">Netflix indiv (1)</option><option value="Disney">Disney+ (7)</option><option value="HBO Max">HBO Max (5)</option><option value="Paramount">Paramount+ (5)</option><option value="Crunchyroll">Crunchyroll (1)</option><option value="Prime video">Prime Video (6)</option><option value="Spoty">Spotify (1)</option><option value="YouTube">YouTube (1)</option><option value="Otros">📝 OTROS (escribir nombre)</option></select></div><div class="input-group"><label>N° Cuenta</label><input type="text" id="cuentaIdCompleta" placeholder="Ej: Cuenta 1"></div></div>
+            <div id="otraPlatCompletaDiv" style="display:none"><div class="input-group"><label>Nombre de la plataforma</label><input type="text" id="otraPlatCompleta" placeholder="Ej: Apple TV+, Star+"></div></div>
+            <div class="input-group"><label>Correo / Usuario</label><input type="email" id="mailCompleta" placeholder="usuario@mail.com"></div>
+            <div class="input-group"><label>Contraseña</label><input type="text" id="passCompleta" placeholder="Contraseña"></div>
+            <div class="row"><div class="input-group"><label>Vencimiento</label><input type="date" id="fechaCompleta"></div><div class="input-group"><label>Precio sugerido</label><input type="number" id="precioCompleta" placeholder="2500"></div></div>
+            <div class="input-group"><label>Proveedor (tu nombre, para mostrar al cliente)</label><input type="text" id="proveedorCompleta" placeholder="Tu nombre o empresa"></div>
+            <div class="input-group"><label>WhatsApp del proveedor (tu número)</label><input type="tel" id="whatsappCompleta" placeholder="5491112345678"></div>
+            <div class="input-group"><label>Observaciones internas</label><textarea id="obsCompleta" rows="2"></textarea></div>
+            <button id="btnGuardarCompleta" class="btn btn-primary" style="width:100%"><i class="fas fa-save"></i> Guardar cuenta</button>
+          </div>
+          <div id="modo-individual" style="display:none">
+            <div class="row"><div class="input-group"><label>Plataforma</label><select id="platIndividual"><option value="">Seleccionar...</option><option value="Netflix">Netflix</option><option value="Netflix indiv">Netflix indiv</option><option value="Disney">Disney+</option><option value="HBO Max">HBO Max</option><option value="Paramount">Paramount+</option><option value="Crunchyroll">Crunchyroll</option><option value="Prime video">Prime Video</option><option value="Spoty">Spotify</option><option value="YouTube">YouTube</option><option value="Otros">📝 OTROS (escribir nombre)</option></select></div><div class="input-group"><label>N° Cuenta</label><input type="text" id="cuentaIdIndividual" placeholder="Ej: Cuenta 1"></div></div>
+            <div id="otraPlatIndividualDiv" style="display:none"><div class="input-group"><label>Nombre de la plataforma</label><input type="text" id="otraPlatIndividual" placeholder="Ej: Apple TV+"></div></div>
+            <div class="row"><div class="input-group"><label>Perfil</label><input type="text" id="nombrePerfilIndividual" placeholder="Nombre del perfil"></div><div class="input-group"><label>PIN</label><input type="text" id="pinIndividual" placeholder="Opcional"></div></div>
+            <div class="input-group"><label>Correo / Usuario</label><input type="email" id="mailIndividual" placeholder="usuario@mail.com"></div>
+            <div class="input-group"><label>Contraseña</label><input type="text" id="passIndividual" placeholder="Contraseña"></div>
+            <div class="row"><div class="input-group"><label>Vencimiento</label><input type="date" id="fechaIndividual"></div><div class="input-group"><label>Precio sugerido</label><input type="number" id="precioIndividual" placeholder="2500"></div></div>
+            <div class="input-group"><label>Proveedor (tu nombre, para mostrar al cliente)</label><input type="text" id="proveedorIndividual" placeholder="Tu nombre o empresa"></div>
+            <div class="input-group"><label>WhatsApp del proveedor (tu número)</label><input type="tel" id="whatsappIndividual" placeholder="5491112345678"></div>
+            <div class="input-group"><label>Observaciones internas</label><textarea id="obsIndividual" rows="2"></textarea></div>
+            <div class="row"><button id="btnGuardarIndividual" class="btn btn-primary" style="flex:2"><i class="fas fa-save"></i> Guardar perfil</button><button id="btnCancelarEdicion" class="btn btn-outline" style="flex:1; display:none;"><i class="fas fa-times"></i> Cancelar</button></div>
+          </div>
+          <div id="modo-masiva" style="display:none">
+            <div class="tip">Separa cada cuenta con línea en blanco o "---". Ejemplo:<br>Mail: correo@mail.com | Contraseña: pass | Perfil: Juan | Proveedor: María</div>
+            <div class="input-group"><label>Plantillas</label><textarea id="batchTexto" rows="8" placeholder="Mail: usuario@mail.com\nContraseña: pass123\nPerfil: Juan\nProveedor: María"></textarea></div>
+            <div class="row"><button id="btnPrevisualizar" class="btn btn-outline"><i class="fas fa-eye"></i> Previsualizar</button><button id="btnCargarMasivo" class="btn btn-primary"><i class="fas fa-upload"></i> Cargar todo</button></div>
+            <div id="batchResultados" style="display:none; background:rgba(0,0,0,0.5); border-radius:20px; padding:0.6rem; margin-top:0.6rem; font-size:0.7rem;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MI CUENTA - CON SEMÁFORO Y SIN DUPLICADOS -->
+      <div id="tab-micuenta" class="tab-panel">
+        <div class="card">
+          <div class="card-title neon-text"><i class="fas fa-id-card"></i> Mi información</div>
+          
+          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;">
+            <div style="display:flex; align-items:center; gap:0.8rem;">
+              <div style="width:50px; height:50px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-envelope" style="font-size:1.3rem;"></i></div>
+              <div><div style="font-size:0.65rem; opacity:0.7;">Email registrado</div><div style="font-size:0.9rem; font-weight:700;" id="perfilEmail">Cargando...</div></div>
+            </div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;">
+            <div style="display:flex; align-items:center; gap:0.8rem;">
+              <div style="width:50px; height:50px; background:linear-gradient(145deg,#6366f1,#8b5cf6); border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-crown" style="font-size:1.3rem;"></i></div>
+              <div style="flex:1;"><div style="font-size:0.65rem; opacity:0.7;">Plan actual</div><div style="font-size:1rem; font-weight:800;" id="perfilPlan">DEMO</div><div style="font-size:0.65rem; margin-top:0.3rem;" id="perfilDiasRestantes"></div></div>
+              <div id="perfilPlanBadge" style="padding:0.3rem 0.8rem; border-radius:1.5rem; font-size:0.7rem; font-weight:700;"></div>
+            </div>
+            <div style="margin-top:0.8rem;" id="semaforoPerfil"></div>
+          <div class="card" style="margin-top:1rem; border:1px solid #6366f1; background:rgba(99,102,241,0.05);">
+            <div style="display:flex; align-items:center; gap:1rem;">
+              <div style="width:40px; height:40px; background:#fff; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#6366f1; font-weight:900; font-style:italic;">prex</div>
+              <div style="flex:1;">
+                <div style="font-size:0.7rem; font-weight:700;">RENOVAR SUSCRIPCIÓN</div>
+                <div style="font-size:0.6rem; opacity:0.7;">Transferí a nuestro alias oficial</div>
+                <div style="font-size:0.9rem; font-weight:800; color:#fff; margin-top:3px;">ultralinkpagos.ar</div>
+              </div>
+              <button onclick="navigator.clipboard.writeText('ultralinkpagos.ar'); toast('Alias copiado');" class="btn btn-primary" style="padding:0.5rem 1rem;"><i class="fas fa-copy"></i></button>
+            </div>
+            <button onclick="window.open('https://wa.me/5492236785329?text=Hola%20Flor,%20ya%20te%20transferí%20por%20Prex', '_blank')" style="width:100%; margin-top:1rem; background:#6366f1; border:none; color:white; padding:0.8rem; border-radius:0.8rem; font-weight:700; cursor:pointer;"><i class="fab fa-whatsapp"></i> INFORMAR PAGO</button>
+          </div>
+
+          </div>
+
+          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;">
+            <div style="font-size:0.65rem; margin-bottom:0.5rem;"><span id="progresoTexto">Días restantes</span></div>
+            <div style="background:rgba(255,255,255,0.1); border-radius:1rem; height:12px; overflow:hidden;"><div id="progresoBarra" style="width:0%; height:100%; background:linear-gradient(90deg,#f5af19,#f12711); border-radius:1rem; transition:width 0.5s;"></div></div>
+            <div style="display:flex; justify-content:space-between; margin-top:0.4rem; font-size:0.55rem;"><span>Inicio</span><span id="fechaExpiracionTexto"></span><span>Fin</span></div>
+          </div>
+
+          <div class="stats-grid" style="margin-bottom:1rem;">
+            <div class="stat-card"><div class="stat-number" id="perfilTotalPerfiles">0</div><div class="stat-label">Mis perfiles</div></div>
+            <div class="stat-card"><div class="stat-number" id="perfilTotalVentas">0</div><div class="stat-label">Mis ventas</div></div>
+            <div class="stat-card"><div class="stat-number" id="perfilGanado">$0</div><div class="stat-label">Ganado</div></div>
+            <div class="stat-card"><div class="stat-number" id="perfilActivos">0</div><div class="stat-label">Activos</div></div>
+          </div>
+
+          <hr>
+          <div class="tip" style="margin-top:1rem;"><i class="fas fa-info-circle"></i> <strong>¿Cómo funciona?</strong><br>• Al registrarte, tenés <strong>3 días de prueba GRATIS</strong> con todo desbloqueado.<br>• Después, necesitás un <strong>token de acceso</strong> que podés comprar en Ajustes.<br>• Cada token te da <strong>30 días adicionales</strong> de uso.<br>• <strong>¡Tus datos NO se pierden!</strong> Al expirar el token o la prueba, solo se bloquea la edición. Al ingresar un nuevo token, recuperás el acceso completo.</div>
