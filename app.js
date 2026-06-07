@@ -730,6 +730,7 @@
     }
     
     async function guardarCuentaCompleta() {
+      if(!checkAppLock()) return;
       let plataforma = document.getElementById("platCompleta").value;
       if(plataforma === "Otros") {
         plataforma = document.getElementById("otraPlatCompleta").value.trim();
@@ -1029,6 +1030,7 @@
     }
     
     async function confirmarReasignar() {
+      if(!checkAppLock()) return;
       const nuevaFecha = document.getElementById("reasignarFecha").value;
       if(!nuevaFecha) {
         toast("Seleccioná una fecha");
@@ -1046,6 +1048,7 @@
     }
     
     async function cambiarPass(id) {
+      if(!checkAppLock()) return;
       const p = perfiles.find(p => p.id === id);
       if(p) {
         const nueva = prompt("Nueva contraseña (mínimo 6 caracteres):");
