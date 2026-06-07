@@ -1,0 +1,68 @@
+name: Premium Features Update
+on:
+  workflow_dispatch:
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Apply Patch
+        run: |
+          cat << 'EOF' > patch_script.py
+          import os
+          with open('index.html', 'r', encoding='utf-8') as f:
+              lines = f.readlines()
+          
+          # CSS TV
+          css_tv = "\n    /* OPTIMIZACIÓN PARA ANDROID TV / FIRE STICK */\n    @media (min-width: 1200px) {\n      html { font-size: 22px; }\n      .app-container { max-width: 1200px; }\n      .bottom-nav-bar { height: 100px; padding-bottom: 20px; }\n      .nav-btn i { font-size: 2rem; }\n      .card { margin-bottom: 2rem; padding: 2rem; }\n      .nav-btn span { font-size: 0.9rem; }\n    }\n"
+          for i, line in enumerate(lines):
+              if "</style>" in line:
+                  lines.insert(i, css_tv)
+                  break
+
+          # Banner Dashboard
+          banner_html = '        <div id="appAnnouncement" class="card" style="display:none; border:1px solid #f5af19; background:rgba(245,175,25,0.05); margin-bottom:1rem; position:relative; overflow:hidden;">\n          <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:#f5af19;"></div>\n          <div style="display:flex; align-items:center; gap:10px;">\n            <i class="fas fa-bullhorn" style="color:#f5af19; font-size:1.2rem;"></i>\n            <div id="announcementContent" style="font-size:0.85rem; font-weight:600; line-height:1.4;"></div>\n          </div>\n        </div>\n'
+          for i, line in enumerate(lines):
+              if "id=\"tab-dashboard\"" in line:
+                  lines.insert(i+1, banner_html)
+                  break
+
+          # Prex Button
+          prex_html = '          <div class="card" style="margin-top:1rem; border:1px solid #6366f1; background:rgba(99,102,241,0.05);">\n            <div style="display:flex; align-items:center; gap:1rem;">\n              <div style="width:40px; height:40px; background:#fff; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#6366f1; font-weight:900; font-style:italic;">prex</div>\n              <div style="flex:1;">\n                <div style="font-size:0.7rem; font-weight:700;">RENOVAR SUSCRIPCIÓN</div>\n                <div style="font-size:0.6rem; opacity:0.7;">Transferí a nuestro alias oficial</div>\n                <div style="font-size:0.9rem; font-weight:800; color:#fff; margin-top:3px;">ultralinkpagos.ar</div>\n              </div>\n              <button onclick="copyPrex()" class="btn btn-primary" style="padding:0.5rem 1rem;"><i class="fas fa-copy"></i></button>\n            </div>\n            <button onclick="window.open(\'https://wa.me/5492236785329?text=Hola%20Flor,%20ya%20te%20transferí%20por%20Prex%20para%20renovar%20mi%20cuenta\', \'_blank\')" style="width:100%; margin-top:1rem; background:#6366f1; border:none; color:white; padding:0.8rem; border-radius:0.8rem; font-weight:700; cursor:pointer;"><i class="fab fa-whatsapp"></i> INFORMAR PAGO</button>\n          </div>\n'
+          for i, line in enumerate(lines):
+              if 'id="tab-micuenta"' in line:
+                  for j in range(i, len(lines)):
+                      if 'id="semaforoPerfil"' in lines[j]:
+                          lines.insert(j+2, prex_html)
+                          break
+                  break
+
+          # JS Logic
+          js_logic = '\n    function copyPrex() {\n      navigator.clipboard.writeText(\'ultralinkpagos.ar\');\n      toast(\'Alias copiado: ultralinkpagos.ar\');\n    }\n\n    async function loadAppAnnouncement() {\n      try {\n        const doc = await db.collection(\'config\').doc(\'announcement\').get();\n        if (doc.exists && doc.data().text) {\n          document.getElementById(\'appAnnouncement\').style.display = \'block\';\n          document.getElementById(\'announcementContent\').innerText = doc.data().text;\n        }\n      } catch(e) { console.log("Error anuncios:", e); }\n    }\n'
+          for i, line in enumerate(lines):
+              if "// ============ FUNCIONES UTILITARIAS ============" in line:
+                  lines.insert(i, js_logic)
+                  break
+
+          # Login & Last Login
+          for i, line in enumerate(lines):
+              if "currentUser = user;" in line:
+                  lines.insert(i+1, "        db.collection('usuarios').doc(user.uid).update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});\n")
+                  lines.insert(i+2, "        loadAppAnnouncement();\n")
+                  break
+
+          with open('index.html', 'w', encoding='utf-8') as f:
+              f.writelines(lines)
+          EOF
+          python3 patch_script.py
+      - name: Commit changes
+        run: |
+          git config --local user.email "florenciaamor36@gmail.com"
+          git config --local user.name "Zapia AI"
+          git add index.html
+          git commit -m "Premium Features: Banner, Prex, TV Opt, Last Connection"
+          git push
