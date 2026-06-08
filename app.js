@@ -1,3 +1,4 @@
+
     // ============================================
     // STREAMFLOW PRO - VERSIÓN COMPLETA CORREGIDA
     // Firebase Compat (sin import maps)
@@ -19,11 +20,9 @@
     const db = firebase.firestore();
     
     // ============ CONFIGURACIÓN GLOBAL ============
-    let currentTab = "dashboard";
     const WHATSAPP_TOKEN_NUMBER = "5492236785329";
     const DIAS_PRUEBA_GRATIS = 3;
     const DIAS_TOKEN = 30;
-    const WHATSAPP_TOKEN_NUMBER = "5492236785329";
     
     // ============ TOKENS VÁLIDOS (150+ tokens originales) ============
     const TOKENS_VALIDOS = new Set([
@@ -70,7 +69,7 @@
     let pendingVentaId = null;
     let unsubscribeFirestore = null;
     let filtroTimeout = null;
-    let appDesbloqueada = false;
+    let appDesbloqueada = true;
     let diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
     let planEstado = "demo";
     let versionLocal = 0;
@@ -137,7 +136,7 @@
       venc.setHours(0, 0, 0, 0);
       const diff = Math.round((venc - hoy) / 86400000);
       if(diff < 0) return "vencido";
-      if(diff <= DIAS_PROXIMO && diff >= 0) return "proximo";
+      if(diff <= DIAS_PROXIMO) return "proximo";
       return "activo";
     }
     
@@ -208,7 +207,6 @@
     
     // ============ SINCRONIZACIÓN CON FIRESTORE ============
     async function guardarPerfiles() {
-      if(planEstado === "bloqueado" && currentTab !== "micuenta") { toast("❌ App bloqueada. Renová tu suscripción para guardar cambios."); return; }
       if(!currentUser) return;
       showLoader("Guardando en la nube...");
       try {
@@ -350,10 +348,9 @@
         actualizarPanelMiCuenta();
       } catch(e) {
         console.error("Error al verificar suscripción:", e);
-        appDesbloqueada = false;
-        planEstado = "bloqueado";
+        appDesbloqueada = true;
+        planEstado = "demo";
         actualizarBadgePlan();
-        aplicarBloqueoApp();
       }
     }
     
@@ -367,45 +364,28 @@
         if(snap.exists && snap.data().usadoPor !== uid) {
           return { valido: false, mensaje: "❌ Token ya usado por otra cuenta" };
         }
-        
-        // Lógica de tokens acumulables
-        const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
-        const suscSnap = await suscRef.get();
         const ahora = new Date();
-        let baseExpiracion = ahora;
-        
-        if (suscSnap.exists && suscSnap.data().fechaExpiracion) {
-          const expActual = new Date(suscSnap.data().fechaExpiracion);
-          if (expActual > ahora) {
-            baseExpiracion = expActual;
-          }
-        }
-        
-        const expiracion = new Date(baseExpiracion);
+        const expiracion = new Date(ahora);
         expiracion.setDate(expiracion.getDate() + DIAS_TOKEN);
-        
         await tokenRef.set({
           token: token,
           usadoPor: uid,
           fechaActivacion: ahora.toISOString(),
           fechaExpiracion: expiracion.toISOString()
         });
-        
+        const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
         await suscRef.set({
           estado: "token",
           fechaExpiracion: expiracion.toISOString()
         }, { merge: true });
-        
         appDesbloqueada = true;
-        const diffTime = Math.abs(expiracion - ahora);
-        diasPruebaRestantes = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
+        diasPruebaRestantes = DIAS_TOKEN;
         planEstado = "token";
         actualizarBadgePlan();
         actualizarSemaforo();
         aplicarBloqueoApp();
         actualizarPanelMiCuenta();
-        return { valido: true, mensaje: `✅ Token activado. Nueva expiración: ${expiracion.toLocaleDateString()}` };
+        return { valido: true, mensaje: "✅ Token activado por 30 días" };
       } catch(e) {
         console.error(e);
         return { valido: false, mensaje: "⚠️ Error al validar token" };
@@ -418,7 +398,7 @@
       if(planEstado === "token") {
         badge.className = "plan-badge pro";
         badge.innerHTML = '<i class="fas fa-crown"></i> PRO ' + diasPruebaRestantes + 'd';
-      } else if(planEstado === "bloqueado" && currentTab !== "micuenta") {
+      } else if(planEstado === "bloqueado") {
         badge.className = "plan-badge blocked";
         badge.innerHTML = '<i class="fas fa-lock"></i> BLOQUEADO';
       } else {
@@ -431,7 +411,7 @@
       const semaforoPerfil = document.getElementById("semaforoPerfil");
       let color = "", texto = "", icono = "";
       
-      if(planEstado === "bloqueado" && currentTab !== "micuenta") {
+      if(planEstado === "bloqueado") {
         color = "semaforo-rojo";
         texto = "BLOQUEADO - Ingresá un token";
         icono = '<i class="fas fa-ban"></i>';
@@ -460,65 +440,19 @@
       }
     }
     
-    
     function aplicarBloqueoApp() {
       const bloqueoMsg = document.getElementById("bloqueoAppMsg");
-      if(planEstado === "bloqueado" && currentTab !== "micuenta") {
+      if(planEstado === "bloqueado") {
         if(!bloqueoMsg) {
           const msg = document.createElement("div");
           msg.id = "bloqueoAppMsg";
-          msg.className = "bloqueo-app-msg-pro";
-          msg.innerHTML = `
-            <div class="lock-card">
-              <div class="lock-icon"><i class="fas fa-crown" style="color:#f5af19; font-size:3.5rem; margin-bottom:1rem; filter:drop-shadow(0 0 15px rgba(245,175,25,0.4));"></i></div>
-              <h3 style="font-size:1.4rem; font-weight:800; margin-bottom:0.5rem;">Potenciá tu Negocio Digital</h3>
-              <p style="font-size:0.9rem; opacity:0.9; margin-bottom:1.5rem;">Tu período de prueba ha finalizado. Suscribite hoy mismo para recuperar el control total de tus cuentas y llevar tu gestión al siguiente nivel con <strong>StreamFlow Pro</strong>.</p>
-              
-              <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; text-align: left;">
-                <h4 style="font-size: 0.85rem; color: #f5af19; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 1px;"><i class="fas fa-star"></i> ¿Qué incluye la app?</h4>
-                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                  <li><i class="fas fa-check" style="color: #10b981;"></i> Gestión Ilimitada</li>
-                  <li><i class="fas fa-check" style="color: #10b981;"></i> Sincronización Real</li>
-                  <li><i class="fas fa-check" style="color: #10b981;"></i> Backup en la Nube</li>
-                  <li><i class="fas fa-check" style="color: #10b981;"></i> Plantillas de Venta</li>
-                  <li><i class="fas fa-check" style="color: #10b981;"></i> Recordatorios WA</li>
-                  <li><i class="fas fa-check" style="color: #10b981;"></i> Carga Masiva</li>
-                  <li><i class="fas fa-check" style="color: #10b981;"></i> Reportes de Ganancia</li>
-                  <li><i class="fas fa-check" style="color: #10b981;"></i> Soporte Técnico</li>
-                </ul>
-              </div>
-
-              <div class="plans-grid">
-                <div class="plan-card">
-                  <div class="plan-name">Plan Mensual</div>
-                  <div class="plan-price">$5.000 <span>/mes</span></div>
-                  <ul class="plan-features">
-                    <li><i class="fas fa-check"></i> Acceso Completo</li>
-                    <li><i class="fas fa-check"></i> Todas las Funciones</li>
-                    <li><i class="fas fa-check"></i> Soporte Standard</li>
-                  </ul>
-                </div>
-                <div class="plan-card featured">
-                  <div class="plan-badge">¡Mejor Valor!</div>
-                  <div class="plan-name">Plan Anual</div>
-                  <div class="plan-price">$42.000 <span>/año</span></div>
-                  <ul class="plan-features">
-                    <li><i class="fas fa-check"></i> Ahorrás $18.000</li>
-                    <li><i class="fas fa-check"></i> Acceso Prioritario</li>
-                    <li><i class="fas fa-check"></i> Soporte VIP</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div class="lock-actions">
-                <button onclick="cambiarTab('micuenta')" class="btn btn-primary" style="height:50px; font-weight:700; margin-bottom:10px;"><i class="fas fa-key"></i> INGRESAR TOKEN</button>
-                <button onclick="window.open('https://wa.me/5492236785329?text=Hola,%20quiero%20comprar%20o%20renovar%20mi%20suscripción%20de%20StreamFlow%20Pro', '_blank')" class="btn btn-outline" style="border-color:#25d366; color:#25d366; height:50px; font-weight:600;"><i class="fab fa-whatsapp"></i> COMPRAR POR WHATSAPP</button>
-              </div>
-              <p class="lock-footer" style="font-size:0.7rem; margin-top:1rem; opacity:0.7;"><i class="fas fa-shield-alt"></i> Tus datos están protegidos y se desbloquearán al activar.</p>
-            </div>
-          `;
+          msg.className = "bloqueo-app-msg";
+          msg.innerHTML = '<i class="fas fa-lock"></i><strong>App bloqueada</strong><br>Tu período de prueba ha expirado o tu token ha vencido.<br>Ingresá un token en Ajustes para continuar.<br><small>⚠️ Tus datos NO se perderán al ingresar un nuevo token.</small>';
           const mainContent = document.getElementById("mainContent");
           if(mainContent) mainContent.insertBefore(msg, mainContent.firstChild);
+        }
+        if(kioscoMode) {
+          toast("Modo bloqueado: solo lectura. Ingresá un token para editar.");
         }
       } else {
         if(bloqueoMsg) bloqueoMsg.remove();
@@ -526,20 +460,7 @@
     }
     
     // ============ CRUD DE PERFILES ============
-    function checkAppLock() {
-      if(planEstado === "bloqueado" && currentTab !== "micuenta") {
-        toast("❌ App bloqueada. Renová tu suscripción para realizar esta acción.");
-        return false;
-      }
-      if(!appDesbloqueada) {
-        toast("⚠️ Verificando suscripción... Por favor esperá un momento.");
-        return false;
-      }
-      return true;
-    }
-
     async function venderPerfil(id, datos) {
-      if(!checkAppLock()) return;
       const p = perfiles.find(p => p.id === id);
       if(!p) return;
       
@@ -582,7 +503,6 @@
     }
     
     async function renovarPerfil(id) {
-      if(!checkAppLock()) return;
       const p = perfiles.find(p => p.id === id);
       if(p) {
         let base = p.fechaVencimiento ? parseFecha(p.fechaVencimiento) : new Date();
@@ -597,7 +517,6 @@
     }
     
     async function marcarLibre(id) {
-      if(!checkAppLock()) return;
       const p = perfiles.find(p => p.id === id);
       if(p && confirm("¿Marcar este perfil como libre?")) {
         p.estado = "libre";
@@ -613,7 +532,10 @@
     }
     
     async function eliminarPerfil(id) {
-      if(!checkAppLock()) return;
+      if(kioscoMode) {
+        toast("Modo kiosco: no se puede eliminar");
+        return;
+      }
       if(confirm("¿Eliminar este perfil permanentemente?")) {
         perfiles = perfiles.filter(p => p.id !== id);
         await guardarPerfiles();
@@ -624,7 +546,6 @@
     }
     
     async function duplicarPerfil(id) {
-      if(!checkAppLock()) return;
       const orig = perfiles.find(p => p.id === id);
       if(orig) {
         const nombre = prompt("Nombre del nuevo perfil:", orig.perfilNombre + " (copia)");
@@ -648,7 +569,7 @@
     }
     
     function editarPerfil(id) {
-      if(planEstado === "bloqueado" && currentTab !== "micuenta") {
+      if(kioscoMode) {
         toast("Modo kiosco: no se puede editar");
         return;
       }
@@ -688,7 +609,6 @@
     }
     
     async function guardarPerfilEditado() {
-      if(!checkAppLock()) return;
       const id = editandoId;
       let plataforma = document.getElementById("platIndividual").value;
       if(plataforma === "Otros") {
@@ -743,7 +663,6 @@
     }
     
     async function guardarPerfilIndividual() {
-      if(!checkAppLock()) return;
       let plataforma = document.getElementById("platIndividual").value;
       if(plataforma === "Otros") {
         plataforma = document.getElementById("otraPlatIndividual").value.trim();
@@ -795,7 +714,6 @@
     }
     
     async function guardarCuentaCompleta() {
-      if(!checkAppLock()) return;
       let plataforma = document.getElementById("platCompleta").value;
       if(plataforma === "Otros") {
         plataforma = document.getElementById("otraPlatCompleta").value.trim();
@@ -1095,7 +1013,6 @@
     }
     
     async function confirmarReasignar() {
-      if(!checkAppLock()) return;
       const nuevaFecha = document.getElementById("reasignarFecha").value;
       if(!nuevaFecha) {
         toast("Seleccioná una fecha");
@@ -1113,7 +1030,6 @@
     }
     
     async function cambiarPass(id) {
-      if(!checkAppLock()) return;
       const p = perfiles.find(p => p.id === id);
       if(p) {
         const nueva = prompt("Nueva contraseña (mínimo 6 caracteres):");
@@ -1212,8 +1128,6 @@
     }
     
     function cambiarTab(tabId) {
-      currentTab = tabId;
-      aplicarBloqueoApp();
       document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
       const tp = document.getElementById(`tab-${tabId}`);
       if(tp) tp.classList.add("active");
@@ -1257,7 +1171,6 @@
     }
     
     async function resetearVentas() {
-      if(!checkAppLock()) return;
       if(confirm("¿Reiniciar todas las ventas? Los perfiles volverán a estado libre.")) {
         perfiles.forEach(p => {
           p.fechaVenta = null;
@@ -1290,7 +1203,6 @@
     }
     
     async function borrarTodosLosPerfiles() {
-      if(!checkAppLock()) return;
       if(confirm("⚠️ ¿BORRAR TODOS LOS PERFILES? Esta acción no se puede deshacer.")) {
         const confirmar = prompt("Escribí CONFIRMAR para borrar todo");
         if(confirmar === "CONFIRMAR") {
@@ -1340,7 +1252,6 @@
     }
     
     async function cargarMasiva() {
-      if(!checkAppLock()) return;
       const texto = document.getElementById("batchTexto").value;
       if(!texto.trim()) {
         toast("No hay datos para cargar");
@@ -1633,9 +1544,8 @@
     document.getElementById("btnPrevisualizar")?.addEventListener("click", previsualizarCargaMasiva);
     document.getElementById("btnCargarMasivo")?.addEventListener("click", cargarMasiva);
     
-    document.getElementById("btnActivarSuscripcion")?.addEventListener("click", async () => {
-      const tokenInput = document.getElementById("tokenActivacionInput");
-      const token = tokenInput.value;
+    document.getElementById("btnValidarToken")?.addEventListener("click", async () => {
+      const token = document.getElementById("tokenAcceso").value;
       if(!token) {
         toast("Ingresá un token");
         return;
@@ -1649,19 +1559,20 @@
       hideLoader();
       toast(resultado.mensaje);
       if(resultado.valido) {
-        tokenInput.value = "";
-        document.getElementById("statusActivacion").innerHTML = `<span style="color:#10b981;"><i class="fas fa-check-circle"></i> ${resultado.mensaje}</span>`;
+        document.getElementById("tokenAcceso").value = "";
+        document.getElementById("tokenEstado").innerHTML = `<span style="color:#10b981;">✅ ${resultado.mensaje}</span>`;
         actualizarPanelMiCuenta();
         aplicarBloqueoApp();
       } else {
-        document.getElementById("statusActivacion").innerHTML = `<span style="color:#ef4444;"><i class="fas fa-exclamation-circle"></i> ${resultado.mensaje}</span>`;
+        document.getElementById("tokenEstado").innerHTML = `<span style="color:#ef4444;">❌ ${resultado.mensaje}</span>`;
       }
     });
     
-    document.getElementById("btnComprarTokenWA")?.addEventListener("click", () => {
-      abrirWhatsApp(WHATSAPP_TOKEN_NUMBER, "Hola, quiero comprar o renovar mi suscripción de StreamFlow Pro");
+    document.getElementById("btnWhatsAppToken")?.addEventListener("click", () => {
+      abrirWhatsApp(WHATSAPP_TOKEN_NUMBER, "Hola, quiero comprar un token para StreamFlow Pro. ¿Me ayudas?");
     });
     
+    document.getElementById("btnIrToken")?.addEventListener("click", () => cambiarTab("ajustes"));
     document.getElementById("btnCerrarSesion")?.addEventListener("click", async () => {
       await auth.signOut();
     });
@@ -1930,3 +1841,175 @@
         if(unsubscribeFirestore) unsubscribeFirestore();
       }
     });
+  
+
+
+
+(function(){
+  // NEXUS IA - CEREBRO CENTRAL & SOPORTE
+  const body = document.body;
+  const chatDiv = document.createElement("div");
+  chatDiv.id = "nexusContainer";
+  chatDiv.style.display = "none";
+  chatDiv.innerHTML = `
+    <style>
+      .nexus-suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .nexus-suggest button { 
+        background: rgba(99, 102, 241, 0.1); 
+        border: 1px solid rgba(99, 102, 241, 0.3); 
+        color: #fff; 
+        padding: 6px 12px; 
+        border-radius: 20px; 
+        font-size: 0.75rem; 
+        cursor: pointer; 
+        transition: all 0.3s;
+      }
+      .nexus-suggest button:hover { background: #6366f1; border-color: #6366f1; }
+      .nexus-chat-window { display: none; flex-direction: column; }
+    </style>
+    <div class="nexus-chat-bubble" id="nexusBubble"><i class="fas fa-brain"></i></div>
+    <div class="nexus-chat-window" id="nexusWindow">
+      <div class="nexus-chat-header">
+        <div style="display:flex; align-items:center; gap:8px;"><i class="fas fa-brain"></i><span style="font-weight:700; font-size:0.9rem;">Nexus IA</span></div>
+        <i class="fas fa-times" id="closeNexus" style="cursor:pointer;"></i>
+      </div>
+      <div class="nexus-chat-body" id="nexusChat">
+        <div class="nexus-msg bot">¡Hola Florencia! 😊 Soy Nexus. Borré el manual viejo porque ahora yo soy tu guía completa. ¿Qué necesitás resolver?</div>
+        <div class="nexus-suggest" id="nexusSuggest">
+           <button onclick="window.nexusAsk('¿Cómo cargo cuentas?')">Cargar cuentas ➕</button>
+           <button onclick="window.nexusAsk('¿Cómo funcionan los vencimientos?')">Vencimientos 📅</button>
+           <button onclick="window.nexusAsk('Ver planes de suscripción')">Precios y Planes 💎</button>
+           <button onclick="window.nexusAsk('¿Cómo renovar un perfil?')">Renovar perfil 🔄</button>
+        </div>
+      </div>
+      <div class="nexus-chat-footer">
+        <input type="text" class="nexus-chat-input" id="nexusInp" placeholder="Escribime cualquier duda...">
+        <button class="nexus-chat-send" id="nexusSendBtn"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  `;
+  body.appendChild(chatDiv);
+
+  const bubble = document.getElementById("nexusBubble"), win = document.getElementById("nexusWindow"), close = document.getElementById("closeNexus");
+  if(bubble && win && close) {
+    bubble.onclick = () => { win.style.display="flex"; bubble.style.display="none"; };
+    close.onclick = () => { win.style.display="none"; bubble.style.display="flex"; };
+  }
+
+  const inp = document.getElementById("nexusInp"), bdy = document.getElementById("nexusChat");
+  let subStep = 0, userData = {};
+
+  const addMsg = (txt, cl) => {
+    const d = document.createElement("div"); d.className = "nexus-msg " + cl; d.innerText = txt;
+    bdy.appendChild(d); bdy.scrollTop = bdy.scrollHeight;
+    const oldSuggest = document.getElementById("nexusSuggest");
+    if(oldSuggest) oldSuggest.remove();
+  };
+
+  const addSuggest = (options) => {
+    const s = document.createElement("div"); s.className = "nexus-suggest"; s.id = "nexusSuggest";
+    options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.innerText = opt.t;
+      btn.onclick = () => window.nexusAsk(opt.q || opt.t);
+      s.appendChild(btn);
+    });
+    bdy.appendChild(s); bdy.scrollTop = bdy.scrollHeight;
+  };
+
+  window.nexusAsk = (t) => { inp.value = t; send(); };
+
+  const send = () => {
+    const t = inp.value.trim(); if(!t) return;
+    addMsg(t, "user"); inp.value = "";
+
+    setTimeout(() => {
+      let r = "";
+      const tl = t.toLowerCase();
+
+      // MÓDULO: SUSCRIPCIÓN
+      if(subStep > 0 || tl.includes("suscribir") || tl.includes("suscripcion") || tl.includes("plan")) {
+         if(tl.includes("precio") || tl.includes("plan") || tl.includes("cuanto cuesta")) {
+            r = "Tenemos planes flexibles:\n• 1 Mes: $7.500\n• 3 Meses: $18.000\n• 6 Meses: $32.000\n• 1 Año: $55.000\n¿Querés que te tome los datos para activar uno?";
+            addMsg(r, "bot"); addSuggest([{t: "Sí, quiero suscribirme", q: "Quiero suscribirme"}, {t: "Más adelante", q: "No gracias"}]); return;
+         }
+         if(subStep === 0) { r = "¡Genial! 🚀 Vamos a profesionalizar tu panel. ¿Me decís tu nombre completo?"; subStep = 1; }
+         else if(subStep === 1) { userData.nombre = t; r = "¡Un gusto, " + t + "! ¿Cuál es tu correo para la cuenta?"; subStep = 2; }
+         else if(subStep === 2) { userData.correo = t; r = "Perfecto. ¿De qué país sos y tu WhatsApp con código?"; subStep = 3; }
+         else if(subStep === 3) {
+            userData.contacto = t;
+            r = "¡Listo! Ya agendé tu pedido. 😊 En minutos te hablamos por WhatsApp para activar el acceso total.";
+            subStep = 0;
+            window.open(`https://wa.me/542235590910?text=Nueva suscripción: ${userData.nombre} (${userData.correo})`, '_blank');
+         }
+      }
+      // MÓDULO: MANUAL DE USUARIO (AYUDA)
+      else if(tl.includes("cargar") || tl.includes("crear") || tl.includes("subir")) {
+        r = "Para cargar cuentas tenés 3 opciones en el menú (+):\n1. **Cuenta Completa**: Ideal para combos (ej. Netflix 5 perfiles). Los crea todos de una.\n2. **Individual**: Para cargar un solo perfil suelto.\n3. **Carga Masiva**: Copiás y pegás una lista de correos y listo.";
+      }
+      else if(tl.includes("vencimiento") || tl.includes("fecha") || tl.includes("aviso")) {
+        r = "El sistema te avisa solo. Las cuentas se ponen en ROJO cuando vencen y en NARANJA cuando faltan pocos días (configurable en Ajustes). Además, podés usar el botón 'Avisar' para mandarle la plantilla de cobro al cliente por WhatsApp.";
+      }
+      else if(tl.includes("renovar") || tl.includes("prolongar")) {
+        r = "Para renovar, buscá el perfil y dale al botón 'Renovar' (icono de flechas). Te va a pedir la nueva fecha y ¡listo!, se actualiza y limpia los días restantes.";
+      }
+      else if(tl.includes("borrar") || tl.includes("eliminar")) {
+        r = "Podés eliminar perfiles uno por uno con el tachito rojo, o borrar toda una cuenta completa desde la sección 'Cuentas'. ¡Cuidado que no hay vuelta atrás!";
+      }
+      else if(tl.includes("beneficio") || tl.includes("ventaja")) {
+        r = "Con StreamFlow Pro tenés: Inventario en la nube (no perdés nada), Plantillas de WhatsApp profesionales, Control total de vencimientos y mi ayuda constante para vender más.";
+      }
+      else {
+        r = "Entiendo. Soy tu asistente y manual vivo. Puedo ayudarte con la carga de cuentas, gestión de vencimientos o con tu suscripción. ¿Qué info necesitás?";
+        addMsg(r, "bot");
+        addSuggest([{t: "Cargar cuentas"}, {t: "Vencimientos"}, {t: "Suscripción"}]);
+        return;
+      }
+      addMsg(r, "bot");
+    }, 800);
+  };
+
+  document.getElementById("nexusSendBtn").onclick = send;
+  inp.onkeypress = (e) => { if(e.key === "Enter") send(); };
+
+  // CONTROL DE SISTEMA
+  setInterval(() => {
+    const container = document.getElementById("nexusContainer");
+    const nexusActive = localStorage.getItem("nexus_ia_active") !== "false";
+    const toggle = document.getElementById("nexusToggle");
+    
+    if(toggle) {
+       if(toggle.dataset.hooked !== "true") {
+         toggle.checked = nexusActive;
+         toggle.onchange = () => { localStorage.setItem("nexus_ia_active", toggle.checked); if(typeof toast !== "undefined") toast(toggle.checked ? "Nexus IA activado 🤖" : "Nexus IA desactivado"); };
+         toggle.dataset.hooked = "true";
+       }
+    }
+
+    if(typeof auth !== "undefined" && auth.currentUser && nexusActive) {
+       container.style.display = "block";
+       // LOGICA DE SUSCRIPCION (3 DIAS)
+       const user = auth.currentUser;
+       const creationTime = user.metadata.creationTime;
+       const now = new Date();
+       const created = new Date(creationTime);
+       const diffDays = Math.ceil((now - created) / (1000 * 60 * 60 * 24));
+       
+       // Si el email es el tuyo, eres PRO siempre
+       if(user.email === "florenciaamor36@gmail.com") {
+          window.planEstado = "token";
+          const p = document.getElementById("perfilPlan");
+          if(p && !p.innerHTML.includes("ADMIN PRO")) p.innerHTML = '<i class="fas fa-shield-alt" style="color:#6366f1"></i> ADMIN PRO';
+       } else {
+          // Si pasaron más de 3 días y no tiene "token" en DB (simplificado para front)
+          if(diffDays > 3 && localStorage.getItem("strm_p") !== "active") {
+             window.planEstado = "bloqueado";
+          } else {
+             window.planEstado = "demo";
+          }
+       }
+    } else {
+       container.style.display = "none";
+    }
+  }, 1000);
+})();
