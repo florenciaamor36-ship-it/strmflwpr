@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="StreamFlow Pro">
   <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f5af19'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%23000'%3E🎬%3C/text%3E%3C/svg%3E">
-  <title>StreamFlow Pro | Dashboard</title>
+  <title>StreamFlow Pro | Gestión Profesional de Streaming</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -30,29 +30,73 @@
     </style>
     </head>
 <body>
-<script>
-    // Robust Auth Check
-    (function() {
-        const check = setInterval(() => {
-            if (typeof firebase !== 'undefined' && firebase.auth) {
-                clearInterval(check);
-                firebase.auth().onAuthStateChanged(user => {
-                    if (!user) {
-                        window.location.replace("login.html");
-                    }
-                });
-            }
-        }, 50);
-    })();
-</script>
-
   <div id="loaderOverlay" class="loader-overlay">
     <div class="loader-spinner"></div>
     <div class="loader-text">Cargando...</div>
   </div>
 
   <!-- LOGIN -->
-  
+  <div class="login-wrapper" id="loginWrapper">
+    <div class="form">
+      <div style="text-align:center; margin-bottom:1rem;">
+        <div style="width:55px; height:55px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:18px; display:flex; align-items:center; justify-content:center; margin:0 auto 0.6rem auto;">
+          <i class="fas fa-gem" style="font-size:1.8rem; color:#fff;"></i>
+        </div>
+        <h2 style="font-size:1.4rem; font-weight:800; background:linear-gradient(135deg,#f5af19,#f12711); -webkit-background-clip:text; background-clip:text; color:transparent;">StreamFlow Pro</h2>
+        <p style="font-size:0.6rem; opacity:0.7; margin-top:0.2rem;">Gestión Profesional de Streaming</p>
+      </div>
+
+      <div id="loginPanel">
+        <div class="flex-column"><label>Email</label></div>
+        <div class="inputForm"><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 32 32" height="20"><g><path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path></g></svg><input type="email" id="loginEmail" class="input" placeholder="correo@ejemplo.com"></div>
+        
+        <div class="flex-column"><label>Contraseña</label></div>
+        <div class="inputForm" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="-64 0 512 512" height="20"><path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path><path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path></svg>
+          <input type="password" id="loginPassword" class="input" placeholder="contraseña" style="flex:1;">
+          <button type="button" id="toggleLoginPassword" style="background:transparent; border:none; color:#f5af19; cursor:pointer; padding:0 12px; font-size:0.8rem;"><i class="fas fa-eye"></i></button>
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:5px 0;">
+          <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-size:0.65rem;">
+            <input type="checkbox" id="rememberMeCheckbox" style="width:16px; height:16px; margin:0;"> Recordarme
+          </label>
+          <span class="span" id="forgotPasswordBtn">¿Olvidaste tu contraseña?</span>
+        </div>
+        
+        <button class="button-submit" id="btnLoginSubmit">Iniciar sesión</button>
+        <p class="p">¿No tienes cuenta? <span class="span" id="showRegister">Regístrate aquí</span></p>
+      </div>
+      
+      <div id="registerPanel" style="display: none;">
+        <div class="flex-column"><label>Email</label></div>
+        <div class="inputForm"><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 32 32" height="20"><path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path></svg><input type="email" id="regEmail" class="input" placeholder="correo@ejemplo.com"></div>
+        
+        <div class="flex-column"><label>Contraseña</label></div>
+        <div class="inputForm" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="-64 0 512 512" height="20"><path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path><path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path></svg>
+          <input type="password" id="regPassword" class="input" placeholder="mínimo 6 caracteres" style="flex:1;">
+          <button type="button" id="toggleRegPassword" style="background:transparent; border:none; color:#f5af19; cursor:pointer; padding:0 12px; font-size:0.8rem;"><i class="fas fa-eye"></i></button>
+        </div>
+        
+        <div class="flex-column"><label>Confirmar contraseña</label></div>
+        <div class="inputForm" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="-64 0 512 512" height="20"><path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path><path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path></svg>
+          <input type="password" id="regPasswordConfirm" class="input" placeholder="repite la contraseña" style="flex:1;">
+          <button type="button" id="toggleRegConfirmPassword" style="background:transparent; border:none; color:#f5af19; cursor:pointer; padding:0 12px; font-size:0.8rem;"><i class="fas fa-eye"></i></button>
+        </div>
+        
+        <button class="button-submit" id="btnRegisterSubmit">Registrarse</button>
+        <p class="p">¿Ya tienes cuenta? <span class="span" id="showLogin">Inicia sesión</span></p>
+      </div>
+      
+      <div id="authError" style="color:#ff6b6b; text-align:center; margin-top:10px; font-size:0.7rem;"></div>
+      
+      <div style="text-align:center; margin-top:1rem; padding-top:0.8rem; border-top:1px solid rgba(255,255,255,0.1); font-size:0.55rem; opacity:0.6;">
+        by La Clave Argentina & Tienda SSH
+      </div>
+    </div>
+  </div>
 
   <!-- MODALES GLOBALES -->
   <div id="resetPasswordModal" class="modal"><div class="modal-content"><h3><i class="fas fa-key"></i> Restablecer contraseña</h3><p>Ingresa tu correo electrónico y te enviaremos un enlace.</p><input type="email" id="resetEmail" placeholder="tu@email.com"><div class="modal-buttons"><button id="modalSendBtn">Enviar</button><button id="modalCancelBtn">Cancelar</button></div><div id="modalMessage" style="margin-top:1rem; font-size:0.7rem; color:#f5af19;"></div></div></div>
@@ -88,7 +132,7 @@
   <div id="confirmModal" class="modal">
     <div class="modal-content">
       <div style="text-align:center; margin-bottom:0.8rem;"><div style="width:50px; height:50px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 0.5rem auto;"><i class="fas fa-gem" style="font-size:1.5rem; color:#fff;"></i></div></div>
-      <h3 id="confirmModalTitle" style="color:#f5af19; font-size:1rem; margin-bottom:0.5rem;"><i class="fas fa-question-circle"></i> Nexus IA</h3>
+      <h3 id="confirmModalTitle" style="color:#f5af19; font-size:1rem; margin-bottom:0.5rem;"><i class="fas fa-question-circle"></i> StreamFlow Pro</h3>
       <p id="confirmModalMessage" style="color:rgba(255,255,255,0.9); font-size:0.8rem; margin-bottom:1rem;">¿Estás seguro?</p>
       <div class="modal-buttons"><button id="confirmModalOk" style="background:linear-gradient(145deg,#f5af19,#f12711); color:#fff; border:none; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:700; cursor:pointer;">Aceptar</button><button id="confirmModalCancel" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:600; cursor:pointer;">Cancelar</button></div>
     </div>
@@ -97,20 +141,20 @@
   <div id="promptModal" class="modal">
     <div class="modal-content">
       <div style="text-align:center; margin-bottom:0.8rem;"><div style="width:50px; height:50px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 0.5rem auto;"><i class="fas fa-gem" style="font-size:1.5rem; color:#fff;"></i></div></div>
-      <h3 id="promptModalTitle" style="color:#f5af19; font-size:1rem; margin-bottom:0.5rem;"><i class="fas fa-edit"></i> Nexus IA</h3>
+      <h3 id="promptModalTitle" style="color:#f5af19; font-size:1rem; margin-bottom:0.5rem;"><i class="fas fa-edit"></i> StreamFlow Pro</h3>
       <p id="promptModalMessage" style="color:rgba(255,255,255,0.9); font-size:0.8rem; margin-bottom:0.8rem;"></p>
       <input type="text" id="promptModalInput" placeholder="" style="width:100%; margin:0.5rem 0; padding:0.8rem; border-radius:2rem; border:1px solid rgba(245,175,25,0.4); background:rgba(255,255,255,0.08); color:#fff; font-size:0.8rem;">
       <div class="modal-buttons"><button id="promptModalOk" style="background:linear-gradient(145deg,#f5af19,#f12711); color:#fff; border:none; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:700; cursor:pointer;">Aceptar</button><button id="promptModalCancel" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:2rem; padding:0.6rem 1.5rem; font-weight:600; cursor:pointer;">Cancelar</button></div>
     </div>
   </div>
 
-  <div id="acercaModal" class="modal"><div class="modal-content"><div class="acerca-container"><div class="acerca-logo"><i class="fas fa-gem"></i></div><h3>Nexus IA</h3><div class="acerca-version">Versión 2.0 · Build 2026</div><div class="acerca-info"><strong>Desarrollado y creado por</strong><br><span style="font-size:1rem; font-weight:700; color:#f5af19;">La Clave Argentina & Tienda SSH</span><br><br>Soluciones digitales profesionales para gestión de streaming.<br>Plataforma integral de administración, venta y control de cuentas.<br><br><strong>Tecnologías:</strong> Firebase, HTML5, CSS3, JavaScript ES6+, PWA<br><strong>Arquitectura:</strong> SPA con sincronización en tiempo real</div><div class="acerca-legal">© 2026 La Clave Argentina & Tienda SSH. Todos los derechos reservados.<br><br>Este software está protegido por las leyes de propiedad intelectual de la República Argentina (Ley 11.723) y tratados internacionales de copyright. Queda expresamente prohibida la reproducción, distribución, modificación o ingeniería inversa del código sin autorización expresa por escrito.<br><br>Desarrollado bajo normas de calidad ISO 9001:2015 e ISO/IEC 25010 para calidad de software. Cumple con los estándares de seguridad de datos GDPR y Ley de Protección de Datos Personales 25.326.<br><br><i class="fas fa-shield-alt"></i> Todos los datos se transmiten cifrados mediante protocolos seguros. La información del usuario es confidencial y no se comparte con terceros.</div><div class="modal-buttons" style="margin-top:1rem;"><button id="acercaCerrar"><i class="fas fa-check"></i> Cerrar</button></div></div></div></div>
+  <div id="acercaModal" class="modal"><div class="modal-content"><div class="acerca-container"><div class="acerca-logo"><i class="fas fa-gem"></i></div><h3>StreamFlow Pro</h3><div class="acerca-version">Versión 2.0 · Build 2026</div><div class="acerca-info"><strong>Desarrollado y creado por</strong><br><span style="font-size:1rem; font-weight:700; color:#f5af19;">La Clave Argentina & Tienda SSH</span><br><br>Soluciones digitales profesionales para gestión de streaming.<br>Plataforma integral de administración, venta y control de cuentas.<br><br><strong>Tecnologías:</strong> Firebase, HTML5, CSS3, JavaScript ES6+, PWA<br><strong>Arquitectura:</strong> SPA con sincronización en tiempo real</div><div class="acerca-legal">© 2026 La Clave Argentina & Tienda SSH. Todos los derechos reservados.<br><br>Este software está protegido por las leyes de propiedad intelectual de la República Argentina (Ley 11.723) y tratados internacionales de copyright. Queda expresamente prohibida la reproducción, distribución, modificación o ingeniería inversa del código sin autorización expresa por escrito.<br><br>Desarrollado bajo normas de calidad ISO 9001:2015 e ISO/IEC 25010 para calidad de software. Cumple con los estándares de seguridad de datos GDPR y Ley de Protección de Datos Personales 25.326.<br><br><i class="fas fa-shield-alt"></i> Todos los datos se transmiten cifrados mediante protocolos seguros. La información del usuario es confidencial y no se comparte con terceros.</div><div class="modal-buttons" style="margin-top:1rem;"><button id="acercaCerrar"><i class="fas fa-check"></i> Cerrar</button></div></div></div></div>
 
   <!-- APP PRINCIPAL -->
   <div class="app-container" id="appContainer">
     <div class="app-header">
       <div class="header-content">
-        <div class="logo"><div class="logo-icon"><i class="fas fa-gem"></i></div><div class="logo-text"><h1>Nexus IA</h1><p>GESTIÓN PROFESIONAL</p></div></div>
+        <div class="logo"><div class="logo-icon"><i class="fas fa-gem"></i></div><div class="logo-text"><h1>StreamFlow Pro</h1><p>GESTIÓN PROFESIONAL</p></div></div>
         <div class="header-actions">
           <div id="planBadge" class="plan-badge demo"><i class="fas fa-gift"></i> DEMO 3d</div>
           <button class="sync-status sincronizado" id="syncStatus" title="Sincronización"><i class="fas fa-cloud"></i></button>
@@ -258,7 +302,7 @@
           <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;">
           <div class="input-group" style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid rgba(255,255,255,0.1);">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
-               <span style="font-weight:600; font-size:0.9rem;"><i class="fas fa-robot" style="color:#6366f1; margin-right:8px;"></i>Asistente Nexus IA</span>
+               <span style="font-weight:600; font-size:0.9rem;"><i class="fas fa-robot" style="color:#6366f1; margin-right:8px;"></i>Asistente StreamFlow Pro</span>
                <label class="switch">
                  <input type="checkbox" id="nexusToggle">
                  <span class="slider round"></span>
@@ -320,8 +364,8 @@
     </div>
   </div>
 
-  <script src="nexus.js"></script>
-  <script src="app.js"></script>
+  
+<script src="app.js"></script>
 </body>
 </html>
 
