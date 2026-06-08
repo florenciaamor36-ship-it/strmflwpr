@@ -1013,4 +1013,34 @@
             👤 ${escapeHtml(p.proveedor || '')}<br>
             📅 ${fechaTexto}<br>
             🔑 <span id="pass-${p.id}">${passOculto}</span>
-            <button class="toggle-password" data-id="${p.id}"><i class="
+            <button class="toggle-password" data-id="${p.id}"><i class="fas fa-eye"></i></button>
+            ${p.whatsappCliente ? `<br>📱 Cliente: ${escapeHtml(p.whatsappCliente)}` : ''}
+            ${p.whatsappProveedor ? `<br>📱 Tu WhatsApp: ${escapeHtml(p.whatsappProveedor)}` : ''}
+          </div>
+          <div class="action-buttons">${botones}</div>
+        </div>
+      `;
+    }
+    
+    function agregarEventosBotones() {
+      document.querySelectorAll(".toggle-password").forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const p = perfiles.find(p => p.id === btn.dataset.id);
+          if(p) {
+            const span = document.getElementById(`pass-${p.id}`);
+            if(span.innerText === '•••••••') {
+              span.innerText = p.password;
+              btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+              span.innerText = '•••••••';
+              btn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+          }
+        };
+      });
+      
+      document.querySelectorAll(".action-btn").forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+        
