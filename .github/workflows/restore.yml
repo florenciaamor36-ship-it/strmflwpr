@@ -1,22 +1,16 @@
-name: Restore Master
-on:
-  workflow_dispatch:
+name: Restore index.html
+on: [workflow_dispatch]
 jobs:
   restore:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Combine parts
-        run: |
-          cat part_0 part_1 part_2 > index.html.b64
-          base64 -d index.html.b64 > index.html
-          rm part_0 part_1 part_2 index.html.b64
+      - uses: actions/checkout@v3
+      - name: Download index.html
+        run: curl -L https://share.zapia.com/xakx45myzy8zfkhl0vjxiy -o index.html
       - name: Commit and push
         run: |
-          git config --global user.email "florenciaamor36@gmail.com"
-          git config --global user.name "florenciaamor36-ship-it"
+          git config --local user.email 'action@github.com'
+          git config --local user.name 'GitHub Action'
           git add index.html
-          git rm --ignore-unmatch part_0 part_1 part_2
-          git commit -m "Manual Restoration of Master Build v30"
+          git commit -m 'Restore full StreamFlow Pro build'
           git push
