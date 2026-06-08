@@ -1231,7 +1231,8 @@ const db = firebase.firestore();
       }
     });
     
-    document.getElementById("btnLoginSubmit")?.addEventListener("click", async () => {
+    document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
       const email = document.getElementById("loginEmail").value;
       const pass = document.getElementById("loginPassword").value;
       if(!email || !pass) {
@@ -1255,7 +1256,8 @@ const db = firebase.firestore();
       }
     });
     
-    document.getElementById("btnRegisterSubmit")?.addEventListener("click", async () => {
+    document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
       const email = document.getElementById("regEmail").value;
       const pass = document.getElementById("regPassword").value;
       const confirm = document.getElementById("regPasswordConfirm").value;
