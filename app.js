@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.onsubmit = async (e) => {
             e.preventDefault();
-            const email = byId("login-email")?.value.trim();
+            const email = byId("loginEmail")?.value.trim();
             const pass = byId("login-pass")?.value;
             if (!email || !pass) return toast("Completar email y contraseña");
             
