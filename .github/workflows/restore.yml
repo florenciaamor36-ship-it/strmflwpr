@@ -1,16 +1,20 @@
 name: Restore index.html
 on: [workflow_dispatch]
+permissions:
+  contents: write
 jobs:
   restore:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download index.html
-        run: curl -L https://share.zapia.com/xakx45myzy8zfkhl0vjxiy -o index.html
+        run: |
+          curl -L -v https://share.zapia.com/xakx45myzy8zfkhl0vjxiy -o index.html
+          ls -l index.html
       - name: Commit and push
         run: |
           git config --local user.email 'action@github.com'
           git config --local user.name 'GitHub Action'
           git add index.html
-          git commit -m 'Restore full StreamFlow Pro build'
+          git commit -m 'Restore full StreamFlow Pro build' || echo 'No changes'
           git push
