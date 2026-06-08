@@ -29,1991 +29,637 @@
       "SF-A7K2-M9P4-X8N1","SF-B3F8-R6W2-Q5L9","SF-C9M4-T1Y7-V2H6","SF-D5R1-K8U3-W7Z0",
       "SF-E2X6-N4Q9-J3P5","SF-F8S3-Y1M7-B6G4","SF-G4W9-C2T8-L5R1","SF-H6V1-Z5Q3-D9F7",
       "SF-J1A4-B7C9-E2F5","SF-K3D6-G8H1-M4N7","SF-L5F9-J2K6-P8Q3","SF-M7H2-L9R5-T1V4",
-      "SF-N9K4-P3S7-W6X2","SF-P2M5-R8T4-Y9Z1","SF-Q4N7-V1W6-A3B8","SF-R6P9-X5Y2-C7D3",
-      "SF-S8R1-Z7A4-E9F6","SF-T1S3-B6C8-G2H5","SF-U3T5-D9F1-J4K7","SF-V5U7-G2H3-M6N9",
-      "SF-W7V9-J5K8-P1Q4","SF-X9W2-L7M3-R5S8","SF-Y2X4-N8P6-T9U3","SF-Z4Y6-Q1R7-V2W5",
-      "SF-A6Z8-S3T9-X7Y1","SF-B8A1-U5V2-Z9W4","SF-C1B3-W7X5-A2D6","SF-D3C5-Y9Z1-B4F8",
-      "SF-E5D7-A2B6-C8G3","SF-F7E9-C4D8-H1J5","SF-G9F2-E6H3-K4L7","SF-H2G4-F8J5-M6N9",
-      "SF-J4H6-G1K7-P8Q2","SF-K6J8-H3L9-R1S4","SF-L8K1-J5M2-T3U6","SF-M1L3-K7N4-V5W8",
-      "SF-N3M5-L9P6-X7Y2","SF-P5N7-M2Q8-Z9A4","SF-Q7P9-N4R1-B3C6","SF-R9Q2-P6S3-D5F8",
-      "SF-S2R4-Q8T5-G7H1","SF-T4S6-R1U7-J9K3","SF-U6T8-S3V9-L2M5","SF-V8U1-T5W2-N4P7",
-      "SF-W1V3-U7X4-Q6R9","SF-X3W5-V9Y6-S8T2","SF-Y5X7-W2Z8-U4V6","SF-Z7Y9-X4A1-W6B3",
-      "SF-A9Z2-Y6B3-X8C5","SF-B2A4-Z8C5-Y1D7","SF-C4B6-A1D7-Z3E9","SF-D6C8-B3E9-A5F2",
-      "SF-E8D1-C5F2-B7G4","SF-F1E3-D7G4-C9H6","SF-G3F5-E9H6-D2J8","SF-H5G7-F2J8-E4K1",
-      "SF-J7H9-G4K1-F6L3","SF-K9J2-H6L3-G8M5","SF-L2K4-J8M5-H1N7","SF-M4L6-K1N7-J3P9",
-      "SF-N6M8-L3P9-K5Q2","SF-P8N1-M5Q2-L7R4","SF-Q1P3-N7R4-M9S6","SF-R3Q5-P9S6-N2T8",
-      "SF-S5R7-Q2T8-P4U1","SF-T7S9-R4U1-Q6V3","SF-U9T2-S6V3-R8W5","SF-V2U4-T8W5-S1X7",
-      "SF-W4V6-U1X7-T3Y9","SF-X6W8-V3Y9-U5Z2","SF-Y8X1-W5Z2-V7A4","SF-Z1Y3-X7A4-W9B6",
-      "SF-A3Z5-Y9B6-X2C8","SF-B5A7-Z2C8-Y4D1","SF-C7B9-A4D1-Z6E3","SF-D9C2-B6E3-A8F5",
-      "SF-E2D4-C8F5-B1G7","SF-F4E6-D1G7-C3H9","SF-G6F8-E3H9-D5J2","SF-H8G1-F5J2-E7K4",
-      "SF-J1H3-G7K4-F9L6","SF-K3J5-H9L6-G2M8","SF-L5K7-J2M8-H4N1","SF-M7L9-K4N1-J6P3",
-      "SF-N9M2-L6P3-K8Q5","SF-P2N4-M8Q5-L1R7","SF-Q4P6-N1R7-M3S9","SF-R6Q8-P3S9-N5T2",
-      "SF-S8R1-Q5T2-P7U4","SF-T1S3-R7U4-Q9V6","SF-U3T5-S9V6-R2W8","SF-V5U7-T2W8-S4X1",
-      "SF-W7V9-U4X1-T6Y3","SF-X9W2-V6Y3-U8Z5","SF-Y2X4-W8Z5-V1A7","SF-Z4Y6-X1A7-W3B9",
-      "SF-A6Z8-Y3B9-X5C2","SF-B8A1-Z5C2-Y7D4","SF-C1B3-A7D4-Z9E6","SF-D3C5-B9E6-A2F8",
-      "SF-E5D7-C2F8-B4G1","SF-F7E9-D4G1-C6H3","SF-G9F2-E6H3-D8J5","SF-H2G4-F8J5-E1K7",
-      "SF-J4H6-G1K7-F3L9","SF-K6J8-H3L9-G5M2","SF-L8K1-J5M2-H7N4","SF-M1L3-K7N4-J9P6",
-      "SF-N3M5-L9P6-K2Q8","SF-P5N7-M2Q8-L4R1","SF-Q7P9-N4R1-M6S3","SF-R9Q2-P6S3-N8T5",
-      "SF-S2R4-Q8T5-P1U7","SF-T4S6-R1U7-Q3V9","SF-U6T8-S3V9-R5W2","SF-V8U1-T5W2-S7X4",
-      "SF-W1V3-U7X4-T9Y6","SF-X3W5-V9Y6-U2Z8","SF-Y5X7-W2Z8-V4A1","SF-Z7Y9-X4A1-W6B3"
+      "SF-N9J5-V3X8-W2G1","SF-P1L4-Z7Q3-M9F6","SF-Q3N6-B8C2-T1Y7","SF-R5P9-G4H8-L2V5",
+      "SF-S7R2-M1N9-X3W4","SF-T9V5-F6G3-P8Q2","SF-U1X8-Y4Z7-D5R9","SF-V3G6-H2J9-L1M4",
+      "SF-W5B9-N7Q3-T2V6","SF-X7M1-P4R9-C8W2","SF-Y9H4-L2G6-F3S7","SF-Z1P7-D5Q3-M8N2",
+      "SF-A3V9-T7X4-B2R6","SF-B5G2-H8M1-Y9W4","SF-C7J5-F3N6-P8Q2","SF-D9L1-C4G7-Z5R3",
+      "SF-E2R6-M8W2-V3H9","SF-F4G3-N9X7-P1Q5","SF-G6H8-B2C4-L5M7","SF-H8J2-D1F5-W7Y3",
+      "SF-J1M4-P9Q3-X8N2","SF-K3G6-L7R5-T2V1","SF-L5H9-F2G6-M4P3","SF-M7N1-B8C2-Y9W4",
+      "SF-N9P5-X3W7-G1H4","SF-P1Q7-L2M6-T8V3","SF-Q3R9-F4G2-Z5N1","SF-R5S1-H7J3-P9Q6",
+      "SF-S7T3-M2N8-X4W5","SF-T9U5-G1H4-B7C9","SF-U1V7-L3M6-Y2W8","SF-V3W9-F5G2-P1Q4",
+      "SF-W5X2-N8Q4-T7V3","SF-X7Y4-M1P9-C2R6","SF-Y9Z6-H5J2-L3M8","SF-Z1A8-G7B3-P4N9",
+      "SF-A3C1-L2M5-F8V4","SF-B5D3-B7C9-W2G1","SF-C7F5-G4H8-L1V6","SF-D9G7-M2N9-T3W5",
+      "SF-E1H9-P5R2-X7Q4","SF-F3J2-F6G1-M8N3","SF-G5K4-L7P3-V1W9","SF-H7L6-B9C2-T4Y1",
+      "SF-J9M8-D5Q3-Z2R6","SF-K1N1-H7G4-X9P2","SF-L3P3-M2N8-F5G7","SF-M5Q5-L1V9-P3B7",
+      "SF-N7R7-G4H2-T8V1","SF-P9S9-F6G3-C2Q5","SF-Q1T1-B8C4-M9N7","SF-R3V3-D1F5-X7P2",
+      "SF-S5W5-M8L2-Y4G1","SF-T7X7-P5Q9-V3H6","SF-U9Y9-L1R3-T7F2","SF-V1Z1-F4G6-M2N8",
+      "SF-W3A3-B7C9-X1P4","SF-X5B5-G2H8-L3M7","SF-Y7C7-M1N9-T5V2","SF-Z9D9-P4Q3-W6G8",
+      "SF-A2E2-L7F5-V9M1","SF-B4G4-G1H8-X3P6","SF-C6H6-F2G9-L5M2","SF-D8J8-M3N7-B4Q1",
+      "SF-E1K1-P9R4-T2W5","SF-F3L3-G7H2-Z5V8","SF-G5M5-B1C4-M9N3","SF-H7N7-D5Q2-X8P1",
+      "SF-J9P9-L1M6-T4V7","SF-K1Q1-F4G8-Z2N5","SF-L3R3-M7N2-X1P9","SF-M5S5-G3H6-P8Q4",
+      "SF-N7T7-L2V9-T1M5","SF-P9U9-B8C2-Y4W7","SF-Q1V1-F5G3-P7Q2","SF-R3W3-M1P9-C5R8",
+      "SF-S5X5-H2J7-L4M1","SF-T7Y7-G1H4-B9C2","SF-U9Z9-L3M6-T5V8","SF-V1A1-F4G2-P7Q3",
+      "SF-W3B3-M8N2-X1P5","SF-X5C5-G7H4-B2R9","SF-Y7D7-L1M5-V3H8","SF-Z9E9-P4Q2-T6G1",
+      "SF-A1F1-M2N7-X9P4","SF-B3G3-L8V5-T1M2","SF-C5H5-B7C9-Y2W6","SF-D7J7-F5G3-P1Q4",
+      "SF-E9K9-M1P8-C4R7","SF-F1L1-H2J6-L5M9","SF-G3M3-G1H4-B7C2","SF-H5N5-L3M7-V8H4",
+      "SF-J7P7-F4G2-P9Q5","SF-K9Q9-M8N1-X2P6","SF-L1R1-G7H4-B5R2","SF-M3S3-L2M6-V1H9",
+      "SF-N5T5-P4Q3-T7G2","SF-P7U7-M1N9-X8P5","SF-Q9V9-L7V4-T2M1","SF-R1W1-B8C2-Y5W8",
+      "SF-S3X3-F6G3-P9Q4","SF-T5Y5-M2P1-C8R5","SF-U7Z7-H5J9-L4M2","SF-V9A9-G1H4-B3C7",
+      "SF-W1B1-L2M6-T9V5","SF-X3C3-F5G2-P8Q1","SF-Y5D5-M1N9-X7P3","SF-Z7E7-G4H8-B2R5",
+      "SF-A9F9-L3M7-V1H6","SF-B1G1-P5Q2-T9G4","SF-C3H3-M2N8-X1P7","SF-D5J5-L8V4-T2M9",
+      "SF-E7K7-B7C2-Y5W1","SF-F9L9-F4G3-P8Q6","SF-G1M1-M9P4-C2R5","SF-H3N3-H5J2-L7M1",
+      "SF-J5P5-G1H8-B4C9","SF-K7Q7-L2M6-T5V9","SF-L9R9-F3G1-P7Q4","SF-M1S1-M2N9-X5P8",
+      "SF-N3T3-G7H4-B1R2","SF-P5U5-L3M5-V7H9","SF-Q7V7-P1Q4-T8G2","SF-R9W9-M8N2-X3P1",
+      "SF-S1X1-G4H2-B9R6","SF-T3Y3-L1M7-V5H2","SF-U5Z5-P9Q2-T7G4","SF-V7A7-M1N6-X2P9",
+      "SF-W9B9-L3V5-T8M1","SF-X1C1-B2C7-Y4W9","SF-Y3D3-F5G1-P2Q8","SF-Z5E5-M9P4-C3R7",
+      "SF-A7F7-H2J6-L1M5","SF-B9G9-G1H4-B8C2","SF-C1H1-L3M7-V5H9","SF-D3J3-F4G2-P7Q1",
+      "SF-E5K5-M8N2-X1P9","SF-F7L7-G7H4-B2R5","SF-G9M9-L1M6-V3H8","SF-H1N1-P4Q2-T7G1",
+      "SF-J3P3-M1N9-X8P4","SF-K5Q5-L7V4-T2M1","SF-L7R7-B8C2-Y5W3","SF-M9S9-F6G3-P1Q4",
+      "SF-N1T1-M2P1-C8R7"
     ]);
     
-    // ============ VARIABLES GLOBALES ============
+    // ============ ESTADO DE LA APP ============
+    let currentUser = null;
     let perfiles = [];
-    let DIAS_PROXIMO = 3;
+    let unsubscribeFirestore = null;
+    let planEstado = "demo"; // demo, token, bloqueado
+    let diasPruebaRestantes = 3;
+    let appDesbloqueada = false;
+    let ordenAsc = true;
+    let filtroTimeout = null;
+    let pendingVentaId = null;
+    let editandoId = null;
     let kioscoMode = false;
     let notificationsEnabled = true;
-    let ordenAsc = true;
-    let currentUser = null;
-    let editandoId = null;
-    let pendingVentaId = null;
-    let unsubscribeFirestore = null;
-    let filtroTimeout = null;
-    let appDesbloqueada = true;
-    let diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
-    let planEstado = "demo";
-    let versionLocal = 0;
-    let autoSyncEnabled = true;
+    let DIAS_PROXIMO = 3;
     
-    // ============ FUNCIONES UTILITARIAS ============
-    function showLoader(texto = "Cargando...") {
-      const overlay = document.getElementById("loaderOverlay");
-      if(overlay) {
-        const textEl = overlay.querySelector(".loader-text");
-        if(textEl) textEl.innerText = texto;
-        overlay.classList.add("active");
+    // ============ UTILIDADES ============
+    function toast(msg) {
+      console.log("TOAST:", msg);
+      const t = document.createElement("div");
+      t.className = "toast";
+      t.innerText = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.classList.add("show"), 100);
+      setTimeout(() => {
+        t.classList.remove("show");
+        setTimeout(() => t.remove(), 500);
+      }, 3000);
+    }
+    
+    function showLoader(text = "Cargando...") {
+      let l = document.getElementById("globalLoader");
+      if(!l) {
+        l = document.createElement("div");
+        l.id = "globalLoader";
+        l.className = "loader-overlay";
+        l.innerHTML = `<div class="loader-content"><div class="spinner"></div><p id="loaderText">${text}</p></div>`;
+        document.body.appendChild(l);
+      } else {
+        document.getElementById("loaderText").innerText = text;
       }
+      l.style.display = "flex";
     }
     
     function hideLoader() {
-      const overlay = document.getElementById("loaderOverlay");
-      if(overlay) overlay.classList.remove("active");
-    }
-    
-    function toast(msg) {
-      let t = document.querySelector(".toast");
-      if(t) t.remove();
-      t = document.createElement("div");
-      t.className = "toast";
-      t.innerHTML = '<i class="fas fa-info-circle"></i> ' + msg;
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), 2500);
-    }
-    
-    function escapeHtml(str) {
-      if(!str) return "";
-      return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+      const l = document.getElementById("globalLoader");
+      if(l) l.style.display = "none";
     }
     
     function generarIdUnico() {
-      return Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      return Date.now().toString(36) + Math.random().toString(36).substr(2);
     }
     
     function parseFecha(str) {
       if(!str) return null;
-      const p = str.split("-");
-      if(p.length !== 3) return null;
-      return new Date(p[0], p[1] - 1, p[2]);
+      const [y, m, d] = str.split("-");
+      return new Date(y, m - 1, d);
     }
     
     function formatearFecha(str) {
-      if(!str) return "";
+      if(!str) return "Sin fecha";
       const f = parseFecha(str);
       if(!f) return str;
-      return f.getDate().toString().padStart(2, '0') + '/' + (f.getMonth() + 1).toString().padStart(2, '0') + '/' + f.getFullYear();
+      return f.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
     }
     
-    function aInputDate(d) {
-      return d.getFullYear() + '-' + (d.getMonth() + 1).toString().padStart(2, '0') + '-' + d.getDate().toString().padStart(2, '0');
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
     
-    function obtenerEstado(fechaStr) {
-      if(!fechaStr) return "libre";
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-      const venc = parseFecha(fechaStr);
-      if(!venc) return "libre";
-      venc.setHours(0, 0, 0, 0);
-      const diff = Math.round((venc - hoy) / 86400000);
-      if(diff < 0) return "vencido";
-      if(diff <= DIAS_PROXIMO) return "proximo";
-      return "activo";
-    }
-    
-    function estadoTexto(e) {
-      const mapa = { activo: "Activo", proximo: "Próximo", vencido: "Vencido", libre: "Libre", vendido: "Vendido" };
-      return mapa[e] || e;
-    }
-    
-    function estadoClase(e) {
-      const mapa = { activo: "badge-success", proximo: "badge-warning", vencido: "badge-danger", libre: "badge-info", vendido: "badge-vendido" };
-      return mapa[e] || "badge";
-    }
-    
-    function abrirWhatsApp(numero, mensaje) {
-      if(!numero) {
-        toast("⚠️ No hay número de WhatsApp");
-        return;
-      }
-      const url = "https://wa.me/" + numero.replace(/\D/g, '') + "?text=" + encodeURIComponent(mensaje);
-      window.open(url, "_blank");
-    }
-    
-    // ============ PLANTILLAS ============
-    function plantillaCliente(p, esVenta) {
-      const fechaVence = p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : "Sin fecha asignada";
-      const garantia = p.fechaVencimiento ? "hasta " + fechaVence : "durante el período contratado";
-      const proveedorMostrar = p.proveedor || "StreamFlow Pro";
-      const whatsappMostrar = p.whatsappProveedor || "";
-      
-      return (esVenta ? "🎉 *¡CUENTA ACTIVADA!* 🎉" : "🔄 *RENOVACIÓN DE CUENTA*") + 
-             "\n\n📺 *Plataforma:* " + p.plataforma +
-             "\n👤 *Perfil:* " + p.perfilNombre +
-             (p.pin ? "\n🔢 *PIN:* " + p.pin : "") +
-             "\n📧 *Usuario:* " + p.mail +
-             "\n🔐 *Contraseña:* " + p.password +
-             "\n📅 *Vence:* " + fechaVence +
-             (p.precioVenta ? "\n💰 *Precio:* $" + p.precioVenta : "") +
-             "\n\n━━━━━━━━━━━━━━━" +
-             "\n📋 *REGLAS DE USO Y SEGURIDAD*" +
-             "\n━━━━━━━━━━━━━━━" +
-             "\n\n✅ *Perfil 100% seguro y verificado*" +
-             "\n🔒 *No modificar:* correo, contraseña ni PIN del perfil" +
-             "\n🚫 *Prohibido:* compartir el acceso con terceros" +
-             "\n👤 *Uso exclusivo:* solo el comprador autorizado" +
-             "\n⚠️ *No cambiar:* configuración de cuenta ni datos de facturación" +
-             "\n🛡️ *Garantía:* " + garantia + ". Si tenés problemas técnicos, contactanos de inmediato." +
-             "\n📞 *Soporte:* " + proveedorMostrar + (whatsappMostrar ? " - +" + whatsappMostrar : "") +
-             "\n🔄 *Renovación:* avisamos con anticipación para que no te quedes sin servicio." +
-             "\n\n━━━━━━━━━━━━━━━" +
-             "\n💎 *CUENTA PREMIUM GARANTIZADA*" +
-             "\n━━━━━━━━━━━━━━━" +
-             "\n\n✅ Guardá estos datos en un lugar seguro." +
-             "\n🙏 ¡Gracias por confiar en nosotros!" +
-             (p.observaciones ? "\n📝 Notas: " + p.observaciones : "");
-    }
-    
-    function plantillaProveedor(p) {
-      return "🚨 *CONSULTA DE PERFIL*\n\n" +
-             "📺 *Plataforma:* " + p.plataforma +
-             "\n👤 *Perfil:* " + p.perfilNombre +
-             "\n📧 *Usuario:* " + p.mail +
-             "\n🔐 *Contraseña:* " + p.password +
-             (p.pin ? "\n🔢 *PIN:* " + p.pin : "") +
-             "\n📅 *Vencimiento:* " + (p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : "Sin fecha") +
-             "\n👤 *Proveedor:* " + (p.proveedor || "No especificado") +
-             "\n📞 Necesito información sobre este perfil.";
-    }
-    
-    // ============ SINCRONIZACIÓN CON FIRESTORE ============
-    async function guardarPerfiles() {
-      if(!currentUser) return;
-      showLoader("Guardando en la nube...");
-      try {
-        await db.collection("usuarios").doc(currentUser.uid).set({
-          perfiles: perfiles,
-          ultimaActualizacion: new Date().toISOString(),
-          version: Date.now()
-        }, { merge: true });
-        toast("✅ Datos guardados en la nube");
-        actualizarSyncStatus("sincronizado");
-        document.getElementById("saveText").innerText = "Sincronizado en la nube";
-      } catch(e) {
-        console.error(e);
-        toast("⚠️ Sin conexión. Datos guardados localmente");
-        actualizarSyncStatus("error");
-        document.getElementById("saveText").innerText = "Guardado local (sin conexión)";
-      } finally {
-        hideLoader();
-      }
-    }
-    
-    async function cargarPerfiles() {
-      if(!currentUser) return;
-      showLoader("Cargando datos desde la nube...");
-      try {
-        const doc = await db.collection("usuarios").doc(currentUser.uid).get();
-        if(doc.exists && doc.data().perfiles) {
-          perfiles = doc.data().perfiles;
-          toast("✅ Datos cargados desde la nube");
-          actualizarSyncStatus("sincronizado");
-          document.getElementById("saveText").innerText = "Sincronizado en la nube";
-        } else {
-          perfiles = [];
-          toast("📦 No hay datos, comenzando con perfil vacío");
-        }
-        actualizarTodo();
-      } catch(e) {
-        console.error(e);
-        toast("⚠️ Sin conexión. Usando datos locales");
-        actualizarSyncStatus("error");
-        document.getElementById("saveText").innerText = "Modo local (sin conexión)";
-        const localBackup = localStorage.getItem("streamflow_perfiles_backup");
-        if(localBackup) {
-          try {
-            perfiles = JSON.parse(localBackup);
-            actualizarTodo();
-          } catch(e2) {}
-        }
-      } finally {
-        hideLoader();
-      }
-    }
-    
-    function iniciarListenerFirestore(uid) {
-      if(unsubscribeFirestore) unsubscribeFirestore();
-      if(!uid) return;
-      unsubscribeFirestore = db.collection("usuarios").doc(uid).onSnapshot((snap) => {
-        if(snap.exists && snap.data().perfiles) {
-          const serverData = snap.data().perfiles;
-          if(JSON.stringify(serverData) !== JSON.stringify(perfiles)) {
-            perfiles = serverData;
-            localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
-            actualizarTodo();
-            toast("🔄 Datos actualizados desde la nube");
-          }
-        }
-      }, (error) => {
-        console.error("Error en listener:", error);
-      });
-    }
-    
-    function actualizarSyncStatus(estado) {
-      const btn = document.getElementById("syncStatus");
-      if(!btn) return;
-      if(estado === "sincronizado") {
-        btn.className = "sync-status sincronizado";
-        btn.title = "Sincronizado con la nube";
-      } else if(estado === "esperando") {
-        btn.className = "sync-status esperando";
-        btn.title = "Sincronizando...";
-      } else {
-        btn.className = "sync-status error";
-        btn.title = "Sin conexión - Modo local";
-      }
-    }
-    
-    // ============ SISTEMA DE SUSCRIPCIÓN Y TOKENS ============
+    // ============ LÓGICA DE SUSCRIPCIÓN ============
     async function verificarSuscripcion(uid) {
-      if(!uid) return;
       try {
-        const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
-        const snap = await suscRef.get();
-        const ahora = new Date();
+        const userDoc = await db.collection("usuarios").doc(uid).get();
+        const userData = userDoc.data();
         
-        if(!snap.exists) {
-          const fechaFinPrueba = new Date(ahora);
-          fechaFinPrueba.setDate(fechaFinPrueba.getDate() + DIAS_PRUEBA_GRATIS);
-          await suscRef.set({
-            fechaPrimerIngreso: ahora.toISOString(),
-            estado: "prueba",
-            fechaExpiracion: fechaFinPrueba.toISOString()
-          });
+        // El email florenciaamor36@gmail.com es siempre PRO
+        if(currentUser.email === "florenciaamor36@gmail.com") {
+          planEstado = "token";
           appDesbloqueada = true;
-          diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
-          planEstado = "demo";
-          actualizarBadgePlan();
-          actualizarSemaforo();
+          diasPruebaRestantes = 9999;
+          aplicarBloqueoApp();
           return;
         }
+    
+        const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
+        const snap = await suscRef.get();
         
-        const data = snap.data();
-        const fechaExpiracion = new Date(data.fechaExpiracion);
-        
-        if(data.estado === "prueba") {
-          if(ahora < fechaExpiracion) {
-            appDesbloqueada = true;
-            diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
-            planEstado = "demo";
+        if(snap.exists) {
+          const data = snap.data();
+          if(data.estado === "token") {
+            const exp = new Date(data.fechaExpiracion);
+            const hoy = new Date();
+            if(exp > hoy) {
+              planEstado = "token";
+              appDesbloqueada = true;
+              diasPruebaRestantes = Math.ceil((exp - hoy) / (1000 * 60 * 60 * 24));
+            } else {
+              planEstado = "bloqueado";
+              appDesbloqueada = false;
+            }
           } else {
-            appDesbloqueada = false;
-            diasPruebaRestantes = 0;
-            planEstado = "bloqueado";
+            // Manejar demo
+            const creacion = new Date(currentUser.metadata.creationTime);
+            const hoy = new Date();
+            const dias = Math.ceil((hoy - creacion) / (1000 * 60 * 60 * 24));
+            if(dias <= DIAS_PRUEBA_GRATIS) {
+              planEstado = "demo";
+              appDesbloqueada = true;
+              diasPruebaRestantes = DIAS_PRUEBA_GRATIS - dias;
+            } else {
+              planEstado = "bloqueado";
+              appDesbloqueada = false;
+            }
           }
-        } else if(data.estado === "token") {
-          if(ahora < fechaExpiracion) {
+        } else {
+          // Nueva cuenta, iniciar demo
+          const creacion = new Date(currentUser.metadata.creationTime);
+          const hoy = new Date();
+          const dias = Math.ceil((hoy - creacion) / (1000 * 60 * 60 * 24));
+          if(dias <= DIAS_PRUEBA_GRATIS) {
+            planEstado = "demo";
             appDesbloqueada = true;
-            diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
-            planEstado = "token";
+            diasPruebaRestantes = DIAS_PRUEBA_GRATIS - dias;
           } else {
-            appDesbloqueada = false;
-            diasPruebaRestantes = 0;
             planEstado = "bloqueado";
+            appDesbloqueada = false;
           }
         }
-        
-        actualizarBadgePlan();
-        actualizarSemaforo();
         aplicarBloqueoApp();
-        actualizarPanelMiCuenta();
       } catch(e) {
-        console.error("Error al verificar suscripción:", e);
-        appDesbloqueada = true;
+        console.error("Error verificando suscripción:", e);
         planEstado = "demo";
-        actualizarBadgePlan();
+        appDesbloqueada = true;
+        aplicarBloqueoApp();
       }
     }
     
-    async function validarToken(token, uid) {
-      if(!uid) return { valido: false, mensaje: "Usuario no autenticado" };
-      token = token.trim().toUpperCase();
-      if(!TOKENS_VALIDOS.has(token)) return { valido: false, mensaje: "❌ Token inválido" };
-      try {
-        const tokenRef = db.collection("tokens_usados").doc(token);
-        const snap = await tokenRef.get();
-        if(snap.exists && snap.data().usadoPor !== uid) {
-          return { valido: false, mensaje: "❌ Token ya usado por otra cuenta" };
-        }
-        const ahora = new Date();
-        const expiracion = new Date(ahora);
-        expiracion.setDate(expiracion.getDate() + DIAS_TOKEN);
-        await tokenRef.set({
-          token: token,
-          usadoPor: uid,
-          fechaActivacion: ahora.toISOString(),
-          fechaExpiracion: expiracion.toISOString()
-        });
-        const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
-        await suscRef.set({
-          estado: "token",
-          fechaExpiracion: expiracion.toISOString()
-        }, { merge: true });
-        appDesbloqueada = true;
-        diasPruebaRestantes = DIAS_TOKEN;
-        planEstado = "token";
-        actualizarBadgePlan();
-        actualizarSemaforo();
-        aplicarBloqueoApp();
-        actualizarPanelMiCuenta();
-        return { valido: true, mensaje: "✅ Token activado por 30 días" };
-      } catch(e) {
-        console.error(e);
-        return { valido: false, mensaje: "⚠️ Error al validar token" };
+    function aplicarBloqueoApp() {
+      const overlay = document.getElementById("bloqueoOverlay");
+      if(!appDesbloqueada && planEstado === "bloqueado") {
+        overlay.style.display = "flex";
+        document.body.classList.add("app-bloqueada");
+      } else {
+        overlay.style.display = "none";
+        document.body.classList.remove("app-bloqueada");
       }
+      actualizarBadgePlan();
     }
     
     function actualizarBadgePlan() {
       const badge = document.getElementById("planBadge");
       if(!badge) return;
       if(planEstado === "token") {
+        badge.innerHTML = '<i class="fas fa-crown"></i> PRO';
         badge.className = "plan-badge pro";
-        badge.innerHTML = '<i class="fas fa-crown"></i> PRO ' + diasPruebaRestantes + 'd';
-      } else if(planEstado === "bloqueado") {
-        badge.className = "plan-badge blocked";
-        badge.innerHTML = '<i class="fas fa-lock"></i> BLOQUEADO';
-      } else {
+      } else if(planEstado === "demo") {
+        badge.innerHTML = '<i class="fas fa-star"></i> DEMO';
         badge.className = "plan-badge demo";
-        badge.innerHTML = '<i class="fas fa-gift"></i> DEMO ' + diasPruebaRestantes + 'd';
-      }
-    }
-    
-    function actualizarSemaforo() {
-      const semaforoPerfil = document.getElementById("semaforoPerfil");
-      let color = "", texto = "", icono = "";
-      
-      if(planEstado === "bloqueado") {
-        color = "semaforo-rojo";
-        texto = "BLOQUEADO - Ingresá un token";
-        icono = '<i class="fas fa-ban"></i>';
-      } else if(planEstado === "token") {
-        color = "semaforo-verde";
-        texto = "PRO ACTIVO - " + diasPruebaRestantes + " días";
-        icono = '<i class="fas fa-check-circle"></i>';
       } else {
-        if(diasPruebaRestantes <= 1) {
-          color = "semaforo-rojo";
-          texto = "DEMO - ÚLTIMO DÍA";
-          icono = '<i class="fas fa-exclamation-triangle"></i>';
-        } else if(diasPruebaRestantes === 2) {
-          color = "semaforo-amarillo";
-          texto = "DEMO - 2 DÍAS";
-          icono = '<i class="fas fa-clock"></i>';
-        } else {
-          color = "semaforo-verde";
-          texto = "DEMO - " + diasPruebaRestantes + " DÍAS";
-          icono = '<i class="fas fa-gift"></i>';
-        }
-      }
-      
-      if(semaforoPerfil) {
-        semaforoPerfil.innerHTML = '<div class="semaforo ' + color + '" style="display:inline-flex;">' + icono + ' Estado: ' + texto + '</div>';
+        badge.innerHTML = '<i class="fas fa-lock"></i> BLOQUEADO';
+        badge.className = "plan-badge blocked";
       }
     }
     
-    function aplicarBloqueoApp() {
-      const bloqueoMsg = document.getElementById("bloqueoAppMsg");
-      if(planEstado === "bloqueado") {
-        if(!bloqueoMsg) {
-          const msg = document.createElement("div");
-          msg.id = "bloqueoAppMsg";
-          msg.className = "bloqueo-app-msg";
-          msg.innerHTML = '<i class="fas fa-lock"></i><strong>App bloqueada</strong><br>Tu período de prueba ha expirado o tu token ha vencido.<br>Ingresá un token en Ajustes para continuar.<br><small>⚠️ Tus datos NO se perderán al ingresar un nuevo token.</small>';
-          const mainContent = document.getElementById("mainContent");
-          if(mainContent) mainContent.insertBefore(msg, mainContent.firstChild);
+    async function validarToken(token, uid) {
+      if(!uid) return { valido: false, mensaje: "Usuario no autenticado" };
+      token = token.trim().toUpperCase();
+      console.log("Validando token:", token, "para UID:", uid);
+      
+      if(!TOKENS_VALIDOS.has(token)) {
+        console.warn("Token inválido (no está en el Set):", token);
+        return { valido: false, mensaje: "❌ Token inválido" };
+      }
+      
+      try {
+        const tokenRef = db.collection("tokens_usados").doc(token);
+        const snap = await tokenRef.get();
+        console.log("Firestore snapshot para token:", snap.exists);
+        
+        if(snap.exists && snap.data().usadoPor !== uid) {
+          console.warn("Token ya usado por:", snap.data().usadoPor);
+          return { valido: false, mensaje: "❌ Token ya usado por otra cuenta" };
         }
-        if(kioscoMode) {
-          toast("Modo bloqueado: solo lectura. Ingresá un token para editar.");
-        }
-      } else {
-        if(bloqueoMsg) bloqueoMsg.remove();
+        
+        const ahora = new Date();
+        const expiracion = new Date(ahora);
+        expiracion.setDate(expiracion.getDate() + DIAS_TOKEN);
+        
+        console.log("Guardando token en tokens_usados...");
+        await tokenRef.set({
+          token: token,
+          usadoPor: uid,
+          fechaActivacion: ahora.toISOString(),
+          fechaExpiracion: expiracion.toISOString()
+        });
+        
+        console.log("Actualizando suscripción del usuario...");
+        const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
+        await suscRef.set({
+          estado: "token",
+          fechaExpiracion: expiracion.toISOString()
+        }, { merge: true });
+        
+        appDesbloqueada = true;
+        diasPruebaRestantes = DIAS_TOKEN;
+        planEstado = "token";
+        
+        actualizarBadgePlan();
+        actualizarTodo();
+        aplicarBloqueoApp();
+        
+        console.log("Token validado exitosamente.");
+        return { valido: true, mensaje: "✅ Token activado por 30 días" };
+      } catch(e) {
+        console.error("TOKEN ERROR DETALLADO:", e.code, e.message, e);
+        return { valido: false, mensaje: "⚠️ Error de permisos: No se pudo conectar con el servidor de licencias (" + (e.code || "unknown") + ")" };
       }
     }
     
-    // ============ CRUD DE PERFILES ============
-    async function venderPerfil(id, datos) {
-      const p = perfiles.find(p => p.id === id);
-      if(!p) return;
-      
-      // Actualizar el perfil con los datos editados en el modal
-      p.plataforma = datos.plataforma || p.plataforma;
-      p.cuentaId = datos.cuentaId || p.cuentaId;
-      p.perfilNombre = datos.perfilNombre || p.perfilNombre;
-      p.mail = datos.mail || p.mail;
-      p.password = datos.password || p.password;
-      p.pin = datos.pin || p.pin;
-      p.fechaVencimiento = datos.fechaVencimiento || p.fechaVencimiento;
-      p.proveedor = datos.proveedor || p.proveedor;
-      p.observaciones = datos.observaciones || p.observaciones;
-      
-      p.precioVenta = parseFloat(datos.precio);
-      p.whatsappCliente = datos.cliente || "";
-      p.fechaVenta = new Date().toISOString();
-      p.estado = "vendido";
-      
-      if(!p.fechaVencimiento) {
-        let nueva = new Date();
-        nueva.setDate(nueva.getDate() + 30);
-        p.fechaVencimiento = aInputDate(nueva);
+    // ============ FIRESTORE CORE ============
+    async function cargarPerfiles() {
+      if(!currentUser) return;
+      try {
+        const snap = await db.collection("usuarios").doc(currentUser.uid).collection("perfiles").get();
+        perfiles = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        actualizarTodo();
+      } catch(e) {
+        console.error("Error cargando perfiles:", e);
+        // Fallback a localStorage si falla Firestore
+        const local = localStorage.getItem("streamflow_perfiles_backup");
+        if(local) perfiles = JSON.parse(local);
+        actualizarTodo();
       }
-      p.estado = obtenerEstado(p.fechaVencimiento);
-      if(p.estado === "libre") p.estado = "vendido";
-      
-      await guardarPerfiles();
-      localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
+    }
+    
+    async function guardarPerfiles() {
+      // Nota: Esta función es un placeholder porque ahora usamos persistencia individual por documento
+      // Pero la mantenemos para compatibilidad con el resto del código
       actualizarTodo();
-      
-      const mensaje = plantillaCliente(p, true);
-      if(datos.cliente && datos.cliente.trim() !== "") {
-        abrirWhatsApp(datos.cliente, mensaje);
-        toast("✅ Venta registrada. Redirigiendo a WhatsApp...");
-      } else {
-        toast("✅ Venta registrada. Plantilla copiada al portapapeles");
-        navigator.clipboard.writeText(mensaje);
+    }
+    
+    function iniciarListenerFirestore(uid) {
+      if(unsubscribeFirestore) unsubscribeFirestore();
+      unsubscribeFirestore = db.collection("usuarios").doc(uid).collection("perfiles")
+        .onSnapshot(snap => {
+          perfiles = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          actualizarTodo();
+        }, err => console.error("Snapshot error:", err));
+    }
+    
+    // Operaciones CRUD individuales en Firestore
+    async function upsertPerfil(perfil) {
+      if(!currentUser) return;
+      const id = perfil.id || generarIdUnico();
+      const p = { ...perfil, id };
+      await db.collection("usuarios").doc(currentUser.uid).collection("perfiles").doc(id).set(p);
+    }
+    
+    async function eliminarPerfil(id) {
+      if(!confirm("¿Borrar este perfil?")) return;
+      if(!currentUser) return;
+      await db.collection("usuarios").doc(currentUser.uid).collection("perfiles").doc(id).delete();
+      toast("Perfil eliminado");
+    }
+    
+    // ============ LÓGICA DE NEGOCIO ============
+    function obtenerEstado(fechaStr) {
+      if(!fechaStr) return "libre";
+      const f = parseFecha(fechaStr);
+      const hoy = new Date();
+      hoy.setHours(0,0,0,0);
+      const diff = Math.round((f - hoy) / 86400000);
+      if(diff < 0) return "vencido";
+      if(diff <= DIAS_PROXIMO) return "proximo";
+      return "activo";
+    }
+    
+    function estadoTexto(est) {
+      const map = { "activo": "✅ Activo", "proximo": "⚠️ Por vencer", "vencido": "❌ Vencido", "libre": "🆓 Libre", "vendido": "💰 Vendido" };
+      return map[est] || est;
+    }
+    
+    function estadoClase(est) {
+      return "badge-" + (est === "activo" ? "success" : est === "proximo" ? "warning" : est === "vencido" ? "danger" : est === "vendido" ? "info" : "light");
+    }
+    
+    async function venderPerfil(id, datosVenta) {
+      const p = perfiles.find(p => p.id === id);
+      if(p) {
+        Object.assign(p, datosVenta);
+        p.estado = "vendido";
+        p.fechaVenta = new Date().toISOString();
+        p.precioVenta = Number(datosVenta.precio) || 0;
+        p.whatsappCliente = datosVenta.cliente;
+        await upsertPerfil(p);
+        toast("✅ Venta registrada");
+        if(datosVenta.cliente) {
+          const msg = plantillaCliente(p, true);
+          abrirWhatsApp(datosVenta.cliente, msg);
+        }
       }
     }
     
     async function renovarPerfil(id) {
       const p = perfiles.find(p => p.id === id);
       if(p) {
-        let base = p.fechaVencimiento ? parseFecha(p.fechaVencimiento) : new Date();
-        base.setMonth(base.getMonth() + 1);
-        p.fechaVencimiento = aInputDate(base);
-        p.estado = obtenerEstado(p.fechaVencimiento);
-        await guardarPerfiles();
-        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
-        actualizarTodo();
-        toast("Renovado hasta " + formatearFecha(p.fechaVencimiento));
+        const nuevaFecha = prompt("Nueva fecha de vencimiento (AAAA-MM-DD):", new Date(Date.now() + 30*86400000).toISOString().split('T')[0]);
+        if(nuevaFecha) {
+          p.fechaVencimiento = nuevaFecha;
+          p.estado = obtenerEstado(nuevaFecha);
+          p.fechaVenta = null;
+          p.precioVenta = null;
+          await upsertPerfil(p);
+          toast("🔄 Perfil renovado");
+        }
       }
     }
     
     async function marcarLibre(id) {
       const p = perfiles.find(p => p.id === id);
-      if(p && confirm("¿Marcar este perfil como libre?")) {
+      if(p) {
         p.estado = "libre";
-        p.fechaVencimiento = null;
         p.fechaVenta = null;
         p.precioVenta = null;
         p.whatsappCliente = "";
-        await guardarPerfiles();
-        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
-        actualizarTodo();
+        await upsertPerfil(p);
         toast("Perfil marcado como libre");
       }
     }
     
-    async function eliminarPerfil(id) {
-      if(kioscoMode) {
-        toast("Modo kiosco: no se puede eliminar");
-        return;
-      }
-      if(confirm("¿Eliminar este perfil permanentemente?")) {
-        perfiles = perfiles.filter(p => p.id !== id);
-        await guardarPerfiles();
-        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
-        actualizarTodo();
-        toast("Perfil eliminado");
-      }
-    }
-    
     async function duplicarPerfil(id) {
-      const orig = perfiles.find(p => p.id === id);
-      if(orig) {
-        const nombre = prompt("Nombre del nuevo perfil:", orig.perfilNombre + " (copia)");
-        if(nombre && nombre.trim()) {
-          const copia = { 
-            ...orig, 
-            id: generarIdUnico(), 
-            perfilNombre: nombre.trim(), 
-            estado: "libre", 
-            fechaVenta: null, 
-            precioVenta: null, 
-            whatsappCliente: "" 
-          };
-          perfiles.push(copia);
-          await guardarPerfiles();
-          localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
-          actualizarTodo();
-          toast("Perfil duplicado");
-        }
-      }
-    }
-    
-    function editarPerfil(id) {
-      if(kioscoMode) {
-        toast("Modo kiosco: no se puede editar");
-        return;
-      }
       const p = perfiles.find(p => p.id === id);
-      if(!p) return;
-      editandoId = id;
-      
-      const conocidas = ["Netflix", "Netflix indiv", "Disney", "HBO Max", "Prime video", "Paramount", "Crunchyroll", "Spoty", "YouTube"];
-      if(!conocidas.includes(p.plataforma)) {
-        document.getElementById("platIndividual").value = "Otros";
-        document.getElementById("otraPlatIndividualDiv").style.display = "block";
-        document.getElementById("otraPlatIndividual").value = p.plataforma;
-      } else {
-        document.getElementById("platIndividual").value = p.plataforma;
-        document.getElementById("otraPlatIndividualDiv").style.display = "none";
-      }
-      document.getElementById("cuentaIdIndividual").value = p.cuentaId || "";
-      document.getElementById("nombrePerfilIndividual").value = p.perfilNombre || "";
-      document.getElementById("pinIndividual").value = p.pin || "";
-      document.getElementById("mailIndividual").value = p.mail || "";
-      document.getElementById("passIndividual").value = p.password || "";
-      document.getElementById("fechaIndividual").value = p.fechaVencimiento || "";
-      document.getElementById("precioIndividual").value = p.precio || "";
-      document.getElementById("proveedorIndividual").value = p.proveedor || "";
-      document.getElementById("whatsappIndividual").value = p.whatsappProveedor || "";
-      document.getElementById("obsIndividual").value = p.observaciones || "";
-      
-      document.querySelectorAll(".carga-tab").forEach(b => b.classList.remove("active"));
-      document.querySelector(".carga-tab[data-mod='individual']").classList.add("active");
-      document.getElementById("modo-completa").style.display = "none";
-      document.getElementById("modo-individual").style.display = "block";
-      document.getElementById("modo-masiva").style.display = "none";
-      document.getElementById("btnCancelarEdicion").style.display = "inline-block";
-      document.getElementById("btnGuardarIndividual").textContent = "Guardar cambios";
-      
-      cambiarTab("carga");
-    }
-    
-    async function guardarPerfilEditado() {
-      const id = editandoId;
-      let plataforma = document.getElementById("platIndividual").value;
-      if(plataforma === "Otros") {
-        plataforma = document.getElementById("otraPlatIndividual").value.trim();
-        if(!plataforma) {
-          toast("Escribí el nombre de la plataforma");
-          return;
-        }
-      }
-      const index = perfiles.findIndex(p => p.id === id);
-      if(index !== -1) {
-        perfiles[index] = {
-          ...perfiles[index],
-          plataforma: plataforma,
-          cuentaId: document.getElementById("cuentaIdIndividual").value,
-          perfilNombre: document.getElementById("nombrePerfilIndividual").value,
-          mail: document.getElementById("mailIndividual").value,
-          password: document.getElementById("passIndividual").value,
-          pin: document.getElementById("pinIndividual").value,
-          fechaVencimiento: document.getElementById("fechaIndividual").value || null,
-          proveedor: document.getElementById("proveedorIndividual").value,
-          whatsappProveedor: document.getElementById("whatsappIndividual").value,
-          observaciones: document.getElementById("obsIndividual").value,
-          precio: document.getElementById("precioIndividual").value ? Number(document.getElementById("precioIndividual").value) : null,
-          estado: document.getElementById("fechaIndividual").value ? obtenerEstado(document.getElementById("fechaIndividual").value) : "libre"
-        };
-        await guardarPerfiles();
-        localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
-        actualizarTodo();
-        toast("✅ Perfil actualizado");
-        editandoId = null;
-        limpiarFormularioIndividual();
-        document.getElementById("btnCancelarEdicion").style.display = "none";
-        document.getElementById("btnGuardarIndividual").textContent = "Guardar perfil";
+      if(p) {
+        const nuevo = { ...p, id: generarIdUnico(), estado: "libre", fechaVenta: null, whatsappCliente: "" };
+        await upsertPerfil(nuevo);
+        toast("Perfil duplicado");
       }
     }
     
+    function abrirWhatsApp(num, msg) {
+      const url = "https://wa.me/" + num.replace(/\D/g, '') + "?text=" + encodeURIComponent(msg);
+      window.open(url, "_blank");
+    }
+    
+    function plantillaCliente(p, esVenta) {
+      return `*STREAMFLOW PRO - DATOS DE TU CUENTA*\n\n` +
+             `🎬 *Servicio:* ${p.plataforma}\n` +
+             `👤 *Perfil:* ${p.perfilNombre}\n` +
+             `📧 *Email:* ${p.mail}\n` +
+             `🔑 *Pass:* ${p.password}\n` +
+             (p.pin ? `🔢 *PIN:* ${p.pin}\n` : '') +
+             `📅 *Vence:* ${formatearFecha(p.fechaVencimiento)}\n\n` +
+             `⚠️ *IMPORTANTE:* No cambiar ningún dato de la cuenta.`;
+    }
+    
+    function plantillaProveedor(p) {
+      return `Pedido para ${p.plataforma}: ${p.mail} / ${p.password}`;
+    }
+    
+    // ============ FORMULARIOS ============
     function limpiarFormularioIndividual() {
-      document.getElementById("platIndividual").value = "Netflix";
-      document.getElementById("cuentaIdIndividual").value = "";
-      document.getElementById("nombrePerfilIndividual").value = "";
-      document.getElementById("pinIndividual").value = "";
-      document.getElementById("mailIndividual").value = "";
-      document.getElementById("passIndividual").value = "";
-      document.getElementById("fechaIndividual").value = "";
-      document.getElementById("precioIndividual").value = "";
-      document.getElementById("proveedorIndividual").value = "";
-      document.getElementById("whatsappIndividual").value = "";
-      document.getElementById("obsIndividual").value = "";
-      document.getElementById("otraPlatIndividual").value = "";
+      ["platIndividual", "cuentaIdIndividual", "perfilIndividual", "mailIndividual", "passIndividual", "pinIndividual", "fechaIndividual", "proveedorIndividual", "whatsappIndividual", "obsIndividual", "precioIndividual"].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = "";
+      });
       document.getElementById("otraPlatIndividualDiv").style.display = "none";
     }
     
     async function guardarPerfilIndividual() {
       let plataforma = document.getElementById("platIndividual").value;
-      if(plataforma === "Otros") {
-        plataforma = document.getElementById("otraPlatIndividual").value.trim();
-        if(!plataforma) {
-          toast("Escribí el nombre de la plataforma");
-          return;
-        }
-      }
-      const cuentaId = document.getElementById("cuentaIdIndividual").value;
-      const nombrePerfil = document.getElementById("nombrePerfilIndividual").value;
-      const mail = document.getElementById("mailIndividual").value;
-      const password = document.getElementById("passIndividual").value;
-      const fecha = document.getElementById("fechaIndividual").value || null;
-      const proveedor = document.getElementById("proveedorIndividual").value;
-      const whatsapp = document.getElementById("whatsappIndividual").value;
-      const obs = document.getElementById("obsIndividual").value;
-      const precio = document.getElementById("precioIndividual").value;
-      const pin = document.getElementById("pinIndividual").value;
-      
-      if(!plataforma || !cuentaId || !nombrePerfil || !mail || !password || !proveedor) {
-        toast("Completá todos los campos");
-        return;
-      }
-      
-      perfiles.push({
-        id: generarIdUnico(),
-        plataforma: plataforma,
-        cuentaId: cuentaId,
-        perfilNombre: nombrePerfil,
-        mail: mail,
-        password: password,
-        pin: pin || "",
-        fechaVencimiento: fecha,
-        proveedor: proveedor,
-        whatsappProveedor: whatsapp,
-        observaciones: obs,
-        precio: precio ? Number(precio) : null,
-        estado: fecha ? obtenerEstado(fecha) : "libre",
+      if(plataforma === "Otros") plataforma = document.getElementById("otraPlatIndividual").value;
+      const id = editandoId || generarIdUnico();
+      const perfil = {
+        id,
+        plataforma,
+        cuentaId: document.getElementById("cuentaIdIndividual").value,
+        perfilNombre: document.getElementById("perfilIndividual").value,
+        mail: document.getElementById("mailIndividual").value,
+        password: document.getElementById("passIndividual").value,
+        pin: document.getElementById("pinIndividual").value,
+        fechaVencimiento: document.getElementById("fechaIndividual").value,
+        proveedor: document.getElementById("proveedorIndividual").value,
+        whatsappProveedor: document.getElementById("whatsappIndividual").value,
+        observaciones: document.getElementById("obsIndividual").value,
+        precio: Number(document.getElementById("precioIndividual").value) || 0,
+        estado: obtenerEstado(document.getElementById("fechaIndividual").value),
         fechaVenta: null,
         precioVenta: null,
         whatsappCliente: ""
-      });
-      
-      await guardarPerfiles();
-      localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
-      actualizarTodo();
-      toast("✅ Perfil guardado");
+      };
+      await upsertPerfil(perfil);
+      toast(editandoId ? "Perfil actualizado" : "Perfil guardado");
       limpiarFormularioIndividual();
+      editandoId = null;
+      document.getElementById("btnCancelarEdicion").style.display = "none";
+      document.getElementById("btnGuardarIndividual").textContent = "Guardar perfil";
+    }
+    
+    function editarPerfil(id) {
+      const p = perfiles.find(p => p.id === id);
+      if(p) {
+        editandoId = id;
+        document.querySelector('.nav-btn[data-nav="cargar"]').click();
+        document.querySelector('.carga-tab[data-mod="individual"]').click();
+        
+        document.getElementById("platIndividual").value = ["Netflix", "Netflix indiv", "Disney", "HBO Max", "Prime video", "Spoty", "YouTube", "Crunchyroll", "Paramount"].includes(p.plataforma) ? p.plataforma : "Otros";
+        if(document.getElementById("platIndividual").value === "Otros") {
+          document.getElementById("otraPlatIndividualDiv").style.display = "block";
+          document.getElementById("otraPlatIndividual").value = p.plataforma;
+        }
+        
+        document.getElementById("cuentaIdIndividual").value = p.cuentaId || "";
+        document.getElementById("perfilIndividual").value = p.perfilNombre || "";
+        document.getElementById("mailIndividual").value = p.mail || "";
+        document.getElementById("passIndividual").value = p.password || "";
+        document.getElementById("pinIndividual").value = p.pin || "";
+        document.getElementById("fechaIndividual").value = p.fechaVencimiento || "";
+        document.getElementById("proveedorIndividual").value = p.proveedor || "";
+        document.getElementById("whatsappIndividual").value = p.whatsappProveedor || "";
+        document.getElementById("obsIndividual").value = p.observaciones || "";
+        document.getElementById("precioIndividual").value = p.precio || "";
+        
+        document.getElementById("btnCancelarEdicion").style.display = "inline-block";
+        document.getElementById("btnGuardarIndividual").textContent = "Actualizar perfil";
+      }
     }
     
     async function guardarCuentaCompleta() {
       let plataforma = document.getElementById("platCompleta").value;
-      if(plataforma === "Otros") {
-        plataforma = document.getElementById("otraPlatCompleta").value.trim();
-        if(!plataforma) {
-          toast("Escribí el nombre de la plataforma");
-          return;
-        }
-      }
-      const cuentaId = document.getElementById("cuentaIdCompleta").value;
-      const mail = document.getElementById("mailCompleta").value;
-      const password = document.getElementById("passCompleta").value;
-      const fecha = document.getElementById("fechaCompleta").value || null;
-      const proveedor = document.getElementById("proveedorCompleta").value;
-      const whatsapp = document.getElementById("whatsappCompleta").value;
-      const obs = document.getElementById("obsCompleta").value;
-      const precio = document.getElementById("precioCompleta").value;
-      
-      if(!plataforma || !cuentaId || !mail || !password || !proveedor) {
-        toast("Completá todos los campos");
-        return;
-      }
-      
-      const cantidades = {
-        "Netflix": 5, "Netflix indiv": 1, "Disney": 7, "HBO Max": 5,
-        "Paramount": 5, "Crunchyroll": 1, "Prime video": 6, "Spoty": 1, "YouTube": 1
+      if(plataforma === "Otros") plataforma = document.getElementById("otraPlatCompleta").value;
+      const base = {
+        plataforma,
+        cuentaId: document.getElementById("cuentaIdCompleta").value,
+        mail: document.getElementById("mailCompleta").value,
+        password: document.getElementById("passCompleta").value,
+        fechaVencimiento: document.getElementById("fechaCompleta").value,
+        proveedor: document.getElementById("proveedorCompleta").value,
+        whatsappProveedor: document.getElementById("whatsappCompleta").value,
+        observaciones: document.getElementById("obsCompleta").value,
+        precio: Number(document.getElementById("precioCompleta").value) || 0,
+        estado: obtenerEstado(document.getElementById("fechaCompleta").value)
       };
-      const cantidad = cantidades[plataforma] || 1;
       
-      for(let i = 1; i <= cantidad; i++) {
-        perfiles.push({
-          id: generarIdUnico(),
-          plataforma: plataforma,
-          cuentaId: cuentaId,
-          mail: mail,
-          password: password,
-          perfilNombre: cantidad === 1 ? "Principal" : "Perfil " + i,
-          pin: "",
-          fechaVencimiento: fecha,
-          proveedor: proveedor,
-          whatsappProveedor: whatsapp,
-          observaciones: obs,
-          precio: precio ? Number(precio) : null,
-          estado: fecha ? obtenerEstado(fecha) : "libre",
-          fechaVenta: null,
-          precioVenta: null,
-          whatsappCliente: ""
-        });
+      const counts = { "Netflix": 5, "Disney": 7, "HBO Max": 5, "Paramount": 5, "Prime video": 6 };
+      const num = counts[plataforma] || 1;
+      
+      showLoader(`Creando ${num} perfiles...`);
+      for(let i=1; i<=num; i++) {
+        await upsertPerfil({ ...base, id: generarIdUnico(), perfilNombre: "Perfil " + i });
       }
-      
-      await guardarPerfiles();
-      localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
-      actualizarTodo();
-      toast("✅ " + plataforma + " guardada (" + cantidad + " perfiles)");
-      
-      document.getElementById("cuentaIdCompleta").value = "";
-      document.getElementById("mailCompleta").value = "";
-      document.getElementById("passCompleta").value = "";
-      document.getElementById("proveedorCompleta").value = "";
-      document.getElementById("fechaCompleta").value = "";
-      document.getElementById("precioCompleta").value = "";
-      document.getElementById("whatsappCompleta").value = "";
-      document.getElementById("obsCompleta").value = "";
-      document.getElementById("otraPlatCompleta").value = "";
-      document.getElementById("otraPlatCompletaDiv").style.display = "none";
+      hideLoader();
+      toast(`✅ Cuenta de ${plataforma} cargada (${num} perfiles)`);
+      ["cuentaIdCompleta", "mailCompleta", "passCompleta", "fechaCompleta", "proveedorCompleta", "whatsappCompleta", "obsCompleta", "precioCompleta", "otraPlatCompleta"].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = "";
+      });
     }
     
     // ============ RENDERIZADO ============
     function actualizarDashboard() {
-      document.getElementById("totalPerfiles").innerHTML = perfiles.length;
-      document.getElementById("libresHoy").innerHTML = perfiles.filter(p => p.estado === "libre").length;
-      document.getElementById("vencenHoy").innerHTML = perfiles.filter(p => p.estado === "proximo").length;
-      document.getElementById("ventasHoy").innerHTML = perfiles.filter(p => p.fechaVenta && p.fechaVenta.split('T')[0] === new Date().toISOString().split('T')[0]).length;
-      document.getElementById("totalGanado").innerHTML = "$" + perfiles.reduce((s,p) => s + (p.precioVenta || 0), 0).toLocaleString();
-      document.getElementById("cantidadVendidos").innerHTML = perfiles.filter(p => p.fechaVenta).length;
+      if(!document.getElementById("totalPerfiles")) return;
+      document.getElementById("totalPerfiles").innerText = perfiles.length;
+      document.getElementById("libresHoy").innerText = perfiles.filter(p => p.estado === "libre").length;
+      document.getElementById("vencenHoy").innerText = perfiles.filter(p => p.estado === "proximo").length;
       
-      const porPlataforma = {};
-      perfiles.forEach(p => { porPlataforma[p.plataforma] = (porPlataforma[p.plataforma] || 0) + 1; });
-      document.getElementById("resumenRapido").innerHTML = Object.entries(porPlataforma).map(([k,v]) => `<span class="badge">${k}: ${v}</span>`).join('');
-      
-      const ventasPlataforma = {};
-      perfiles.filter(p => p.fechaVenta).forEach(p => { ventasPlataforma[p.plataforma] = (ventasPlataforma[p.plataforma] || 0) + 1; });
-      const top = Object.entries(ventasPlataforma).sort((a,b) => b[1] - a[1])[0];
-      document.getElementById("menosVendido").innerHTML = top ? `🔥 Más vendido: ${top[0]} (${top[1]} ventas)` : "📊 Sin ventas aún";
-      
-      const libresPlata = {};
-      perfiles.filter(p => p.estado === "libre").forEach(p => { libresPlata[p.plataforma] = (libresPlata[p.plataforma] || 0) + 1; });
-      const disponibles = Object.keys(libresPlata);
-      let combosHtml = "";
-      if(disponibles.length >= 2) {
-        combosHtml += `<div class="combo-card">⚡ Combo ${disponibles.slice(0,2).join(" + ")} - Precio especial</div>`;
-      }
-      combosHtml += `<div class="combo-card">🎯 Combo del día: Netflix + Disney + HBO Max</div>`;
-      document.getElementById("combosContainer").innerHTML = combosHtml;
-    }
-    
-    function renderResumenes() {
-      const streaming = {};
-      const proveedores = {};
-      perfiles.forEach(p => {
-        const plataforma = p.plataforma || "Otros";
-        if(!streaming[plataforma]) streaming[plataforma] = { total:0, activo:0, proximo:0, vencido:0, libre:0, vendido:0 };
-        streaming[plataforma].total++;
-        streaming[plataforma][p.estado]++;
-        const proveedor = p.proveedor || "Sin proveedor";
-        if(!proveedores[proveedor]) proveedores[proveedor] = { total:0, activo:0, proximo:0, vencido:0, libre:0, vendido:0 };
-        proveedores[proveedor].total++;
-        proveedores[proveedor][p.estado]++;
-      });
-      document.getElementById("resumenStreaming").innerHTML = Object.keys(streaming).sort().map(k => `<div style="font-size:0.7rem; margin-bottom:0.4rem;"><strong>${k}</strong> · ${streaming[k].total} total · ✅${streaming[k].activo||0} ⚠️${streaming[k].proximo||0} ❌${streaming[k].vencido||0} 🆓${streaming[k].libre||0} 💰${streaming[k].vendido||0}</div>`).join('');
-      document.getElementById("resumenProveedores").innerHTML = Object.keys(proveedores).sort().map(k => `<div style="font-size:0.7rem; margin-bottom:0.4rem;"><strong>${k}</strong> · ${proveedores[k].total} total · ✅${proveedores[k].activo||0} ⚠️${proveedores[k].proximo||0} ❌${proveedores[k].vencido||0} 🆓${proveedores[k].libre||0} 💰${proveedores[k].vendido||0}</div>`).join('');
+      const ventas = perfiles.filter(p => p.fechaVenta && p.fechaVenta.startsWith(new Date().toISOString().split('T')[0]));
+      document.getElementById("ventasHoy").innerText = ventas.length;
+      document.getElementById("totalGanado").innerText = "$" + perfiles.reduce((s,p) => s + (p.precioVenta || 0), 0).toLocaleString();
     }
     
     function renderListaPerfiles() {
-      let filtroPlat = document.getElementById("filtroPlataforma").value;
-      const filtroEst = document.getElementById("filtroEstado").value;
-      const busqueda = document.getElementById("buscarTexto").value.toLowerCase().trim();
-      const proveedorFiltro = document.getElementById("filtroProveedor").value.toLowerCase().trim();
-      const fechaDesde = document.getElementById("fechaDesde").value;
-      const fechaHasta = document.getElementById("fechaHasta").value;
-      const otraPlat = document.getElementById("otraPlatFiltro")?.value.toLowerCase().trim();
+      const container = document.getElementById("listaPerfilesCont");
+      if(!container) return;
       
-      // Si seleccionó "Otros", mostrar el input para escribir la plataforma personalizada
-      if(filtroPlat === "Otros") {
-        document.getElementById("otraPlatFiltroDiv").style.display = "block";
-        filtroPlat = otraPlat || "";
-      } else {
-        document.getElementById("otraPlatFiltroDiv").style.display = "none";
-      }
+      const busqueda = document.getElementById("buscarTexto").value.toLowerCase();
+      const fPlat = document.getElementById("filtroPlataforma").value;
+      const fEst = document.getElementById("filtroEstado").value;
       
-      let datos = perfiles.filter(p => {
-        if(filtroPlat && p.plataforma !== filtroPlat && (filtroPlat !== "Otros" || (filtroPlat === "Otros" && !p.plataforma.match(/^(Netflix|Netflix indiv|Disney|HBO Max|Prime video|Spoty|YouTube|Crunchyroll|Paramount)$/)))) return false;
-        if(filtroEst && p.estado !== filtroEst) return false;
-        if(proveedorFiltro && !p.proveedor?.toLowerCase().includes(proveedorFiltro)) return false;
-        if(fechaDesde && p.fechaVencimiento && p.fechaVencimiento < fechaDesde) return false;
-        if(fechaHasta && p.fechaVencimiento && p.fechaVencimiento > fechaHasta) return false;
-        if(busqueda) {
-          const campos = [p.perfilNombre, p.cuentaId, p.mail, p.proveedor, p.whatsappCliente, p.whatsappProveedor, p.plataforma];
-          return campos.some(campo => campo && campo.toLowerCase().includes(busqueda));
-        }
-        return true;
+      let filtered = perfiles.filter(p => {
+        const matchesBusqueda = !busqueda || p.mail.toLowerCase().includes(busqueda) || p.perfilNombre.toLowerCase().includes(busqueda) || (p.cuentaId && p.cuentaId.toLowerCase().includes(busqueda));
+        const matchesPlat = !fPlat || p.plataforma === fPlat;
+        const matchesEst = !fEst || p.estado === fEst;
+        return matchesBusqueda && matchesPlat && matchesEst;
       });
       
-      const activos = datos.filter(p => p.estado !== "libre" && p.estado !== "vendido");
-      const libres = datos.filter(p => p.estado === "libre");
-      const vendidos = datos.filter(p => p.estado === "vendido");
-      const todosActivos = [...activos, ...vendidos];
-      
-      const contAct = document.getElementById("listaActivos");
-      const contLib = document.getElementById("listaLibres");
-      if(!contAct || !contLib) return;
-      
-      if(todosActivos.length === 0) {
-        contAct.innerHTML = '<div class="empty-state">No hay perfiles activos o vendidos</div>';
-      } else {
-        contAct.innerHTML = todosActivos.map(p => crearTarjetaPerfil(p, false)).join('');
-      }
-      
-      if(libres.length === 0) {
-        contLib.innerHTML = '<div class="empty-state">No hay perfiles libres</div>';
-      } else {
-        contLib.innerHTML = libres.map(p => crearTarjetaPerfil(p, true)).join('');
-      }
-      
-      agregarEventosBotones();
-    }
-    
-    function crearTarjetaPerfil(p, esLibre) {
-      const passOculto = '•'.repeat(Math.min(10, (p.password || "").length));
-      let botones = `
-        <button class="action-btn" data-act="wa" data-id="${p.id}"><i class="fab fa-whatsapp"></i> WA Prov</button>
-        <button class="action-btn" data-act="copy" data-id="${p.id}"><i class="fas fa-copy"></i> Copiar</button>
-        <button class="action-btn" data-act="pass" data-id="${p.id}"><i class="fas fa-key"></i> Pass</button>
-        <button class="action-btn" data-act="edit" data-id="${p.id}"><i class="fas fa-edit"></i> Editar</button>
-        <button class="action-btn" data-act="renew" data-id="${p.id}"><i class="fas fa-sync-alt"></i> Renovar</button>
-        <button class="action-btn" data-act="free" data-id="${p.id}"><i class="fas fa-circle"></i> Libre</button>
-        <button class="action-btn" data-act="dup" data-id="${p.id}"><i class="fas fa-copy"></i> Duplicar</button>
-        <button class="action-btn btn-danger" data-act="del" data-id="${p.id}"><i class="fas fa-trash"></i> Eliminar</button>
-      `;
-      
-      if(esLibre) {
-        botones += `<button class="action-btn btn-primary" data-act="sell" data-id="${p.id}"><i class="fas fa-tag"></i> Vender</button>`;
-        botones += `<button class="action-btn" data-act="reassign" data-id="${p.id}"><i class="fas fa-calendar-alt"></i> Reasignar</button>`;
-      }
-      
-      if(p.estado === "vendido" && p.whatsappCliente) {
-        botones += `<button class="action-btn whatsapp-btn" data-act="wacliente" data-id="${p.id}"><i class="fab fa-whatsapp"></i> WA Cliente</button>`;
-      }
-      
-      let fechaTexto = p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : "Sin fecha";
-      if(p.estado === "vendido" && p.fechaVenta) {
-        fechaTexto = `Vendido el ${new Date(p.fechaVenta).toLocaleDateString()}`;
-      }
-      
-      return `
-        <div class="profile-card">
-          <div class="profile-header">
-            <span class="badge">${escapeHtml(p.plataforma)}</span>
-            <span class="badge ${estadoClase(p.estado)}">${estadoTexto(p.estado)}</span>
-            ${p.precioVenta ? `<span class="badge">💰 $${p.precioVenta}</span>` : ''}
-          </div>
-          <div class="profile-info">
-            <strong>${escapeHtml(p.cuentaId || '')} - ${escapeHtml(p.perfilNombre || '')}</strong><br>
-            📧 ${escapeHtml(p.mail || '')}<br>
-            👤 ${escapeHtml(p.proveedor || '')}<br>
-            📅 ${fechaTexto}<br>
-            🔑 <span id="pass-${p.id}">${passOculto}</span>
-            <button class="toggle-password" data-id="${p.id}"><i class="fas fa-eye"></i></button>
-            ${p.whatsappCliente ? `<br>📱 Cliente: ${escapeHtml(p.whatsappCliente)}` : ''}
-            ${p.whatsappProveedor ? `<br>📱 Tu WhatsApp: ${escapeHtml(p.whatsappProveedor)}` : ''}
-          </div>
-          <div class="action-buttons">${botones}</div>
-        </div>
-      `;
-    }
-    
-    function agregarEventosBotones() {
-      document.querySelectorAll(".toggle-password").forEach(btn => {
-        btn.onclick = (e) => {
-          e.stopPropagation();
-          const p = perfiles.find(p => p.id === btn.dataset.id);
-          if(p) {
-            const span = document.getElementById(`pass-${p.id}`);
-            if(span.innerText === '•••••••') {
-              span.innerText = p.password;
-              btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
-            } else {
-              span.innerText = '•••••••';
-              btn.innerHTML = '<i class="fas fa-eye"></i>';
-            }
-          }
-        };
-      });
-      
-      document.querySelectorAll(".action-btn").forEach(btn => {
-        btn.onclick = () => {
-          const id = btn.dataset.id;
-          const act = btn.dataset.act;
-          const p = perfiles.find(p => p.id === id);
-          if(!p) return;
-          if(act === "wa") {
-            if(p.whatsappProveedor) abrirWhatsApp(p.whatsappProveedor, plantillaProveedor(p));
-            else toast("Sin WhatsApp del proveedor");
-          } else if(act === "wacliente") {
-            if(p.whatsappCliente) abrirWhatsApp(p.whatsappCliente, plantillaCliente(p, false));
-            else toast("Sin WhatsApp del cliente");
-          } else if(act === "copy") {
-            navigator.clipboard.writeText(plantillaProveedor(p));
-            toast("Copiado");
-          } else if(act === "pass") {
-            cambiarPass(id);
-          } else if(act === "edit") {
-            editarPerfil(id);
-          } else if(act === "renew") {
-            renovarPerfil(id);
-          } else if(act === "free") {
-            marcarLibre(id);
-          } else if(act === "dup") {
-            duplicarPerfil(id);
-          } else if(act === "del") {
-            eliminarPerfil(id);
-          } else if(act === "sell") {
-            mostrarVentaModal(id);
-          } else if(act === "reassign") {
-            mostrarReasignarModal(id);
-          }
-        };
-      });
-    }
-    
-    function mostrarVentaModal(id) {
-      const p = perfiles.find(p => p.id === id);
-      if(!p) return;
-      pendingVentaId = id;
-      document.getElementById("ventaPerfilInfo").innerHTML = `<strong>${escapeHtml(p.plataforma)} - ${escapeHtml(p.perfilNombre)}</strong><br>Estado actual: ${estadoTexto(p.estado)}`;
-      document.getElementById("ventaPlataforma").value = p.plataforma || "Netflix";
-      document.getElementById("ventaCuentaId").value = p.cuentaId || "";
-      document.getElementById("ventaPerfilNombre").value = p.perfilNombre || "";
-      document.getElementById("ventaMail").value = p.mail || "";
-      document.getElementById("ventaPassword").value = p.password || "";
-      document.getElementById("ventaPin").value = p.pin || "";
-      document.getElementById("ventaFechaVencimiento").value = p.fechaVencimiento || "";
-      document.getElementById("ventaProveedor").value = p.proveedor || "";
-      document.getElementById("ventaPrecio").value = p.precio || 2500;
-      document.getElementById("ventaCliente").value = "";
-      document.getElementById("ventaObservaciones").value = p.observaciones || "";
-      document.getElementById("ventaModal").style.display = "flex";
-    }
-    
-    function mostrarReasignarModal(id) {
-      const p = perfiles.find(p => p.id === id);
-      if(p) {
-        document.getElementById("reasignarPerfilInfo").innerHTML = `${p.plataforma} - ${p.perfilNombre}`;
-        document.getElementById("reasignarFecha").value = p.fechaVencimiento || "";
-        document.getElementById("reasignarModal").style.display = "flex";
-        window.reasignarId = id;
-      }
-    }
-    
-    async function confirmarReasignar() {
-      const nuevaFecha = document.getElementById("reasignarFecha").value;
-      if(!nuevaFecha) {
-        toast("Seleccioná una fecha");
+      if(filtered.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>No se encontraron perfiles</p></div>';
         return;
       }
-      const p = perfiles.find(p => p.id === window.reasignarId);
-      if(p) {
-        p.fechaVencimiento = nuevaFecha;
-        p.estado = obtenerEstado(nuevaFecha);
-        await guardarPerfiles();
-        actualizarTodo();
-        toast("Fecha reasignada");
-        document.getElementById("reasignarModal").style.display = "none";
-      }
-    }
-    
-    async function cambiarPass(id) {
-      const p = perfiles.find(p => p.id === id);
-      if(p) {
-        const nueva = prompt("Nueva contraseña (mínimo 6 caracteres):");
-        if(nueva && nueva.length >= 6) {
-          const confirmar = prompt("Confirmar nueva contraseña:");
-          if(confirmar === nueva) {
-            p.password = nueva;
-            await guardarPerfiles();
-            actualizarTodo();
-            toast("Contraseña actualizada");
-          } else {
-            toast("Las contraseñas no coinciden");
-          }
-        } else if(nueva) {
-          toast("La contraseña debe tener al menos 6 caracteres");
-        }
-      }
-    }
-    
-    function renderHistorial() {
-      const fp = document.getElementById("historialFiltroPlataforma").value;
-      const busqueda = document.getElementById("historialBuscar").value.toLowerCase();
-      let ventas = perfiles.filter(p => p.fechaVenta);
-      if(fp) ventas = ventas.filter(p => p.plataforma === fp);
-      if(busqueda) ventas = ventas.filter(p => p.perfilNombre.toLowerCase().includes(busqueda) || (p.whatsappCliente && p.whatsappCliente.toLowerCase().includes(busqueda)));
-      ventas.sort((a,b) => new Date(b.fechaVenta) - new Date(a.fechaVenta));
-      const container = document.getElementById("historialLista");
-      if(ventas.length === 0) {
-        container.innerHTML = '<div class="empty-state">No hay ventas registradas</div>';
-      } else {
-        container.innerHTML = ventas.map(p => `
-          <div class="profile-card">
-            <div class="profile-header"><span class="badge">${escapeHtml(p.plataforma)}</span><span class="badge badge-success">Vendido</span></div>
-            <div class="profile-info"><strong>${escapeHtml(p.perfilNombre)}</strong><br>💰 $${p.precioVenta}<br>📅 ${new Date(p.fechaVenta).toLocaleDateString()}<br>👤 Cliente: ${p.whatsappCliente || "No especificado"}</div>
-            <div class="action-buttons"><button class="action-btn reenviar-wa" data-numero="${p.whatsappCliente || ''}" data-mensaje="${escapeHtml(plantillaCliente(p, true))}"><i class="fab fa-whatsapp"></i> Reenviar plantilla</button></div>
+      
+      container.innerHTML = filtered.map(p => `
+        <div class="profile-card ${p.estado}">
+          <div class="card-header">
+            <span class="plat-badge">${p.plataforma}</span>
+            <span class="status-badge ${p.estado}">${estadoTexto(p.estado)}</span>
           </div>
-        `).join('');
-      }
-      document.querySelectorAll(".reenviar-wa").forEach(btn => {
-        btn.onclick = () => {
-          const numero = btn.dataset.numero;
-          const mensaje = btn.dataset.mensaje;
-          if(numero) abrirWhatsApp(numero, mensaje);
-          else toast("Sin número de cliente");
-        };
-      });
+          <div class="card-body">
+            <h3>${p.perfilNombre}</h3>
+            <p><i class="fas fa-envelope"></i> ${p.mail}</p>
+            <p><i class="fas fa-key"></i> ${p.password}</p>
+            ${p.pin ? `<p><i class="fas fa-thumbtack"></i> PIN: ${p.pin}</p>` : ''}
+            <p><i class="fas fa-calendar-alt"></i> Vence: ${formatearFecha(p.fechaVencimiento)}</p>
+            ${p.whatsappCliente ? `<p><i class="fab fa-whatsapp"></i> Cliente: ${p.whatsappCliente}</p>` : ''}
+          </div>
+          <div class="card-actions">
+            <button onclick="abrirWhatsApp('${p.whatsappProveedor}', '${plantillaProveedor(p)}')" class="btn-icon" title="WhatsApp Proveedor"><i class="fab fa-whatsapp"></i></button>
+            <button onclick="editarPerfil('${p.id}')" class="btn-icon" title="Editar"><i class="fas fa-edit"></i></button>
+            <button onclick="renovarPerfil('${p.id}')" class="btn-icon" title="Renovar"><i class="fas fa-sync"></i></button>
+            ${p.estado === 'libre' ? `<button onclick="mostrarVentaModal('${p.id}')" class="btn-icon sell" title="Vender"><i class="fas fa-tag"></i></button>` : ''}
+            <button onclick="eliminarPerfil('${p.id}')" class="btn-icon delete" title="Borrar"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
     }
     
     function actualizarPanelMiCuenta() {
       if(!currentUser) return;
-      document.getElementById("perfilEmail").innerHTML = currentUser.email || "-";
-      document.getElementById("perfilPlan").innerHTML = planEstado === "token" ? "PRO - PREMIUM" : (planEstado === "bloqueado" ? "BLOQUEADO" : "DEMO - PRUEBA");
-      document.getElementById("perfilDiasRestantes").innerHTML = planEstado === "token" ? "✅ Suscripción activa" : (planEstado === "bloqueado" ? "⚠️ Período expirado - Ingresá un token" : `🎯 ${diasPruebaRestantes} días restantes`);
-      document.getElementById("perfilTotalPerfiles").innerHTML = perfiles.length;
-      document.getElementById("perfilTotalVentas").innerHTML = perfiles.filter(p => p.fechaVenta).length;
-      document.getElementById("perfilGanado").innerHTML = "$" + perfiles.reduce((s,p) => s + (p.precioVenta || 0), 0).toLocaleString();
-      document.getElementById("perfilActivos").innerHTML = perfiles.filter(p => p.estado === "activo" || p.estado === "proximo").length;
+      document.getElementById("perfilEmail").innerText = currentUser.email;
+      document.getElementById("perfilPlan").innerText = planEstado === "token" ? "PRO PREMIUM" : (planEstado === "demo" ? "DEMO" : "BLOQUEADO");
+      document.getElementById("perfilDiasRestantes").innerText = diasPruebaRestantes + " días";
       
-      const progresoBarra = document.getElementById("progresoBarra");
-      const progresoTexto = document.getElementById("progresoTexto");
-      const fechaExpiracionSpan = document.getElementById("fechaExpiracionTexto");
-      if(planEstado === "token") {
-        const totalDias = DIAS_TOKEN;
-        const progreso = (diasPruebaRestantes / totalDias) * 100;
-        if(progresoBarra) progresoBarra.style.width = `${progreso}%`;
-        if(progresoTexto) progresoTexto.innerText = `${diasPruebaRestantes} días restantes del plan PRO`;
-        if(fechaExpiracionSpan) fechaExpiracionSpan.innerText = `+${diasPruebaRestantes} días`;
-      } else if(planEstado === "demo") {
-        const totalDias = DIAS_PRUEBA_GRATIS;
-        const progreso = (diasPruebaRestantes / totalDias) * 100;
-        if(progresoBarra) progresoBarra.style.width = `${progreso}%`;
-        if(progresoTexto) progresoTexto.innerText = `${diasPruebaRestantes} días restantes de prueba`;
-        if(fechaExpiracionSpan) fechaExpiracionSpan.innerText = `+${diasPruebaRestantes} días`;
-      } else {
-        if(progresoBarra) progresoBarra.style.width = "0%";
-        if(progresoTexto) progresoTexto.innerText = "Cuenta bloqueada";
-        if(fechaExpiracionSpan) fechaExpiracionSpan.innerText = "Expirado";
+      const bar = document.getElementById("progresoBarra");
+      if(bar) {
+        const perc = planEstado === "token" ? (diasPruebaRestantes/30)*100 : (diasPruebaRestantes/3)*100;
+        bar.style.width = Math.min(100, perc) + "%";
       }
     }
     
     function actualizarTodo() {
       actualizarDashboard();
       renderListaPerfiles();
-      renderResumenes();
-      renderHistorial();
       actualizarPanelMiCuenta();
-      const emailEl = document.getElementById("emailEnPerfiles");
-      if(emailEl) emailEl.innerText = currentUser ? currentUser.email : "No logueado";
-    }
-    
-    function actualizarConDebounce() {
-      if(filtroTimeout) clearTimeout(filtroTimeout);
-      filtroTimeout = setTimeout(() => {
-        renderListaPerfiles();
-      }, 300);
     }
     
     function cambiarTab(tabId) {
       document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-      const tp = document.getElementById(`tab-${tabId}`);
-      if(tp) tp.classList.add("active");
+      document.getElementById("tab-" + tabId)?.classList.add("active");
       document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-      const navBtn = document.querySelector(`.nav-btn[data-nav="${tabId}"]`);
-      if(navBtn) navBtn.classList.add("active");
-      if(tabId === "micuenta") actualizarPanelMiCuenta();
-      if(tabId === "perfiles") renderListaPerfiles();
-      if(tabId === "dashboard") actualizarDashboard();
-      if(tabId === "historial") renderHistorial();
-      if(tabId === "stats") { actualizarDashboard(); renderResumenes(); }
-    }
-    
-    function limpiarFiltros() {
-      document.getElementById("filtroPlataforma").value = "";
-      document.getElementById("filtroEstado").value = "";
-      document.getElementById("buscarTexto").value = "";
-      document.getElementById("filtroProveedor").value = "";
-      document.getElementById("fechaDesde").value = "";
-      document.getElementById("fechaHasta").value = "";
-      document.getElementById("otraPlatFiltro").value = "";
-      document.getElementById("otraPlatFiltroDiv").style.display = "none";
-      renderListaPerfiles();
-      toast("Filtros limpiados");
-    }
-    
-    function ordenarPerfiles() {
-      perfiles.sort((a,b) => {
-        if(!a.fechaVencimiento && !b.fechaVencimiento) return 0;
-        if(!a.fechaVencimiento) return 1;
-        if(!b.fechaVencimiento) return -1;
-        const fa = parseFecha(a.fechaVencimiento);
-        const fb = parseFecha(b.fechaVencimiento);
-        if(!fa || !fb) return 0;
-        return ordenAsc ? fa - fb : fb - fa;
-      });
-      ordenAsc = !ordenAsc;
-      guardarPerfiles();
+      document.querySelector(`.nav-btn[data-nav="${tabId}"]`)?.classList.add("active");
       actualizarTodo();
-      toast(ordenAsc ? "Orden ascendente" : "Orden descendente");
     }
     
-    async function resetearVentas() {
-      if(confirm("¿Reiniciar todas las ventas? Los perfiles volverán a estado libre.")) {
-        perfiles.forEach(p => {
-          p.fechaVenta = null;
-          p.precioVenta = null;
-          p.whatsappCliente = "";
-          if(p.estado === "vendido") p.estado = "libre";
-        });
-        await guardarPerfiles();
-        actualizarTodo();
-        toast("Ventas reiniciadas");
-      }
-    }
-    
-    function exportarDatos() {
-      if(perfiles.length === 0) {
-        toast("Sin datos para exportar");
-        return;
-      }
-      const data = JSON.stringify(perfiles);
-      const blob = new Blob([data], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `streamflow_backup_${new Date().toISOString().split('T')[0]}.json`;
-      a.click();
-      toast("Backup exportado");
-    }
-    
-    function importarDatos() {
-      document.getElementById("archivoImportar").click();
-    }
-    
-    async function borrarTodosLosPerfiles() {
-      if(confirm("⚠️ ¿BORRAR TODOS LOS PERFILES? Esta acción no se puede deshacer.")) {
-        const confirmar = prompt("Escribí CONFIRMAR para borrar todo");
-        if(confirmar === "CONFIRMAR") {
-          perfiles = [];
-          await guardarPerfiles();
-          localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
-          actualizarTodo();
-          toast("Todos los datos eliminados");
-        }
-      }
-    }
-    
-    function previsualizarCargaMasiva() {
-      const texto = document.getElementById("batchTexto").value;
-      if(!texto.trim()) {
-        toast("No hay datos para previsualizar");
-        return;
-      }
-      const lineas = texto.split(/\r?\n/);
-      let cuentaActual = {};
-      const cuentas = [];
-      for(const linea of lineas) {
-        const lineaTrim = linea.trim();
-        if(lineaTrim === "" || lineaTrim === "---") {
-          if(Object.keys(cuentaActual).length > 0) {
-            cuentas.push(cuentaActual);
-            cuentaActual = {};
-          }
-          continue;
-        }
-        const partes = lineaTrim.split(/[=:]/);
-        if(partes.length >= 2) {
-          const clave = partes[0].trim().toLowerCase();
-          const valor = partes.slice(1).join(":").trim();
-          if(clave.includes("mail") || clave.includes("email") || clave.includes("correo")) cuentaActual.mail = valor;
-          else if(clave.includes("contraseña") || clave.includes("password") || clave.includes("pass")) cuentaActual.password = valor;
-          else if(clave.includes("perfil") || clave.includes("usuario")) cuentaActual.perfilNombre = valor;
-          else if(clave.includes("proveedor") || clave.includes("vendedor")) cuentaActual.proveedor = valor;
-          else if(clave.includes("vencimiento") || clave.includes("fecha")) cuentaActual.fechaVencimiento = valor;
-          else if(clave.includes("whatsapp") || clave.includes("wa")) cuentaActual.whatsapp = valor;
-        }
-      }
-      if(Object.keys(cuentaActual).length > 0) cuentas.push(cuentaActual);
-      const resultadosDiv = document.getElementById("batchResultados");
-      resultadosDiv.style.display = "block";
-      resultadosDiv.innerHTML = `<strong>📋 Previsualización (${cuentas.length} cuentas encontradas)</strong><br>${cuentas.map((c, i) => `${i+1}. ${c.perfilNombre || "Sin nombre"} - ${c.mail || "Sin email"} - ${c.proveedor || "Sin proveedor"}`).join('<br>')}<br><small>✅ Verifica que los datos sean correctos antes de cargar.</small>`;
-    }
-    
-    async function cargarMasiva() {
-      const texto = document.getElementById("batchTexto").value;
-      if(!texto.trim()) {
-        toast("No hay datos para cargar");
-        return;
-      }
-      const lineas = texto.split(/\r?\n/);
-      let cuentaActual = {};
-      let agregadas = 0;
-      for(const linea of lineas) {
-        const lineaTrim = linea.trim();
-        if(lineaTrim === "" || lineaTrim === "---") {
-          if(Object.keys(cuentaActual).length > 0 && cuentaActual.mail && cuentaActual.password && cuentaActual.perfilNombre && cuentaActual.proveedor) {
-            perfiles.push({
-              id: generarIdUnico(),
-              plataforma: "Carga masiva",
-              cuentaId: "MASIVA_" + Date.now(),
-              perfilNombre: cuentaActual.perfilNombre,
-              mail: cuentaActual.mail,
-              password: cuentaActual.password,
-              pin: "",
-              fechaVencimiento: cuentaActual.fechaVencimiento || null,
-              proveedor: cuentaActual.proveedor,
-              whatsappProveedor: cuentaActual.whatsapp || "",
-              observaciones: "",
-              precio: null,
-              estado: cuentaActual.fechaVencimiento ? obtenerEstado(cuentaActual.fechaVencimiento) : "libre",
-              fechaVenta: null,
-              precioVenta: null,
-              whatsappCliente: ""
-            });
-            agregadas++;
-          }
-          cuentaActual = {};
-          continue;
-        }
-        const partes = lineaTrim.split(/[=:]/);
-        if(partes.length >= 2) {
-          const clave = partes[0].trim().toLowerCase();
-          const valor = partes.slice(1).join(":").trim();
-          if(clave.includes("mail") || clave.includes("email") || clave.includes("correo")) cuentaActual.mail = valor;
-          else if(clave.includes("contraseña") || clave.includes("password") || clave.includes("pass")) cuentaActual.password = valor;
-          else if(clave.includes("perfil") || clave.includes("usuario")) cuentaActual.perfilNombre = valor;
-          else if(clave.includes("proveedor") || clave.includes("vendedor")) cuentaActual.proveedor = valor;
-          else if(clave.includes("vencimiento") || clave.includes("fecha")) cuentaActual.fechaVencimiento = valor;
-          else if(clave.includes("whatsapp") || clave.includes("wa")) cuentaActual.whatsapp = valor;
-        }
-      }
-      if(Object.keys(cuentaActual).length > 0 && cuentaActual.mail && cuentaActual.password && cuentaActual.perfilNombre && cuentaActual.proveedor) {
-        perfiles.push({
-          id: generarIdUnico(),
-          plataforma: "Carga masiva",
-          cuentaId: "MASIVA_" + Date.now(),
-          perfilNombre: cuentaActual.perfilNombre,
-          mail: cuentaActual.mail,
-          password: cuentaActual.password,
-          pin: "",
-          fechaVencimiento: cuentaActual.fechaVencimiento || null,
-          proveedor: cuentaActual.proveedor,
-          whatsappProveedor: cuentaActual.whatsapp || "",
-          observaciones: "",
-          precio: null,
-          estado: cuentaActual.fechaVencimiento ? obtenerEstado(cuentaActual.fechaVencimiento) : "libre",
-          fechaVenta: null,
-          precioVenta: null,
-          whatsappCliente: ""
-        });
-        agregadas++;
-      }
-      if(agregadas > 0) {
-        await guardarPerfiles();
-        actualizarTodo();
-        toast(`✅ ${agregadas} perfiles cargados correctamente`);
-        document.getElementById("batchTexto").value = "";
-        document.getElementById("batchResultados").style.display = "none";
+    // ============ INICIALIZACIÓN ============
+    auth.onAuthStateChanged(user => {
+      if(user) {
+        currentUser = user;
+        document.getElementById("loginWrapper").style.display = "none";
+        document.getElementById("appContainer").style.display = "flex";
+        document.getElementById("bottomNavBar").style.display = "flex";
+        verificarSuscripcion(user.uid);
+        iniciarListenerFirestore(user.uid);
       } else {
-        toast("No se encontraron perfiles válidos para cargar");
-      }
-    }
-    
-    // ============ CONFIGURACIÓN LOCAL ============
-    function guardarConfigLocal() {
-      localStorage.setItem("streamflow_config", JSON.stringify({
-        tema: document.body.classList.contains("light") ? "light" : "dark",
-        kiosco: kioscoMode,
-        notifications: notificationsEnabled,
-        diasProximo: DIAS_PROXIMO
-      }));
-    }
-    
-    function cargarConfigLocal() {
-      const saved = localStorage.getItem("streamflow_config");
-      if(saved) {
-        try {
-          const cfg = JSON.parse(saved);
-          if(cfg.tema === "light") document.body.classList.add("light");
-          document.getElementById("themeToggle").checked = cfg.tema === "light";
-          kioscoMode = cfg.kiosco || false;
-          document.getElementById("kioscoToggle").checked = kioscoMode;
-          notificationsEnabled = cfg.notifications !== false;
-          document.getElementById("notificationsToggle").checked = notificationsEnabled;
-          DIAS_PROXIMO = cfg.diasProximo || 3;
-          document.getElementById("diasProximoConfig").value = DIAS_PROXIMO;
-        } catch(e) {}
-      }
-    }
-    
-    // ============ NOTIFICACIONES DE VENCIMIENTO ============
-    function mostrarAvisoVencimientos() {
-      if(!notificationsEnabled) return;
-      const hoy = new Date();
-      hoy.setHours(0,0,0,0);
-      const vencidos = [];
-      const proximos = [];
-      perfiles.forEach(p => {
-        if(!p.fechaVencimiento || p.estado === "libre" || p.estado === "vendido" || !p.whatsappCliente) return;
-        const f = parseFecha(p.fechaVencimiento);
-        if(!f) return;
-        f.setHours(0,0,0,0);
-        const diff = Math.round((f - hoy) / 86400000);
-        if(diff < 0) {
-          vencidos.push(p);
-        } else if(diff <= DIAS_PROXIMO) {
-          proximos.push(p);
-        }
-      });
-      if(vencidos.length > 0 || proximos.length > 0) {
-        let html = "<strong>📢 RECORDATORIO DE VENCIMIENTOS</strong><br><br>";
-        if(vencidos.length > 0) {
-          html += '<span style="color:#ef4444;">🔴 VENCIDOS:</span><br>';
-          vencidos.forEach(p => html += `❌ ${p.plataforma} - ${p.perfilNombre}<br>`);
-        }
-        if(proximos.length > 0) {
-          html += '<br><span style="color:#f5af19;">🟡 PRÓXIMOS A VENCER:</span><br>';
-          proximos.forEach(p => {
-            html += `⚠️ ${p.plataforma} - ${p.perfilNombre} (${formatearFecha(p.fechaVencimiento)})`;
-            if(p.whatsappCliente) {
-              html += ` <button onclick="avisarClienteVencimiento('${p.id}')" style="background:#25D366; color:#fff; border:none; border-radius:1rem; padding:0.2rem 0.6rem; font-size:0.65rem; cursor:pointer;"><i class="fab fa-whatsapp"></i> Avisar</button>`;
-            }
-            html += "<br>";
-          });
-        }
-        document.getElementById("vencimientoModalMensaje").innerHTML = html;
-        document.getElementById("vencimientoModal").style.display = "flex";
-      }
-    }
-    
-    window.avisarClienteVencimiento = function(perfilId) {
-      const p = perfiles.find(p => p.id === perfilId);
-      if(p && p.whatsappCliente) {
-        const fechaVence = p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : "próximamente";
-        const mensaje = `🔔 *AVISO DE VENCIMIENTO* 🔔\n\nHola,\n\nTu cuenta de *${p.plataforma}* (Perfil: ${p.perfilNombre}) está próxima a vencer.\n\n📅 *Vence el:* ${fechaVence}\n\nPor favor, contactanos para renovarla y seguir disfrutando del servicio sin interrupciones.\n\n¡Gracias por confiar en nosotros! 🙏`;
-        abrirWhatsApp(p.whatsappCliente, mensaje);
-      } else {
-        toast("No hay WhatsApp del cliente registrado");
-      }
-    };
-    
-    // ============ EVENT LISTENERS ============
-    document.getElementById("platCompleta")?.addEventListener("change", function() {
-      document.getElementById("otraPlatCompletaDiv").style.display = this.value === "Otros" ? "block" : "none";
-    });
-    
-    document.getElementById("platIndividual")?.addEventListener("change", function() {
-      document.getElementById("otraPlatIndividualDiv").style.display = this.value === "Otros" ? "block" : "none";
-    });
-    
-    document.getElementById("filtroPlataforma")?.addEventListener("change", function() {
-      if(this.value === "Otros") {
-        document.getElementById("otraPlatFiltroDiv").style.display = "block";
-      } else {
-        document.getElementById("otraPlatFiltroDiv").style.display = "none";
-        renderListaPerfiles();
+        currentUser = null;
+        document.getElementById("loginWrapper").style.display = "flex";
+        document.getElementById("appContainer").style.display = "none";
+        document.getElementById("bottomNavBar").style.display = "none";
       }
     });
     
-    document.getElementById("otraPlatFiltro")?.addEventListener("input", renderListaPerfiles);
-    
-    document.getElementById("showRegister")?.addEventListener("click", () => {
-      document.getElementById("loginPanel").style.display = "none";
-      document.getElementById("registerPanel").style.display = "block";
-    });
-    
-    document.getElementById("showLogin")?.addEventListener("click", () => {
-      document.getElementById("registerPanel").style.display = "none";
-      document.getElementById("loginPanel").style.display = "block";
-    });
-    
-    document.getElementById("forgotPasswordBtn")?.addEventListener("click", () => {
-      document.getElementById("resetPasswordModal").style.display = "flex";
-    });
-    
-    document.getElementById("modalCancelBtn")?.addEventListener("click", () => {
-      document.getElementById("resetPasswordModal").style.display = "none";
-    });
-    
-    document.getElementById("modalSendBtn")?.addEventListener("click", async () => {
-      const email = document.getElementById("resetEmail").value;
-      if(!email) {
-        toast("Ingresá un email");
-        return;
-      }
-      try {
-        await auth.sendPasswordResetEmail(email);
-        toast("✅ Correo enviado");
-        document.getElementById("resetPasswordModal").style.display = "none";
-      } catch(e) {
-        toast("❌ Error: " + e.message);
-      }
-    });
-    
-    document.getElementById("btnLoginSubmit")?.addEventListener("click", async () => {
-      const email = document.getElementById("loginEmail").value;
-      const pass = document.getElementById("loginPassword").value;
-      if(!email || !pass) {
-        document.getElementById("authError").innerText = "Completá todos los campos";
-        return;
-      }
-      const btn = document.getElementById("btnLoginSubmit");
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Entrando...';
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        if(document.getElementById("rememberMeCheckbox").checked) {
-          localStorage.setItem("recordarEmail", email);
-        }
-        toast("✅ Bienvenido");
-      } catch(e) {
-        document.getElementById("authError").innerText = e.message;
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = "Iniciar sesión";
-      }
-    });
-    
-    document.getElementById("btnRegisterSubmit")?.addEventListener("click", async () => {
-      const email = document.getElementById("regEmail").value;
-      const pass = document.getElementById("regPassword").value;
-      const confirm = document.getElementById("regPasswordConfirm").value;
-      if(pass !== confirm) {
-        document.getElementById("authError").innerText = "Las contraseñas no coinciden";
-        return;
-      }
-      if(pass.length < 6) {
-        document.getElementById("authError").innerText = "La contraseña debe tener al menos 6 caracteres";
-        return;
-      }
-      const btn = document.getElementById("btnRegisterSubmit");
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Registrando...';
-      try {
-        await auth.createUserWithEmailAndPassword(email, pass);
-        toast("✅ Registro exitoso");
-      } catch(e) {
-        document.getElementById("authError").innerText = e.message;
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = "Registrarse";
-      }
-    });
-    
-    document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-      await auth.signOut();
-      toast("Sesión cerrada");
-    });
-    
-    document.getElementById("btnGuardarCompleta")?.addEventListener("click", guardarCuentaCompleta);
-    
-    document.getElementById("btnGuardarIndividual")?.addEventListener("click", () => {
-      if(editandoId) {
-        guardarPerfilEditado();
-      } else {
-        guardarPerfilIndividual();
-      }
-    });
-    
-    document.getElementById("btnCancelarEdicion")?.addEventListener("click", () => {
-      editandoId = null;
-      limpiarFormularioIndividual();
-      document.getElementById("btnCancelarEdicion").style.display = "none";
-      document.getElementById("btnGuardarIndividual").textContent = "Guardar perfil";
-      toast("Edición cancelada");
-    });
-    
-    document.getElementById("btnExportar")?.addEventListener("click", exportarDatos);
-    document.getElementById("btnImportar")?.addEventListener("click", importarDatos);
-    document.getElementById("btnBorrarTodo")?.addEventListener("click", borrarTodosLosPerfiles);
-    document.getElementById("btnOrdenar")?.addEventListener("click", ordenarPerfiles);
-    document.getElementById("btnLimpiarFiltros")?.addEventListener("click", limpiarFiltros);
-    document.getElementById("btnResetVentas")?.addEventListener("click", resetearVentas);
-    document.getElementById("btnPrevisualizar")?.addEventListener("click", previsualizarCargaMasiva);
-    document.getElementById("btnCargarMasivo")?.addEventListener("click", cargarMasiva);
-    
-    document.getElementById("btnValidarToken")?.addEventListener("click", async () => {
-      const token = document.getElementById("tokenAcceso").value;
-      if(!token) {
-        toast("Ingresá un token");
-        return;
-      }
-      if(!currentUser) {
-        toast("Iniciá sesión primero");
-        return;
-      }
-      showLoader("Validando token...");
-      const resultado = await validarToken(token, currentUser.uid);
-      hideLoader();
-      toast(resultado.mensaje);
-      if(resultado.valido) {
-        document.getElementById("tokenAcceso").value = "";
-        document.getElementById("tokenEstado").innerHTML = `<span style="color:#10b981;">✅ ${resultado.mensaje}</span>`;
-        actualizarPanelMiCuenta();
-        aplicarBloqueoApp();
-      } else {
-        document.getElementById("tokenEstado").innerHTML = `<span style="color:#ef4444;">❌ ${resultado.mensaje}</span>`;
-      }
-    });
-    
-    document.getElementById("btnWhatsAppToken")?.addEventListener("click", () => {
-      abrirWhatsApp(WHATSAPP_TOKEN_NUMBER, "Hola, quiero comprar un token para StreamFlow Pro. ¿Me ayudas?");
-    });
-    
-    document.getElementById("btnIrToken")?.addEventListener("click", () => cambiarTab("ajustes"));
-    document.getElementById("btnCerrarSesion")?.addEventListener("click", async () => {
-      await auth.signOut();
-    });
-    document.getElementById("btnAbrirManual")?.addEventListener("click", () => cambiarTab("ayuda"));
-    document.getElementById("btnVolverDeAyuda")?.addEventListener("click", () => cambiarTab("ajustes"));
-    document.getElementById("btnAcercaDe")?.addEventListener("click", () => {
-      document.getElementById("acercaModal").style.display = "flex";
-    });
-    document.getElementById("acercaCerrar")?.addEventListener("click", () => {
-      document.getElementById("acercaModal").style.display = "none";
-    });
-    
-    document.getElementById("ventaConfirmar")?.addEventListener("click", async () => {
-      if(pendingVentaId) {
-        await venderPerfil(pendingVentaId, {
-          plataforma: document.getElementById("ventaPlataforma").value,
-          cuentaId: document.getElementById("ventaCuentaId").value,
-          perfilNombre: document.getElementById("ventaPerfilNombre").value,
-          mail: document.getElementById("ventaMail").value,
-          password: document.getElementById("ventaPassword").value,
-          pin: document.getElementById("ventaPin").value,
-          fechaVencimiento: document.getElementById("ventaFechaVencimiento").value,
-          proveedor: document.getElementById("ventaProveedor").value,
-          precio: document.getElementById("ventaPrecio").value,
-          cliente: document.getElementById("ventaCliente").value,
-          observaciones: document.getElementById("ventaObservaciones").value
-        });
-        document.getElementById("ventaModal").style.display = "none";
-        pendingVentaId = null;
-      }
-    });
-    
-    document.getElementById("ventaCancelar")?.addEventListener("click", () => {
-      document.getElementById("ventaModal").style.display = "none";
-      pendingVentaId = null;
-    });
-    
-    document.getElementById("reasignarConfirmar")?.addEventListener("click", confirmarReasignar);
-    document.getElementById("reasignarCancelar")?.addEventListener("click", () => {
-      document.getElementById("reasignarModal").style.display = "none";
-    });
-    
-    document.getElementById("themeToggle")?.addEventListener("change", (e) => {
-      if(e.target.checked) document.body.classList.add("light");
-      else document.body.classList.remove("light");
-      guardarConfigLocal();
-    });
-    
-    document.getElementById("kioscoToggle")?.addEventListener("change", (e) => {
-      kioscoMode = e.target.checked;
-      guardarConfigLocal();
-      actualizarTodo();
-      if(kioscoMode) toast("Modo kiosco activado - edición deshabilitada");
-      else toast("Modo kiosco desactivado");
-    });
-    
-    document.getElementById("notificationsToggle")?.addEventListener("change", (e) => {
-      notificationsEnabled = e.target.checked;
-      guardarConfigLocal();
-      if(notificationsEnabled) mostrarAvisoVencimientos();
-    });
-    
-    document.getElementById("diasProximoConfig")?.addEventListener("change", (e) => {
-      DIAS_PROXIMO = parseInt(e.target.value) || 3;
-      guardarConfigLocal();
-      actualizarTodo();
-    });
-    
-    document.getElementById("btnExportConfig")?.addEventListener("click", () => {
-      const config = {
-        tema: document.body.classList.contains("light") ? "light" : "dark",
-        kiosco: kioscoMode,
-        notifications: notificationsEnabled,
-        diasProximo: DIAS_PROXIMO
-      };
-      const blob = new Blob([JSON.stringify(config)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.download = "streamflow_config.json";
-      a.href = URL.createObjectURL(blob);
-      a.click();
-      toast("Configuración exportada");
-    });
-    
-    document.getElementById("btnImportConfig")?.addEventListener("click", () => {
-      document.getElementById("archivoConfig").click();
-    });
-    
-    document.getElementById("archivoConfig")?.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const cfg = JSON.parse(ev.target.result);
-          if(cfg.tema === "light") document.body.classList.add("light");
-          else document.body.classList.remove("light");
-          document.getElementById("themeToggle").checked = cfg.tema === "light";
-          kioscoMode = cfg.kiosco || false;
-          document.getElementById("kioscoToggle").checked = kioscoMode;
-          notificationsEnabled = cfg.notifications !== false;
-          document.getElementById("notificationsToggle").checked = notificationsEnabled;
-          DIAS_PROXIMO = cfg.diasProximo || 3;
-          document.getElementById("diasProximoConfig").value = DIAS_PROXIMO;
-          guardarConfigLocal();
-          toast("Configuración importada");
-        } catch(err) { toast("Archivo inválido"); }
-      };
-      reader.readAsText(file);
-      e.target.value = "";
-    });
-    
-    document.getElementById("btnResetConfig")?.addEventListener("click", () => {
-      DIAS_PROXIMO = 3;
-      kioscoMode = false;
-      notificationsEnabled = true;
-      document.body.classList.remove("light");
-      document.getElementById("themeToggle").checked = false;
-      document.getElementById("kioscoToggle").checked = false;
-      document.getElementById("notificationsToggle").checked = true;
-      document.getElementById("diasProximoConfig").value = 3;
-      guardarConfigLocal();
-      actualizarTodo();
-      toast("Configuración restablecida");
-    });
-    
-    document.getElementById("archivoImportar")?.addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = async (ev) => {
-        try {
-          const data = JSON.parse(ev.target.result);
-          if(Array.isArray(data) && confirm("¿Reemplazar todos los datos actuales?")) {
-            perfiles = data;
-            await guardarPerfiles();
-            localStorage.setItem("streamflow_perfiles_backup", JSON.stringify(perfiles));
-            actualizarTodo();
-            toast("Datos importados");
-          } else {
-            toast("Archivo inválido");
-          }
-        } catch(err) { toast("Error al leer archivo"); }
-      };
-      reader.readAsText(file);
-      e.target.value = "";
-    });
-    
-    document.getElementById("vencimientoModalCerrar")?.addEventListener("click", () => {
-      document.getElementById("vencimientoModal").style.display = "none";
-    });
-    
-    document.getElementById("syncStatus")?.addEventListener("click", async () => {
-      if(currentUser) {
-        await guardarPerfiles();
-        toast("Sincronización manual completada");
-      } else {
-        toast("No hay usuario logueado");
-      }
-    });
-    
-    document.getElementById("filtroPlataforma")?.addEventListener("change", actualizarConDebounce);
-    document.getElementById("filtroEstado")?.addEventListener("change", actualizarConDebounce);
-    document.getElementById("buscarTexto")?.addEventListener("input", actualizarConDebounce);
-    document.getElementById("filtroProveedor")?.addEventListener("input", actualizarConDebounce);
-    document.getElementById("fechaDesde")?.addEventListener("change", actualizarConDebounce);
-    document.getElementById("fechaHasta")?.addEventListener("change", actualizarConDebounce);
-    document.getElementById("historialFiltroPlataforma")?.addEventListener("change", renderHistorial);
-    document.getElementById("historialBuscar")?.addEventListener("input", () => setTimeout(renderHistorial, 300));
-    
+    // Event Listeners Globales
     document.querySelectorAll(".nav-btn").forEach(btn => {
-      btn.addEventListener("click", () => cambiarTab(btn.dataset.nav));
+      btn.onclick = () => cambiarTab(btn.dataset.nav);
     });
     
     document.querySelectorAll(".carga-tab").forEach(btn => {
-      btn.addEventListener("click", () => {
+      btn.onclick = () => {
         document.querySelectorAll(".carga-tab").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         const mod = btn.dataset.mod;
         document.getElementById("modo-completa").style.display = mod === "completa" ? "block" : "none";
         document.getElementById("modo-individual").style.display = mod === "individual" ? "block" : "none";
-        document.getElementById("modo-masiva").style.display = mod === "masiva" ? "block" : "none";
-        editandoId = null;
-        document.getElementById("btnCancelarEdicion").style.display = "none";
-        document.getElementById("btnGuardarIndividual").textContent = "Guardar perfil";
-      });
+      };
     });
     
-    document.querySelectorAll("#manualQuickNav .quick-link").forEach(link => {
-      link.addEventListener("click", () => {
-        const section = link.dataset.section;
-        const target = document.getElementById(`manual-${section}`);
-        if(target) {
-          target.scrollIntoView({ behavior: "smooth" });
-          target.querySelector(".manual-section-body")?.classList.add("open");
-        }
-      });
+    document.getElementById("btnValidarToken")?.addEventListener("click", async () => {
+      const t = document.getElementById("tokenInput").value;
+      if(!t) return toast("Ingresá un token");
+      showLoader("Validando...");
+      const res = await validarToken(t, currentUser.uid);
+      hideLoader();
+      toast(res.mensaje);
     });
     
-    document.querySelectorAll(".manual-section-header").forEach(header => {
-      header.addEventListener("click", () => {
-        const body = header.nextElementSibling;
-        const icon = header.querySelector("i");
-        body.classList.toggle("open");
-        if(body.classList.contains("open")) {
-          icon.classList.remove("fa-chevron-right");
-          icon.classList.add("fa-chevron-down");
-        } else {
-          icon.classList.remove("fa-chevron-down");
-          icon.classList.add("fa-chevron-right");
-        }
-      });
-    });
+    document.getElementById("logoutBtn")?.addEventListener("click", () => auth.signOut());
     
-    document.getElementById("manualSearch")?.addEventListener("input", function() {
-      const query = this.value.toLowerCase().trim();
-      const secciones = document.querySelectorAll(".manual-section");
-      let found = 0;
-      secciones.forEach(seccion => {
-        if(!query || seccion.textContent.toLowerCase().includes(query)) {
-          seccion.style.display = "block";
-          found++;
-        } else {
-          seccion.style.display = "none";
-        }
-      });
-      const resultsDiv = document.getElementById("manualSearchResults");
-      if(query) {
-        resultsDiv.style.display = "block";
-        resultsDiv.innerHTML = `🔍 ${found} resultado(s) para "<strong>${escapeHtml(query)}</strong>"`;
-      } else {
-        resultsDiv.style.display = "none";
-      }
-    });
-    
-    // ============ INICIALIZACIÓN ============
-    cargarConfigLocal();
-    
-    const emailGuardado = localStorage.getItem("recordarEmail");
-    if(emailGuardado) {
-      document.getElementById("loginEmail").value = emailGuardado;
-      document.getElementById("rememberMeCheckbox").checked = true;
-    }
-    
-    auth.onAuthStateChanged(async (user) => {
-      if(user) {
-        currentUser = user;
-        document.getElementById("loginWrapper").style.display = "none";
-        document.getElementById("appContainer").style.display = "flex";
-        const nav = document.getElementById("bottomNavBar");
-        if(nav) nav.style.display = "flex";
-        document.body.style.overflow = "hidden";
-        document.body.style.height = "100vh";
-        document.body.style.position = "fixed";
-        document.body.style.width = "100%";
-        await verificarSuscripcion(user.uid);
-        await cargarPerfiles();
-        iniciarListenerFirestore(user.uid);
-        toast("Bienvenido " + user.email);
-        if(notificationsEnabled) mostrarAvisoVencimientos();
-      } else {
-        currentUser = null;
-        document.getElementById("loginWrapper").style.display = "flex";
-        document.getElementById("appContainer").style.display = "none";
-        const nav2 = document.getElementById("bottomNavBar");
-        if(nav2) nav2.style.display = "none";
-        document.body.style.overflow = "";
-        document.body.style.height = "";
-        document.body.style.position = "";
-        document.body.style.width = "";
-        if(unsubscribeFirestore) unsubscribeFirestore();
-      }
-    });
-  
-
-
-
-(function(){
-  // StreamFlow Pro - CEREBRO CENTRAL & SOPORTE
-  const body = document.body;
-  const chatDiv = document.createElement("div");
-  chatDiv.id = "nexusContainer";
-  chatDiv.style.display = "none";
-  chatDiv.innerHTML = `
-    <style>
-      .nexus-suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-      .nexus-suggest button { 
-        background: rgba(99, 102, 241, 0.1); 
-        border: 1px solid rgba(99, 102, 241, 0.3); 
-        color: #fff; 
-        padding: 6px 12px; 
-        border-radius: 20px; 
-        font-size: 0.75rem; 
-        cursor: pointer; 
-        transition: all 0.3s;
-      }
-      .nexus-suggest button:hover { background: #6366f1; border-color: #6366f1; }
-      .nexus-chat-window { display: none; flex-direction: column; }
-    </style>
-    <div class="nexus-chat-bubble" id="nexusBubble"><i class="fas fa-brain"></i></div>
-    <div class="nexus-chat-window" id="nexusWindow">
-      <div class="nexus-chat-header">
-        <div style="display:flex; align-items:center; gap:8px;"><i class="fas fa-brain"></i><span style="font-weight:700; font-size:0.9rem;">Nexus IA</span></div>
-        <i class="fas fa-times" id="closeNexus" style="cursor:pointer;"></i>
-      </div>
-      <div class="nexus-chat-body" id="nexusChat">
-        <div class="nexus-msg bot">¡Hola Florencia! 😊 Soy Nexus. Borré el manual viejo porque ahora yo soy tu guía completa. ¿Qué necesitás resolver?</div>
-        <div class="nexus-suggest" id="nexusSuggest">
-           <button onclick="window.nexusAsk('¿Cómo cargo cuentas?')">Cargar cuentas ➕</button>
-           <button onclick="window.nexusAsk('¿Cómo funcionan los vencimientos?')">Vencimientos 📅</button>
-           <button onclick="window.nexusAsk('Ver planes de suscripción')">Precios y Planes 💎</button>
-           <button onclick="window.nexusAsk('¿Cómo renovar un perfil?')">Renovar perfil 🔄</button>
-        </div>
-      </div>
-      <div class="nexus-chat-footer">
-        <input type="text" class="nexus-chat-input" id="nexusInp" placeholder="Escribime cualquier duda...">
-        <button class="nexus-chat-send" id="nexusSendBtn"><i class="fas fa-paper-plane"></i></button>
-      </div>
-    </div>
-  `;
-  body.appendChild(chatDiv);
-
-  const bubble = document.getElementById("nexusBubble"), win = document.getElementById("nexusWindow"), close = document.getElementById("closeNexus");
-  if(bubble && win && close) {
-    bubble.onclick = () => { win.style.display="flex"; bubble.style.display="none"; };
-    close.onclick = () => { win.style.display="none"; bubble.style.display="flex"; };
-  }
-
-  const inp = document.getElementById("nexusInp"), bdy = document.getElementById("nexusChat");
-  let subStep = 0, userData = {};
-
-  const addMsg = (txt, cl) => {
-    const d = document.createElement("div"); d.className = "nexus-msg " + cl; d.innerText = txt;
-    bdy.appendChild(d); bdy.scrollTop = bdy.scrollHeight;
-    const oldSuggest = document.getElementById("nexusSuggest");
-    if(oldSuggest) oldSuggest.remove();
-  };
-
-  const addSuggest = (options) => {
-    const s = document.createElement("div"); s.className = "nexus-suggest"; s.id = "nexusSuggest";
-    options.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.innerText = opt.t;
-      btn.onclick = () => window.nexusAsk(opt.q || opt.t);
-      s.appendChild(btn);
-    });
-    bdy.appendChild(s); bdy.scrollTop = bdy.scrollHeight;
-  };
-
-  window.nexusAsk = (t) => { inp.value = t; send(); };
-
-  const send = () => {
-    const t = inp.value.trim(); if(!t) return;
-    addMsg(t, "user"); inp.value = "";
-
-    setTimeout(() => {
-      let r = "";
-      const tl = t.toLowerCase();
-
-      // MÓDULO: SUSCRIPCIÓN
-      if(subStep > 0 || tl.includes("suscribir") || tl.includes("suscripcion") || tl.includes("plan")) {
-         if(tl.includes("precio") || tl.includes("plan") || tl.includes("cuanto cuesta")) {
-            r = "Tenemos planes flexibles:\n• 1 Mes: $7.500\n• 3 Meses: $18.000\n• 6 Meses: $32.000\n• 1 Año: $55.000\n¿Querés que te tome los datos para activar uno?";
-            addMsg(r, "bot"); addSuggest([{t: "Sí, quiero suscribirme", q: "Quiero suscribirme"}, {t: "Más adelante", q: "No gracias"}]); return;
-         }
-         if(subStep === 0) { r = "¡Genial! 🚀 Vamos a profesionalizar tu panel. ¿Me decís tu nombre completo?"; subStep = 1; }
-         else if(subStep === 1) { userData.nombre = t; r = "¡Un gusto, " + t + "! ¿Cuál es tu correo para la cuenta?"; subStep = 2; }
-         else if(subStep === 2) { userData.correo = t; r = "Perfecto. ¿De qué país sos y tu WhatsApp con código?"; subStep = 3; }
-         else if(subStep === 3) {
-            userData.contacto = t;
-            r = "¡Listo! Ya agendé tu pedido. 😊 En minutos te hablamos por WhatsApp para activar el acceso total.";
-            subStep = 0;
-            window.open(`https://wa.me/542235590910?text=Nueva suscripción: ${userData.nombre} (${userData.correo})`, '_blank');
-         }
-      }
-      // MÓDULO: MANUAL DE USUARIO (AYUDA)
-      else if(tl.includes("cargar") || tl.includes("crear") || tl.includes("subir")) {
-        r = "Para cargar cuentas tenés 3 opciones en el menú (+):\n1. **Cuenta Completa**: Ideal para combos (ej. Netflix 5 perfiles). Los crea todos de una.\n2. **Individual**: Para cargar un solo perfil suelto.\n3. **Carga Masiva**: Copiás y pegás una lista de correos y listo.";
-      }
-      else if(tl.includes("vencimiento") || tl.includes("fecha") || tl.includes("aviso")) {
-        r = "El sistema te avisa solo. Las cuentas se ponen en ROJO cuando vencen y en NARANJA cuando faltan pocos días (configurable en Ajustes). Además, podés usar el botón 'Avisar' para mandarle la plantilla de cobro al cliente por WhatsApp.";
-      }
-      else if(tl.includes("renovar") || tl.includes("prolongar")) {
-        r = "Para renovar, buscá el perfil y dale al botón 'Renovar' (icono de flechas). Te va a pedir la nueva fecha y ¡listo!, se actualiza y limpia los días restantes.";
-      }
-      else if(tl.includes("borrar") || tl.includes("eliminar")) {
-        r = "Podés eliminar perfiles uno por uno con el tachito rojo, o borrar toda una cuenta completa desde la sección 'Cuentas'. ¡Cuidado que no hay vuelta atrás!";
-      }
-      else if(tl.includes("beneficio") || tl.includes("ventaja")) {
-        r = "Con StreamFlow Pro tenés: Inventario en la nube (no perdés nada), Plantillas de WhatsApp profesionales, Control total de vencimientos y mi ayuda constante para vender más.";
-      }
-      else {
-        r = "Entiendo. Soy tu asistente y manual vivo. Puedo ayudarte con la carga de cuentas, gestión de vencimientos o con tu suscripción. ¿Qué info necesitás?";
-        addMsg(r, "bot");
-        addSuggest([{t: "Cargar cuentas"}, {t: "Vencimientos"}, {t: "Suscripción"}]);
-        return;
-      }
-      addMsg(r, "bot");
-    }, 800);
-  };
-
-  document.getElementById("nexusSendBtn").onclick = send;
-  inp.onkeypress = (e) => { if(e.key === "Enter") send(); };
-
-  // CONTROL DE SISTEMA
-  setInterval(() => {
-    const container = document.getElementById("nexusContainer");
-    const nexusActive = localStorage.getItem("nexus_ia_active") !== "false";
-    const toggle = document.getElementById("nexusToggle");
-    
-    if(toggle) {
-       if(toggle.dataset.hooked !== "true") {
-         toggle.checked = nexusActive;
-         toggle.onchange = () => { localStorage.setItem("nexus_ia_active", toggle.checked); if(typeof toast !== "undefined") toast(toggle.checked ? "Nexus IA activado 🤖" : "Nexus IA desactivado"); };
-         toggle.dataset.hooked = "true";
-       }
-    }
-
-    if(typeof auth !== "undefined" && auth.currentUser && nexusActive) {
-       container.style.display = "block";
-       // LOGICA DE SUSCRIPCION (3 DIAS)
-       const user = auth.currentUser;
-       const creationTime = user.metadata.creationTime;
-       const now = new Date();
-       const created = new Date(creationTime);
-       const diffDays = Math.ceil((now - created) / (1000 * 60 * 60 * 24));
-       
-       // Si el email es el tuyo, eres PRO siempre
-       if(user.email === "florenciaamor36@gmail.com") {
-          window.planEstado = "token";
-          const p = document.getElementById("perfilPlan");
-          if(p && !p.innerHTML.includes("ADMIN PRO")) p.innerHTML = '<i class="fas fa-shield-alt" style="color:#6366f1"></i> ADMIN PRO';
-       } else {
-          // Si pasaron más de 3 días y no tiene "token" en DB (simplificado para front)
-          if(diffDays > 3 && localStorage.getItem("strm_p") !== "active") {
-             window.planEstado = "bloqueado";
-          } else {
-             window.planEstado = "demo";
-          }
-       }
-    } else {
-       container.style.display = "none";
-    }
-  }, 1000);
-})();
+    // Nexus IA Bubble (Simplificado)
+    (function() {
+      const b = document.createElement("div");
+      b.className = "nexus-bubble";
+      b.innerHTML = '<i class="fas fa-brain"></i>';
+      b.onclick = () => toast("Nexus IA: ¿En qué puedo ayudarte hoy?");
+      document.body.appendChild(b);
+    })();
