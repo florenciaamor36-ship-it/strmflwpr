@@ -694,7 +694,7 @@
     body.light .acerca-legal { border-top-color:rgba(0,0,0,0.1); }
   
 
-/* NEXUS IA PREMIUM CSS */
+/* StreamFlow Pro PREMIUM CSS */
 .nexus-chat-bubble { position: fixed; bottom: 85px; right: 20px; width: 55px; height: 55px; border-radius: 50%; background: linear-gradient(145deg, #6366f1, #a855f7); color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4); cursor: pointer; z-index: 1000; transition: transform 0.3s; border: 2px solid rgba(255,255,255,0.2); }
 .nexus-chat-bubble:hover { transform: scale(1.1); }
 .nexus-chat-window { position: fixed; bottom: 150px; right: 20px; width: 320px; height: 450px; background: #0f0c29; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 1.5rem; z-index: 1001; display: none; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
