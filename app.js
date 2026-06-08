@@ -300,45 +300,55 @@
         const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
         const snap = await suscRef.get();
         const ahora = new Date();
+        const user = auth.currentUser;
         
         if(!snap.exists) {
-          const fechaFinPrueba = new Date(ahora);
-          fechaFinPrueba.setDate(fechaFinPrueba.getDate() + DIAS_PRUEBA_GRATIS);
-          await suscRef.set({
-            fechaPrimerIngreso: ahora.toISOString(),
-            estado: "prueba",
-            fechaExpiracion: fechaFinPrueba.toISOString()
-          });
-          appDesbloqueada = true;
-          diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
-          planEstado = "demo";
-          actualizarBadgePlan();
-          actualizarSemaforo();
-          return;
-        }
-        
-        const data = snap.data();
-        const fechaExpiracion = new Date(data.fechaExpiracion);
-        
-        if(data.estado === "prueba") {
-          if(ahora < fechaExpiracion) {
+          const creationTime = user.metadata.creationTime;
+          const created = new Date(creationTime);
+          const diffDays = (ahora - created) / (1000 * 60 * 60 * 24);
+          
+          if(diffDays > DIAS_PRUEBA_GRATIS) {
+            appDesbloqueada = false;
+            planEstado = "bloqueado";
+            diasPruebaRestantes = 0;
+          } else {
+            const fechaFinPrueba = new Date(created);
+            fechaFinPrueba.setDate(fechaFinPrueba.getDate() + DIAS_PRUEBA_GRATIS);
+            
+            await suscRef.set({
+              fechaPrimerIngreso: created.toISOString(),
+              estado: "prueba",
+              fechaExpiracion: fechaFinPrueba.toISOString()
+            });
+            
             appDesbloqueada = true;
-            diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
+            diasPruebaRestantes = Math.ceil((fechaFinPrueba - ahora) / 86400000);
             planEstado = "demo";
-          } else {
-            appDesbloqueada = false;
-            diasPruebaRestantes = 0;
-            planEstado = "bloqueado";
           }
-        } else if(data.estado === "token") {
-          if(ahora < fechaExpiracion) {
-            appDesbloqueada = true;
-            diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
-            planEstado = "token";
-          } else {
-            appDesbloqueada = false;
-            diasPruebaRestantes = 0;
-            planEstado = "bloqueado";
+        } else {
+          const data = snap.data();
+          const fechaExpiracion = new Date(data.fechaExpiracion);
+          
+          if(data.estado === "prueba") {
+            if(ahora < fechaExpiracion) {
+              appDesbloqueada = true;
+              diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
+              planEstado = "demo";
+            } else {
+              appDesbloqueada = false;
+              diasPruebaRestantes = 0;
+              planEstado = "bloqueado";
+            }
+          } else if(data.estado === "token") {
+            if(ahora < fechaExpiracion) {
+              appDesbloqueada = true;
+              diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
+              planEstado = "token";
+            } else {
+              appDesbloqueada = false;
+              diasPruebaRestantes = 0;
+              planEstado = "bloqueado";
+            }
           }
         }
         
@@ -348,9 +358,10 @@
         actualizarPanelMiCuenta();
       } catch(e) {
         console.error("Error al verificar suscripción:", e);
-        appDesbloqueada = true;
-        planEstado = "demo";
+        appDesbloqueada = false;
+        planEstado = "bloqueado";
         actualizarBadgePlan();
+        aplicarBloqueoApp();
       }
     }
     
@@ -446,14 +457,52 @@
         if(!bloqueoMsg) {
           const msg = document.createElement("div");
           msg.id = "bloqueoAppMsg";
-          msg.className = "bloqueo-app-msg";
-          msg.innerHTML = '<i class="fas fa-lock"></i><strong>App bloqueada</strong><br>Tu período de prueba ha expirado o tu token ha vencido.<br>Ingresá un token en Ajustes para continuar.<br><small>⚠️ Tus datos NO se perderán al ingresar un nuevo token.</small>';
+          msg.className = "bloqueo-app-msg-pro";
+          msg.innerHTML = `
+            <div class="lock-card">
+              <div class="lock-icon"><i class="fas fa-crown" style="color:#f5af19; font-size:3.5rem; margin-bottom:1rem; filter:drop-shadow(0 0 15px rgba(245,175,25,0.4));"></i></div>
+              <h3 style="font-size:1.4rem; font-weight:800; margin-bottom:0.5rem;">Tu suscripción ha finalizado</h3>
+              <p style="font-size:0.9rem; opacity:0.9; margin-bottom:1.2rem; line-height:1.5;">Elegí uno de nuestros planes para seguir gestionando tu negocio con <strong>StreamFlow Pro</strong>.</p>
+              <div style="background:rgba(245,175,25,0.08); border:1px solid rgba(245,175,25,0.2); border-radius:14px; padding:10px 12px; margin-bottom:1rem; text-align:left;">
+                <div style="font-size:0.72rem; opacity:0.85; margin-bottom:5px;"><strong>¿Qué incluye la app?</strong></div>
+                <div style="font-size:0.72rem; line-height:1.45; opacity:0.95;">• Venta rápida y renovación de perfiles<br>• Recordatorios automáticos por WhatsApp<br>• Plantillas listas para cliente y vendedor<br>• Carga masiva y cuentas completas<br>• Estadísticas, historial y control de stock</div>
+              </div>
+              <div class="plans-grid">
+                <div class="plan-card">
+                  <div class="plan-name">Plan Mensual</div>
+                  <div class="plan-price">$5.000 <span>/mes</span></div>
+                  <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Gestión ilimitada de perfiles</li>
+                    <li><i class="fas fa-check"></i> Plantillas automáticas WhatsApp</li>
+                    <li><i class="fas fa-check"></i> Cálculo de ganancias</li>
+                    <li><i class="fas fa-check"></i> Recordatorios de vencimiento</li>
+                    <li><i class="fas fa-check"></i> Soporte WhatsApp</li>
+                  </ul>
+                </div>
+                <div class="plan-card featured">
+                  <div class="plan-badge">Ahorrá $18.000</div>
+                  <div class="plan-name">Plan Anual</div>
+                  <div class="plan-price">$42.000 <span>/año</span></div>
+                  <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Todo lo del Mensual</li>
+                    <li><i class="fas fa-check"></i> Carga masiva</li>
+                    <li><i class="fas fa-check"></i> Estadísticas Pro</li>
+                    <li><i class="fas fa-check"></i> Acceso prioritario VIP</li>
+                    <li><i class="fas fa-check"></i> Mejor precio por mes</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="lock-actions">
+                <button onclick="cambiarTab('micuenta')" class="btn btn-primary" style="height:50px; font-weight:700; margin-bottom:10px;"><i class="fas fa-key"></i> INGRESAR TOKEN</button>
+                <button onclick="window.open('https://wa.me/5492236785329?text=Hola,%20quiero%20comprar%20o%20renovar%20mi%20suscripción%20de%20StreamFlow%20Pro', '_blank')" class="btn btn-outline" style="border-color:#25d366; color:#25d366; height:50px; font-weight:600;"><i class="fab fa-whatsapp"></i> COMPRAR POR WHATSAPP</button>
+              </div>
+              <p class="lock-footer" style="font-size:0.7rem; margin-top:1rem; opacity:0.7;"><i class="fas fa-shield-alt"></i> Tus datos están protegidos y se desbloquearán al activar.</p>
+            </div>
+          `;
           const mainContent = document.getElementById("mainContent");
           if(mainContent) mainContent.insertBefore(msg, mainContent.firstChild);
         }
-        if(kioscoMode) {
-          toast("Modo bloqueado: solo lectura. Ingresá un token para editar.");
-        }
+        if(kioscoMode) toast("Modo bloqueado: solo lectura. Ingresá un token para editar.");
       } else {
         if(bloqueoMsg) bloqueoMsg.remove();
       }
