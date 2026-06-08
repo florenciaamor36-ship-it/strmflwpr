@@ -1,1 +1,160 @@
-test
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="theme-color" content="#0f0c29">
+  <title>StreamFlow Pro | Gestión Profesional</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Firebase Compat -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <!-- LOGIN WRAPPER -->
+  <div id="loginWrapper" class="login-wrapper" style="display:flex;">
+    <div class="login-card">
+      <h2>StreamFlow Pro</h2>
+      <p>Accedé a tu panel de gestión</p>
+      <div id="login-container">
+        <!-- El contenido se maneja con window.location.href a login.html si no hay sesión, 
+             pero aquí lo dejamos por si se carga directamente -->
+        <div style="display:grid;gap:12px;margin-top:16px;">
+          <input type="email" id="login-email" class="input" placeholder="Email">
+          <input type="password" id="login-pass" class="input" placeholder="Contraseña">
+          <button id="btn-login-index" class="button-submit">Iniciar sesión</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP CONTAINER -->
+  <div id="appContainer" class="app-container" style="display:none;">
+    <header class="main-header">
+      <div class="logo">StreamFlow <span>Pro</span></div>
+      <div id="planBadge" class="plan-badge">DEMO</div>
+    </header>
+
+    <main class="content">
+      <!-- TAB DASHBOARD -->
+      <div id="tab-dashboard" class="tab-panel active">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="label">Total Perfiles</span>
+            <span id="totalPerfiles" class="value">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Libres</span>
+            <span id="libresHoy" class="value">0</span>
+          </div>
+          <div class="stat-card warning">
+            <span class="label">Vencen pronto</span>
+            <span id="vencenHoy" class="value">0</span>
+          </div>
+          <div class="stat-card success">
+            <span class="label">Ventas Hoy</span>
+            <span id="ventasHoy" class="value">0</span>
+          </div>
+        </div>
+        <div class="summary-card">
+          <span class="label">Total Ganado</span>
+          <span id="totalGanado" class="value">$0</span>
+        </div>
+      </div>
+
+      <!-- TAB CARGAR -->
+      <div id="tab-cargar" class="tab-panel">
+        <div class="carga-selector">
+          <button class="carga-tab active" data-mod="completa">Cuenta Completa</button>
+          <button class="carga-tab" data-mod="individual">Individual</button>
+        </div>
+        <div id="modo-completa" class="form-container">
+          <select id="platCompleta" class="input">
+            <option value="Netflix">Netflix</option>
+            <option value="Disney">Disney</option>
+            <option value="HBO Max">HBO Max</option>
+            <option value="Otros">Otros</option>
+          </select>
+          <input type="text" id="mailCompleta" class="input" placeholder="Email de la cuenta">
+          <input type="text" id="passCompleta" class="input" placeholder="Contraseña">
+          <input type="date" id="fechaCompleta" class="input">
+          <button id="btnGuardarCompleta" class="button-submit">Crear Cuenta</button>
+        </div>
+        <div id="modo-individual" class="form-container" style="display:none;">
+          <input type="text" id="perfilIndividual" class="input" placeholder="Nombre del Perfil">
+          <input type="text" id="mailIndividual" class="input" placeholder="Email">
+          <input type="text" id="passIndividual" class="input" placeholder="Contraseña">
+          <button id="btnGuardarIndividual" class="button-submit">Guardar Perfil</button>
+          <button id="btnCancelarEdicion" class="button-submit secondary" style="display:none;">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- TAB PERFILES -->
+      <div id="tab-perfiles" class="tab-panel">
+        <div class="filters">
+          <input type="text" id="buscarTexto" class="input search" placeholder="Buscar por email o perfil...">
+          <div class="filter-row">
+            <select id="filtroPlataforma" class="input">
+              <option value="">Todas</option>
+              <option value="Netflix">Netflix</option>
+            </select>
+            <select id="filtroEstado" class="input">
+              <option value="">Todos</option>
+              <option value="libre">Libres</option>
+              <option value="activo">Activos</option>
+            </select>
+          </div>
+        </div>
+        <div id="listaPerfilesCont" class="profiles-list"></div>
+      </div>
+
+      <!-- TAB CUENTA -->
+      <div id="tab-micuenta" class="tab-panel">
+        <div class="account-card">
+          <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <h3 id="perfilEmail">cargando...</h3>
+            <span id="perfilPlan" class="plan-tag">DEMO</span>
+          </div>
+          <div class="subscription-status">
+            <p>Días restantes: <strong id="perfilDiasRestantes">...</strong></p>
+            <div class="progress-bg"><div id="progresoBarra" class="progress-fill"></div></div>
+          </div>
+          <div class="token-activation">
+            <h4>Activar Token</h4>
+            <div class="input-group">
+              <input type="text" id="tokenInput" class="input" placeholder="SF-XXXX-XXXX-XXXX">
+              <button id="btnValidarToken" class="button-submit">Validar</button>
+            </div>
+          </div>
+          <button id="logoutBtn" class="button-submit logout">Cerrar Sesión</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- NAV BAR -->
+    <nav id="bottomNavBar" class="bottom-nav">
+      <button class="nav-btn active" data-nav="dashboard"><i class="fas fa-th-large"></i><span>Dashboard</span></button>
+      <button class="nav-btn" data-nav="cargar"><i class="fas fa-plus-circle"></i><span>Cargar</span></button>
+      <button class="nav-btn" data-nav="perfiles"><i class="fas fa-list-ul"></i><span>Perfiles</span></button>
+      <button class="nav-btn" data-nav="micuenta"><i class="fas fa-user"></i><span>Cuenta</span></button>
+    </nav>
+  </div>
+
+  <!-- BLOQUEO OVERLAY -->
+  <div id="bloqueoOverlay" class="bloqueo-overlay" style="display:none;">
+    <div class="bloqueo-content">
+      <i class="fas fa-lock"></i>
+      <h2>Acceso Limitado</h2>
+      <p>Tu período de prueba ha terminado. Activá un token para continuar.</p>
+      <button onclick="cambiarTab('micuenta')" class="button-submit">Ir a Mi Cuenta</button>
+    </div>
+  </div>
+
+  <script src="app.js?v=1780929708"></script>
+</body>
+</html>
