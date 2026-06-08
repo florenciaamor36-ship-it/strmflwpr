@@ -48,6 +48,7 @@ auth.onAuthStateChanged(async (user) => {
 async function initApp() {
     showLoader("Iniciando...");
     try {
+        actualizarTodo();
         await verificarSuscripcion(currentUser.uid);
         await cargarPerfiles();
         iniciarListenerFirestore(currentUser.uid);
