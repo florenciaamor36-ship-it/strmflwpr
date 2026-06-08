@@ -1,3 +1,4 @@
+
     /* ============================================ */
     /* RESET Y ESTILOS BASE */
     /* ============================================ */
@@ -691,126 +692,17 @@
     .acerca-info strong { color:#f5af19; }
     .acerca-legal { font-size:0.55rem; opacity:0.6; line-height:1.5; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem; margin-top:1rem; }
     body.light .acerca-legal { border-top-color:rgba(0,0,0,0.1); }
+  
 
-    /* PROFESSIONAL BLOCKING CARD */
-    .bloqueo-app-msg-pro {
-      margin-bottom: 1.5rem;
-      animation: fadeInDown 0.4s ease;
-    }
-    @keyframes fadeInDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
-    .lock-card {
-      background: linear-gradient(160deg, rgba(30, 30, 50, 0.95) 0
-    .lock-card {
-      background: linear-gradient(165deg, #1e1e3f 0%, #0f0c29 100%);
-      border: 1px solid rgba(245, 175, 25, 0.4);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-      color: #fff;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .lock-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(245,175,25,0.05) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .lock-icon {
-      width: 70px;
-      height: 70px;
-      background: rgba(245,175,25,0.15);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      color: #f5af19;
-      font-size: 2.2rem;
-      box-shadow: 0 0 20px rgba(245,175,25,0.2);
-    }
-    .lock-card h3 { 
-      font-size: 1.5rem; 
-      font-weight: 800; 
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #fff 0%, #bbb 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .lock-card p { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.8); margin-bottom: 24px; }
-    
-    .features-box {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 18px;
-      padding: 15px;
-      margin-bottom: 25px;
-      text-align: left;
-    }
-    .features-box strong { 
-      color: #f5af19; 
-      display: block; 
-      margin-bottom: 10px; 
-      font-size: 0.85rem; 
-      text-transform: uppercase; 
-      letter-spacing: 1px;
-    }
-    .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.8rem;
-      margin-bottom: 6px;
-      color: rgba(255,255,255,0.9);
-    }
-    .feature-item i { color: #10b981; font-size: 0.7rem; }
-
-    .plans-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 25px; }
-    
-    .plan-card { 
-      background: rgba(255,255,255,0.05); 
-      border: 1px solid rgba(255,255,255,0.1); 
-      border-radius: 20px; 
-      padding: 20px; 
-      position: relative;
-      transition: transform 0.3s ease;
-    }
-    .plan-card.featured { 
-      border: 2px solid #f5af19; 
-      background: rgba(245,175,25,0.08);
-      transform: scale(1.02);
-    }
-    .plan-badge { 
-      position: absolute; 
-      top: -12px; 
-      right: 20px; 
-      background: #f12711; 
-      color: #fff; 
-      font-size: 0.65rem; 
-      font-weight: 900; 
-      padding: 5px 12px; 
-      border-radius: 20px;
-      box-shadow: 0 4px 10px rgba(241,39,17,0.3);
-    }
-    .plan-name { font-size: 0.9rem; font-weight: 700; opacity: 0.8; margin-bottom: 5px; }
-    .plan-price { font-size: 1.8rem; font-weight: 900; color: #fff; }
-    .plan-price span { font-size: 0.9rem; opacity: 0.6; font-weight: 400; }
-    
-    .lock-actions { display: grid; gap: 12px; }
-    .lock-actions .btn { 
-      height: 55px; 
-      border-radius: 18px; 
-      font-weight: 800; 
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    .btn-wa { border: 1.5px solid #25d366 !important; color: #25d366 !important; background: rgba(37,211,102,0.05) !important; }
-    .lock-footer { font-size: 0.75rem; margin-top: 20px; opacity: 0.6; }
+/* NEXUS IA PREMIUM CSS */
+.nexus-chat-bubble { position: fixed; bottom: 85px; right: 20px; width: 55px; height: 55px; border-radius: 50%; background: linear-gradient(145deg, #6366f1, #a855f7); color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4); cursor: pointer; z-index: 1000; transition: transform 0.3s; border: 2px solid rgba(255,255,255,0.2); }
+.nexus-chat-bubble:hover { transform: scale(1.1); }
+.nexus-chat-window { position: fixed; bottom: 150px; right: 20px; width: 320px; height: 450px; background: #0f0c29; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 1.5rem; z-index: 1001; display: none; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+.nexus-chat-header { padding: 1rem; background: linear-gradient(145deg, #6366f1, #a855f7); display: flex; align-items: center; justify-content: space-between; color: white; }
+.nexus-chat-body { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; background: rgba(0,0,0,0.2); }
+.nexus-msg { padding: 0.7rem 1rem; border-radius: 1rem; font-size: 0.8rem; max-width: 85%; line-height: 1.4; }
+.nexus-msg.bot { background: rgba(255,255,255,0.1); align-self: flex-start; color: #fff; border-bottom-left-radius: 0.2rem; }
+.nexus-msg.user { background: #6366f1; align-self: flex-end; color: #fff; font-weight: 600; border-bottom-right-radius: 0.2rem; }
+.nexus-chat-footer { padding: 0.8rem; display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); }
+.nexus-chat-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 0.6rem 1rem; color: #fff; font-size: 0.85rem; outline: none; }
+.nexus-chat-send { background: #6366f1; color: #fff; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
