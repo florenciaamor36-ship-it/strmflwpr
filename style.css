@@ -700,3 +700,38 @@
     @keyframes fadeInDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
     .lock-card {
       background: linear-gradient(160deg, rgba(30, 30, 50, 0.95) 0
+    .lock-card {
+      background: linear-gradient(160deg, rgba(30, 30, 50, 0.96) 0%, rgba(15, 12, 41, 0.98) 100%);
+      border: 1px solid rgba(245,175,25,0.35);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+      color: #fff;
+    }
+    .lock-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(245,175,25,0.12);
+      margin: 0 auto 14px;
+      color: #f5af19;
+      font-size: 1.6rem;
+    }
+    .lock-card h3 { font-size: 1.2rem; margin: 0 0 8px; }
+    .lock-card p { font-size: 0.82rem; line-height: 1.5; color: #ddd; }
+    .plans-grid { display:grid; grid-template-columns: 1fr; gap: 10px; margin: 14px 0 16px; }
+    .plan-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; position: relative; }
+    .plan-card.featured { border-color: rgba(245,175,25,0.35); background: rgba(245,175,25,0.08); }
+    .plan-badge { position:absolute; top:-10px; right:10px; background:#f12711; color:#fff; font-size:0.62rem; font-weight:800; padding:4px 9px; border-radius:999px; }
+    .plan-name { font-size:0.78rem; font-weight:800; margin-bottom: 4px; }
+    .plan-price { font-size: 1.35rem; font-weight: 900; color: #f5af19; margin-bottom: 8px; }
+    .plan-price span { font-size: 0.75rem; color:#ddd; font-weight:700; }
+    .plan-features { list-style:none; padding:0; margin:0; }
+    .plan-features li { font-size:0.72rem; line-height:1.45; margin-bottom:4px; color:#f4f4f4; }
+    .plan-features i { color:#10b981; margin-right:6px; }
+    .lock-actions { display:grid; gap:10px; margin-top: 10px; }
+    .lock-actions .btn { width:100%; height: 48px; border-radius: 16px; font-weight:800; }
+    .lock-footer { font-size:0.68rem; opacity:0.8; margin-top: 12px; }
