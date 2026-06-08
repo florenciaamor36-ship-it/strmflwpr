@@ -1231,27 +1231,24 @@ const db = firebase.firestore();
       }
     });
     
-    document.getElementById("btnLoginSubmit")?.addEventListener("click", async () => {
-      const email = document.getElementById("loginEmail").value;
-      const pass = document.getElementById("loginPassword").value;
+    document.getElementById("btn-login-index")?.addEventListener("click", async () => {
+      const email = document.getElementById("login-email").value.trim();
+      const pass = document.getElementById("login-pass").value;
       if(!email || !pass) {
-        document.getElementById("authError").innerText = "Completá todos los campos";
+        toast("Completar todos los campos");
         return;
       }
-      const btn = document.getElementById("btnLoginSubmit");
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Entrando...';
+      showLoader("Iniciando sesión...");
       try {
         await auth.signInWithEmailAndPassword(email, pass);
-        if(document.getElementById("rememberMeCheckbox").checked) {
+        if(document.getElementById("rememberMeCheckbox")?.checked) {
           localStorage.setItem("recordarEmail", email);
         }
         toast("✅ Bienvenido");
       } catch(e) {
-        document.getElementById("authError").innerText = e.message;
+        toast("❌ Error: " + e.message);
       } finally {
-        btn.disabled = false;
-        btn.innerHTML = "Iniciar sesión";
+        hideLoader();
       }
     });
     
@@ -1698,28 +1695,21 @@ const db = firebase.firestore();
             document.getElementById("appContainer").style.display = "flex";
             if(nav) nav.style.display = "flex";
             
-            // Branding Admin for Flor
             if (user.email === "florenciaamor36@gmail.com") {
                 const pPlan = document.getElementById('perfilPlan');
                 if(pPlan) pPlan.innerHTML = '<i class="fas fa-shield-alt" style="color:#f5af19"></i> ADMIN PRO';
+            }
             
-            
-            // Transición inmediata para mejor UX
-            document.getElementById("loginWrapper").style.display = "none";
-            document.getElementById("appContainer").style.display = "flex";
-            if(nav) nav.style.display = "flex";
             hideLoader();
-            
-            // Cargas secundarias sin bloquear el inicio
             verificarSuscripcion(user.uid).catch(e => console.error("Error suscripción:", e));
             cargarPerfiles().catch(e => console.error("Error perfiles:", e));
             iniciarListenerFirestore(user.uid);
-         else {
+        } else {
             currentUser = null;
             document.getElementById("loginWrapper").style.display = "flex";
             document.getElementById("appContainer").style.display = "none";
             if(nav) nav.style.display = "none";
             if(unsubscribeFirestore) unsubscribeFirestore();
-        
-    ;
+        }
+    });
 
