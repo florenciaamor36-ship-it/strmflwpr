@@ -19,16 +19,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   
   <link rel="stylesheet" href="style.css">
-
-    <style>
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .4s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-    input:checked + .slider { background-color: #6366f1; }
-    input:checked + .slider:before { transform: translateX(20px); }
-    </style>
-    </head>
+</head>
 <body>
   <div id="loaderOverlay" class="loader-overlay">
     <div class="loader-spinner"></div>
@@ -102,7 +93,6 @@
   <div id="resetPasswordModal" class="modal"><div class="modal-content"><h3><i class="fas fa-key"></i> Restablecer contraseña</h3><p>Ingresa tu correo electrónico y te enviaremos un enlace.</p><input type="email" id="resetEmail" placeholder="tu@email.com"><div class="modal-buttons"><button id="modalSendBtn">Enviar</button><button id="modalCancelBtn">Cancelar</button></div><div id="modalMessage" style="margin-top:1rem; font-size:0.7rem; color:#f5af19;"></div></div></div>
   <div id="vencimientoModal" class="modal"><div class="modal-content modal-content-wide"><h3><i class="fas fa-bell"></i> Recordatorio de vencimientos</h3><div id="vencimientoModalMensaje" style="text-align:left; margin:1rem 0;"></div><div class="modal-buttons"><button id="vencimientoModalCerrar">Cerrar</button></div></div></div>
   
-  <!-- VENTA MODAL - CORREGIDO: se autocompleta con los datos del perfil -->
   <div id="ventaModal" class="modal">
     <div class="modal-content modal-content-wide">
       <h3><i class="fas fa-tag"></i> Vender perfil</h3>
@@ -151,7 +141,7 @@
   <div id="acercaModal" class="modal"><div class="modal-content"><div class="acerca-container"><div class="acerca-logo"><i class="fas fa-gem"></i></div><h3>StreamFlow Pro</h3><div class="acerca-version">Versión 2.0 · Build 2026</div><div class="acerca-info"><strong>Desarrollado y creado por</strong><br><span style="font-size:1rem; font-weight:700; color:#f5af19;">La Clave Argentina & Tienda SSH</span><br><br>Soluciones digitales profesionales para gestión de streaming.<br>Plataforma integral de administración, venta y control de cuentas.<br><br><strong>Tecnologías:</strong> Firebase, HTML5, CSS3, JavaScript ES6+, PWA<br><strong>Arquitectura:</strong> SPA con sincronización en tiempo real</div><div class="acerca-legal">© 2026 La Clave Argentina & Tienda SSH. Todos los derechos reservados.<br><br>Este software está protegido por las leyes de propiedad intelectual de la República Argentina (Ley 11.723) y tratados internacionales de copyright. Queda expresamente prohibida la reproducción, distribución, modificación o ingeniería inversa del código sin autorización expresa por escrito.<br><br>Desarrollado bajo normas de calidad ISO 9001:2015 e ISO/IEC 25010 para calidad de software. Cumple con los estándares de seguridad de datos GDPR y Ley de Protección de Datos Personales 25.326.<br><br><i class="fas fa-shield-alt"></i> Todos los datos se transmiten cifrados mediante protocolos seguros. La información del usuario es confidencial y no se comparte con terceros.</div><div class="modal-buttons" style="margin-top:1rem;"><button id="acercaCerrar"><i class="fas fa-check"></i> Cerrar</button></div></div></div></div>
 
   <!-- APP PRINCIPAL -->
-  <div class="app-container" id="appContainer">
+  <div class="app-container" id="appContainer" style="display:none;">
     <div class="app-header">
       <div class="header-content">
         <div class="logo"><div class="logo-icon"><i class="fas fa-gem"></i></div><div class="logo-text"><h1>StreamFlow Pro</h1><p>GESTIÓN PROFESIONAL</p></div></div>
@@ -182,7 +172,7 @@
         <div class="card"><div class="card-title neon-text"><i class="fas fa-chart-pie"></i> Resumen rápido</div><div id="resumenRapido" style="display:flex; flex-wrap:wrap; gap:0.4rem;"></div></div>
       </div>
 
-      <!-- PERFILES - CON BÚSQUEDA MEJORADA -->
+      <!-- PERFILES -->
       <div id="tab-perfiles" class="tab-panel">
         <div class="card">
           <div class="row" style="margin-bottom:0.8rem"><button id="btnExportar" class="btn btn-success"><i class="fas fa-download"></i> Exportar</button><button id="btnImportar" class="btn btn-outline"><i class="fas fa-upload"></i> Importar</button><input type="file" id="archivoImportar" accept=".json" style="display:none"><button id="btnBorrarTodo" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Borrar</button></div>
@@ -264,86 +254,15 @@
         </div>
       </div>
 
-      <!-- MI CUENTA - CON SEMÁFORO Y SIN DUPLICADOS -->
-      <div id="tab-micuenta" class="tab-panel">
-        <div class="card">
-          <div class="card-title neon-text"><i class="fas fa-id-card"></i> Mi información</div>
-          
-          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;">
-            <div style="display:flex; align-items:center; gap:0.8rem;">
-              <div style="width:50px; height:50px; background:linear-gradient(145deg,#f5af19,#f12711); border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-envelope" style="font-size:1.3rem;"></i></div>
-              <div><div style="font-size:0.65rem; opacity:0.7;">Email registrado</div><div style="font-size:0.9rem; font-weight:700;" id="perfilEmail">Cargando...</div></div>
-            </div>
-          </div>
-
-          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;">
-            <div style="display:flex; align-items:center; gap:0.8rem;">
-              <div style="width:50px; height:50px; background:linear-gradient(145deg,#6366f1,#8b5cf6); border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-crown" style="font-size:1.3rem;"></i></div>
-              <div style="flex:1;"><div style="font-size:0.65rem; opacity:0.7;">Plan actual</div><div style="font-size:1rem; font-weight:800;" id="perfilPlan">DEMO</div><div style="font-size:0.65rem; margin-top:0.3rem;" id="perfilDiasRestantes"></div></div>
-              <div id="perfilPlanBadge" style="padding:0.3rem 0.8rem; border-radius:1.5rem; font-size:0.7rem; font-weight:700;"></div>
-            </div>
-            <div style="margin-top:0.8rem;" id="semaforoPerfil"></div>
-          </div>
-
-          <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1rem; margin-bottom:1rem;">
-            <div style="font-size:0.65rem; margin-bottom:0.5rem;"><span id="progresoTexto">Días restantes</span></div>
-            <div style="background:rgba(255,255,255,0.1); border-radius:1rem; height:12px; overflow:hidden;"><div id="progresoBarra" style="width:0%; height:100%; background:linear-gradient(90deg,#f5af19,#f12711); border-radius:1rem; transition:width 0.5s;"></div></div>
-            <div style="display:flex; justify-content:space-between; margin-top:0.4rem; font-size:0.55rem;"><span>Inicio</span><span id="fechaExpiracionTexto"></span><span>Fin</span></div>
-          </div>
-
-          <div class="stats-grid" style="margin-bottom:1rem;">
-            <div class="stat-card"><div class="stat-number" id="perfilTotalPerfiles">0</div><div class="stat-label">Mis perfiles</div></div>
-            <div class="stat-card"><div class="stat-number" id="perfilTotalVentas">0</div><div class="stat-label">Mis ventas</div></div>
-            <div class="stat-card"><div class="stat-number" id="perfilGanado">$0</div><div class="stat-label">Ganado</div></div>
-            <div class="stat-card"><div class="stat-number" id="perfilActivos">0</div><div class="stat-label">Activos</div></div>
-          </div>
-
-          <hr>
-          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;">
-          <div class="input-group" style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid rgba(255,255,255,0.1);">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
-               <span style="font-weight:600; font-size:0.9rem;"><i class="fas fa-robot" style="color:#6366f1; margin-right:8px;"></i>Asistente StreamFlow Pro</span>
-               <label class="switch">
-                 <input type="checkbox" id="nexusToggle">
-                 <span class="slider round"></span>
-               </label>
-            </div>
-            <div class="tip" style="margin-top:0.5rem;">💡 Activá o desactivá el asistente inteligente en tu panel de control.</div>
-          </div>
-<button id="btnCerrarSesion" class="btn btn-danger" style="flex:1;"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button></div>
-          <div class="tip" style="margin-top:1rem;"><i class="fas fa-info-circle"></i> <strong>¿Cómo funciona?</strong><br>• Al registrarte, tenés <strong>3 días de prueba GRATIS</strong> con todo desbloqueado.<br>• <strong>¡Tus datos NO se pierden!</strong> Al expirar el período de suscripción, el sistema entrará en modo solo lectura hasta que se renueve el plan.</div>
-        </div>
-      </div>
-
-      <!-- AYUDA -->
-      
-          <div class="manual-section" id="manual-carga"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 2. Cargar Cuentas</div><div class="manual-section-body"><p>Hay tres modos: <strong>Cuenta Completa</strong> (crea todos los perfiles automáticos), <strong>Individual</strong> (un solo perfil) y <strong>Masiva</strong> (pegás un bloque de texto).</p></div></div>
-          <div class="manual-section" id="manual-gestion"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 3. Gestión de Perfiles</div><div class="manual-section-body"><p>Cada perfil tiene botones: Copiar, Renovar, Libre, Editar, Eliminar, Vender, Reasignar, Duplicar, Pass.</p></div></div>
-          <div class="manual-section" id="manual-ventas"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 4. Ventas</div><div class="manual-section-body"><p>Al vender un perfil, se genera automáticamente una plantilla para WhatsApp con todos los datos y reglas de uso.</p></div></div>
-          <div class="manual-section" id="manual-config"><div class="manual-section-header"><i class="fas fa-chevron-right"></i> 5. Configuración</div><div class="manual-section-body"><p>Podés cambiar tema, modo kiosco, días para "próximo", exportar/importar configuración.</p></div></div>
-        </div>
-      </div>
-
       <!-- AJUSTES -->
       <div id="tab-ajustes" class="tab-panel">
         <div class="card">
-          <div class="card-title neon-text" style="margin-top:0;"><i class="fas fa-shield-alt"></i> Token de Acceso</div>
-          <div id="estadoPrueba" style="background:rgba(245,175,25,0.15); padding:0.8rem; border-radius:0.9rem; font-size:0.7rem; margin-bottom:0.8rem; border-left:4px solid #f5af19; display:none;"></div>
-          <div class="tip" style="margin-bottom:0.8rem;">💡 Tenés 3 días de prueba gratis. Después ingresá un token para 30 días más. El token se oculta al escribirlo por seguridad.<br><strong>✅ Tus datos NO se pierden al expirar el token o la prueba.</strong></div>
-          <div class="input-group"><label>Token de Cliente</label>
-            <div style="display:flex; gap:0.3rem;"><input type="password" id="tokenAcceso" placeholder="SF-XXXX-XXXX-XXXX" style="flex:1;" autocomplete="off"><button id="btnValidarToken" class="btn btn-primary" style="width:auto; margin-top:0;"><i class="fas fa-check-circle"></i> Validar</button></div>
-          </div>
-          <div class="input-group"><button id="btnWhatsAppToken" class="btn btn-success" style="width:100%; background:#25D366; margin-top:0.5rem;"><i class="fab fa-whatsapp"></i> Comprar token por WhatsApp</button></div>
-          <div id="tokenEstado" style="margin:0.5rem 0;"></div>
-          <div id="tokenInfo" style="font-size:0.65rem; opacity:0.8; display:none;"></div>
+          <div class="card-title neon-text"><i class="fas fa-cog"></i> Configuración</div>
+          <div class="switch-group"><span>Modo Claro</span><label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label></div>
+          <div class="switch-group"><span>Notificaciones</span><label class="switch"><input type="checkbox" id="notifToggle" checked><span class="slider"></span></label></div>
+          <div class="switch-group"><span>Sincronización automática</span><label class="switch"><input type="checkbox" id="syncToggle" checked><span class="slider"></span></label></div>
           <hr>
-          <div class="card-title neon-text"><i class="fas fa-sliders-h"></i> Configuración</div>
-          <div class="switch-group"><span>Tema claro</span><label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label></div>
-          <div class="switch-group"><span>Modo kiosco</span><label class="switch"><input type="checkbox" id="kioscoToggle"><span class="slider"></span></label></div>
-          <div class="switch-group"><span>Notificaciones de vencimiento</span><label class="switch"><input type="checkbox" id="notificationsToggle" checked><span class="slider"></span></label></div>
-          <div class="input-group"><label>Días para considerar "Próximo a vencer"</label><input type="number" id="diasProximoConfig" min="1" max="10" value="3"></div>
-          <div class="row"><button id="btnExportConfig" class="btn btn-outline"><i class="fas fa-download"></i> Exportar config</button><button id="btnImportConfig" class="btn btn-outline"><i class="fas fa-upload"></i> Importar config</button><button id="btnResetConfig" class="btn btn-outline"><i class="fas fa-undo-alt"></i> Resetear</button></div>
-          <input type="file" id="archivoConfig" accept=".json" style="display:none">
+          <button id="btnCerrarSesion" class="btn btn-danger" style="width:100%"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
           <hr>
           <button id="btnAbrirManual" class="btn btn-outline" style="width:100%"><i class="fas fa-book-open"></i> Manual de Usuario</button>
           <hr>
@@ -352,24 +271,16 @@
       </div>
     </div>
 
-    <div class="bottom-nav-bar">
+    <div class="bottom-nav-bar" id="bottomNavBar" style="display:none;">
       <button class="nav-btn active" data-nav="dashboard"><i class="fas fa-home"></i><span>Inicio</span></button>
       <button class="nav-btn" data-nav="carga"><i class="fas fa-plus-circle"></i><span>Cargar</span></button>
       <button class="nav-btn" data-nav="perfiles"><i class="fas fa-list-ul"></i><span>Perfiles</span></button>
       <button class="nav-btn" data-nav="historial"><i class="fas fa-history"></i><span>Historial</span></button>
       <button class="nav-btn" data-nav="stats"><i class="fas fa-chart-line"></i><span>Stats</span></button>
-      <button class="nav-btn" data-nav="micuenta"><i class="fas fa-user-circle"></i><span>Mi Cuenta</span></button>
       <button class="nav-btn" data-nav="ajustes"><i class="fas fa-cog"></i><span>Ajustes</span></button>
-      
     </div>
   </div>
 
-  
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
-
-
-
-
-
