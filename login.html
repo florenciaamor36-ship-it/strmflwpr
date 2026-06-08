@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0c29">
+    <title>Acceso | StreamFlow Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <style>
+        :root {
+            --primary: #f5af19;
+            --secondary: #f12711;
+            --bg: #0f0c29;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .label {
+            display: block;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            padding-left: 5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 15px 12px 45px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 4px rgba(245, 175, 25, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--secondary);
+            opacity: 0.9;
+        }
+
+        .toggle-auth {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .toggle-auth span {
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        #error-msg {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            min-height: 1.2rem;
+        }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-top: 3px solid #000;
+            border-radius: 50%;
+            display: none;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🎬</div>
+        <h1>StreamFlow Pro</h1>
+        
+        <!-- Login Form -->
+        <div id="login-view">
+            <div class="form-group">
+                <label class="label">Correo electrónico</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="login-email" class="input" placeholder="tu@email.com">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label">Contraseña</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="login-pass" class="input" placeholder="••••••••">
+                </div>
+            </div>
+            <button id="btn-login" class="btn btn-primary">
+                <span id="login-text">Entrar</span>
+                <div id="login-loader" class="loader"></div>
+            </button>
+            <div class="toggle-auth">¿No tienes cuenta? <span onclick="toggleAuth()">Regístrate</span></div>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-view" class="hidden">
+            <div class="form-group">
+                <label class="label">Correo electrónico</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="reg-email" class="input" placeholder="tu@email.com">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label">Contraseña</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="reg-pass" class="input" placeholder="Mínimo 6 caracteres">
+                </div>
+            </div>
+            <button id="btn-register" class="btn btn-primary">
+                <span id="reg-text">Crear cuenta</span>
+                <div id="reg-loader" class="loader"></div>
+            </button>
+            <div class="toggle-auth">¿Ya tienes cuenta? <span onclick="toggleAuth()">Inicia sesión</span></div>
+        </div>
+
+        <div id="error-msg"></div>
+    </div>
+
+    <script src="login-logic.js"></script>
+</body>
+</html>
