@@ -19,6 +19,7 @@
     const db = firebase.firestore();
     
     // ============ CONFIGURACIÓN GLOBAL ============
+    let currentTab = "dashboard";
     const WHATSAPP_TOKEN_NUMBER = "5492236785329";
     const DIAS_PRUEBA_GRATIS = 3;
     const DIAS_TOKEN = 30;
@@ -207,7 +208,7 @@
     
     // ============ SINCRONIZACIÓN CON FIRESTORE ============
     async function guardarPerfiles() {
-      if(planEstado === "bloqueado") { toast("❌ App bloqueada. Renová tu suscripción para guardar cambios."); return; }
+      if(planEstado === "bloqueado" && currentTab !== "micuenta") { toast("❌ App bloqueada. Renová tu suscripción para guardar cambios."); return; }
       if(!currentUser) return;
       showLoader("Guardando en la nube...");
       try {
@@ -417,7 +418,7 @@
       if(planEstado === "token") {
         badge.className = "plan-badge pro";
         badge.innerHTML = '<i class="fas fa-crown"></i> PRO ' + diasPruebaRestantes + 'd';
-      } else if(planEstado === "bloqueado") {
+      } else if(planEstado === "bloqueado" && currentTab !== "micuenta") {
         badge.className = "plan-badge blocked";
         badge.innerHTML = '<i class="fas fa-lock"></i> BLOQUEADO';
       } else {
@@ -430,7 +431,7 @@
       const semaforoPerfil = document.getElementById("semaforoPerfil");
       let color = "", texto = "", icono = "";
       
-      if(planEstado === "bloqueado") {
+      if(planEstado === "bloqueado" && currentTab !== "micuenta") {
         color = "semaforo-rojo";
         texto = "BLOQUEADO - Ingresá un token";
         icono = '<i class="fas fa-ban"></i>';
@@ -462,7 +463,7 @@
     
     function aplicarBloqueoApp() {
       const bloqueoMsg = document.getElementById("bloqueoAppMsg");
-      if(planEstado === "bloqueado") {
+      if(planEstado === "bloqueado" && currentTab !== "micuenta") {
         if(!bloqueoMsg) {
           const msg = document.createElement("div");
           msg.id = "bloqueoAppMsg";
@@ -470,28 +471,40 @@
           msg.innerHTML = `
             <div class="lock-card">
               <div class="lock-icon"><i class="fas fa-crown" style="color:#f5af19; font-size:3.5rem; margin-bottom:1rem; filter:drop-shadow(0 0 15px rgba(245,175,25,0.4));"></i></div>
-              <h3 style="font-size:1.4rem; font-weight:800; margin-bottom:0.5rem;">Tu suscripción ha finalizado</h3>
-              <p style="font-size:0.9rem; opacity:0.9; margin-bottom:1.5rem;">Elegí uno de nuestros planes para seguir gestionando tu negocio con <strong>StreamFlow Pro</strong>.</p>
+              <h3 style="font-size:1.4rem; font-weight:800; margin-bottom:0.5rem;">Potenciá tu Negocio Digital</h3>
+              <p style="font-size:0.9rem; opacity:0.9; margin-bottom:1.5rem;">Tu período de prueba ha finalizado. Suscribite hoy mismo para recuperar el control total de tus cuentas y llevar tu gestión al siguiente nivel con <strong>StreamFlow Pro</strong>.</p>
               
+              <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; text-align: left;">
+                <h4 style="font-size: 0.85rem; color: #f5af19; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 1px;"><i class="fas fa-star"></i> ¿Qué incluye la app?</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                  <li><i class="fas fa-check" style="color: #10b981;"></i> Gestión Ilimitada</li>
+                  <li><i class="fas fa-check" style="color: #10b981;"></i> Sincronización Real</li>
+                  <li><i class="fas fa-check" style="color: #10b981;"></i> Backup en la Nube</li>
+                  <li><i class="fas fa-check" style="color: #10b981;"></i> Plantillas de Venta</li>
+                  <li><i class="fas fa-check" style="color: #10b981;"></i> Recordatorios WA</li>
+                  <li><i class="fas fa-check" style="color: #10b981;"></i> Carga Masiva</li>
+                  <li><i class="fas fa-check" style="color: #10b981;"></i> Reportes de Ganancia</li>
+                  <li><i class="fas fa-check" style="color: #10b981;"></i> Soporte Técnico</li>
+                </ul>
+              </div>
+
               <div class="plans-grid">
                 <div class="plan-card">
                   <div class="plan-name">Plan Mensual</div>
                   <div class="plan-price">$5.000 <span>/mes</span></div>
                   <ul class="plan-features">
-                    <li><i class="fas fa-check"></i> Gestión Ilimitada</li>
-                    <li><i class="fas fa-check"></i> Plantillas Automáticas</li>
-                    <li><i class="fas fa-check"></i> Cálculo de Ganancias</li>
-                    <li><i class="fas fa-check"></i> Recordatorios WA</li>
+                    <li><i class="fas fa-check"></i> Acceso Completo</li>
+                    <li><i class="fas fa-check"></i> Todas las Funciones</li>
+                    <li><i class="fas fa-check"></i> Soporte Standard</li>
                   </ul>
                 </div>
                 <div class="plan-card featured">
-                  <div class="plan-badge">Ahorrá $18.000</div>
+                  <div class="plan-badge">¡Mejor Valor!</div>
                   <div class="plan-name">Plan Anual</div>
                   <div class="plan-price">$42.000 <span>/año</span></div>
                   <ul class="plan-features">
-                    <li><i class="fas fa-check"></i> Todo lo del Mensual</li>
-                    <li><i class="fas fa-check"></i> Carga Masiva</li>
-                    <li><i class="fas fa-check"></i> Estadísticas Pro</li>
+                    <li><i class="fas fa-check"></i> Ahorrás $18.000</li>
+                    <li><i class="fas fa-check"></i> Acceso Prioritario</li>
                     <li><i class="fas fa-check"></i> Soporte VIP</li>
                   </ul>
                 </div>
@@ -514,7 +527,7 @@
     
     // ============ CRUD DE PERFILES ============
     function checkAppLock() {
-      if(planEstado === "bloqueado") {
+      if(planEstado === "bloqueado" && currentTab !== "micuenta") {
         toast("❌ App bloqueada. Renová tu suscripción para realizar esta acción.");
         return false;
       }
@@ -635,7 +648,7 @@
     }
     
     function editarPerfil(id) {
-      if(planEstado === "bloqueado") {
+      if(planEstado === "bloqueado" && currentTab !== "micuenta") {
         toast("Modo kiosco: no se puede editar");
         return;
       }
@@ -1199,6 +1212,8 @@
     }
     
     function cambiarTab(tabId) {
+      currentTab = tabId;
+      aplicarBloqueoApp();
       document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
       const tp = document.getElementById(`tab-${tabId}`);
       if(tp) tp.classList.add("active");
