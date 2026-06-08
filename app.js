@@ -22,6 +22,7 @@
     const WHATSAPP_TOKEN_NUMBER = "5492236785329";
     const DIAS_PRUEBA_GRATIS = 3;
     const DIAS_TOKEN = 30;
+    const WHATSAPP_TOKEN_NUMBER = "5492236785329";
     
     // ============ TOKENS VÁLIDOS (150+ tokens originales) ============
     const TOKENS_VALIDOS = new Set([
@@ -458,6 +459,7 @@
       }
     }
     
+    
     function aplicarBloqueoApp() {
       const bloqueoMsg = document.getElementById("bloqueoAppMsg");
       if(planEstado === "bloqueado") {
@@ -467,9 +469,9 @@
           msg.className = "bloqueo-app-msg-pro";
           msg.innerHTML = `
             <div class="lock-card">
-              <div class="lock-icon"><i class="fas fa-lock"></i></div>
-              <h3>Acceso Restringido</h3>
-              <p>Tu período de acceso ha finalizado. Para seguir utilizando todas las herramientas profesionales de <strong>StreamFlow Pro</strong>, por favor renová tu suscripción.</p>
+              <div class="lock-icon"><i class="fas fa-crown" style="color:#f5af19; font-size:3.5rem; margin-bottom:1rem; filter:drop-shadow(0 0 15px rgba(245,175,25,0.4));"></i></div>
+              <h3 style="font-size:1.4rem; font-weight:800; margin-bottom:0.5rem;">Tu suscripción ha finalizado</h3>
+              <p style="font-size:0.9rem; opacity:0.9; margin-bottom:1.5rem;">Elegí uno de nuestros planes para seguir gestionando tu negocio con <strong>StreamFlow Pro</strong>.</p>
               
               <div class="plans-grid">
                 <div class="plan-card">
@@ -479,8 +481,7 @@
                     <li><i class="fas fa-check"></i> Gestión Ilimitada</li>
                     <li><i class="fas fa-check"></i> Plantillas Automáticas</li>
                     <li><i class="fas fa-check"></i> Cálculo de Ganancias</li>
-                    <li><i class="fas fa-check"></i> Recordatorios de Vencimiento</li>
-                    <li><i class="fas fa-check"></i> Soporte WhatsApp</li>
+                    <li><i class="fas fa-check"></i> Recordatorios WA</li>
                   </ul>
                 </div>
                 <div class="plan-card featured">
@@ -489,19 +490,18 @@
                   <div class="plan-price">$42.000 <span>/año</span></div>
                   <ul class="plan-features">
                     <li><i class="fas fa-check"></i> Todo lo del Mensual</li>
-                    <li><i class="fas fa-check"></i> Carga Masiva de Cuentas</li>
-                    <li><i class="fas fa-check"></i> Panel de Estadísticas</li>
-                    <li><i class="fas fa-check"></i> Acceso Prioritario</li>
+                    <li><i class="fas fa-check"></i> Carga Masiva</li>
+                    <li><i class="fas fa-check"></i> Estadísticas Pro</li>
                     <li><i class="fas fa-check"></i> Soporte VIP</li>
                   </ul>
                 </div>
               </div>
 
               <div class="lock-actions">
-                <button onclick="cambiarTab('micuenta')" class="btn btn-primary"><i class="fas fa-key"></i> Ingresar Token</button>
-                <button onclick="window.open('https://wa.me/5492236785329?text=Hola,%20quiero%20renovar%20mi%20suscripción%20de%20StreamFlow%20Pro', '_blank')" class="btn btn-outline"><i class="fab fa-whatsapp"></i> Comprar Token</button>
+                <button onclick="cambiarTab('micuenta')" class="btn btn-primary" style="height:50px; font-weight:700; margin-bottom:10px;"><i class="fas fa-key"></i> INGRESAR TOKEN</button>
+                <button onclick="window.open('https://wa.me/5492236785329?text=Hola,%20quiero%20comprar%20o%20renovar%20mi%20suscripción%20de%20StreamFlow%20Pro', '_blank')" class="btn btn-outline" style="border-color:#25d366; color:#25d366; height:50px; font-weight:600;"><i class="fab fa-whatsapp"></i> COMPRAR POR WHATSAPP</button>
               </div>
-              <p class="lock-footer">⚠️ Tus datos están seguros. Se desbloquearán al ingresar el token.</p>
+              <p class="lock-footer" style="font-size:0.7rem; margin-top:1rem; opacity:0.7;"><i class="fas fa-shield-alt"></i> Tus datos están protegidos y se desbloquearán al activar.</p>
             </div>
           `;
           const mainContent = document.getElementById("mainContent");
@@ -1618,8 +1618,9 @@
     document.getElementById("btnPrevisualizar")?.addEventListener("click", previsualizarCargaMasiva);
     document.getElementById("btnCargarMasivo")?.addEventListener("click", cargarMasiva);
     
-    document.getElementById("btnValidarToken")?.addEventListener("click", async () => {
-      const token = document.getElementById("tokenAcceso").value;
+    document.getElementById("btnActivarSuscripcion")?.addEventListener("click", async () => {
+      const tokenInput = document.getElementById("tokenActivacionInput");
+      const token = tokenInput.value;
       if(!token) {
         toast("Ingresá un token");
         return;
@@ -1633,17 +1634,17 @@
       hideLoader();
       toast(resultado.mensaje);
       if(resultado.valido) {
-        document.getElementById("tokenAcceso").value = "";
-        document.getElementById("tokenEstado").innerHTML = `<span style="color:#10b981;">✅ ${resultado.mensaje}</span>`;
+        tokenInput.value = "";
+        document.getElementById("statusActivacion").innerHTML = `<span style="color:#10b981;"><i class="fas fa-check-circle"></i> ${resultado.mensaje}</span>`;
         actualizarPanelMiCuenta();
         aplicarBloqueoApp();
       } else {
-        document.getElementById("tokenEstado").innerHTML = `<span style="color:#ef4444;">❌ ${resultado.mensaje}</span>`;
+        document.getElementById("statusActivacion").innerHTML = `<span style="color:#ef4444;"><i class="fas fa-exclamation-circle"></i> ${resultado.mensaje}</span>`;
       }
     });
     
-    document.getElementById("btnWhatsAppToken")?.addEventListener("click", () => {
-      abrirWhatsApp(WHATSAPP_TOKEN_NUMBER, "Hola, quiero comprar un token para StreamFlow Pro. ¿Me ayudas?");
+    document.getElementById("btnComprarTokenWA")?.addEventListener("click", () => {
+      abrirWhatsApp(WHATSAPP_TOKEN_NUMBER, "Hola, quiero comprar o renovar mi suscripción de StreamFlow Pro");
     });
     
     document.getElementById("btnCerrarSesion")?.addEventListener("click", async () => {
