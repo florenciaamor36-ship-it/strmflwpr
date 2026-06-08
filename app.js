@@ -72,6 +72,14 @@
     let appDesbloqueada = true;
     let diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
     let planEstado = "demo";
+
+    function checkAppLock() {
+      if (planEstado === "bloqueado") {
+        toast("⚠️ ACCESO BLOQUEADO: Tu suscripción ha expirado. Por favor, ingresá un nuevo token para continuar operando.");
+        return true;
+      }
+      return false;
+    }
     let versionLocal = 0;
     let autoSyncEnabled = true;
     
@@ -207,6 +215,7 @@
     
     // ============ SINCRONIZACIÓN CON FIRESTORE ============
     async function guardarPerfiles() {
+      if(checkAppLock()) return;
       if(!currentUser) return;
       showLoader("Guardando en la nube...");
       try {
@@ -510,6 +519,7 @@
     
     // ============ CRUD DE PERFILES ============
     async function venderPerfil(id, datos) {
+      if(checkAppLock()) return;
       const p = perfiles.find(p => p.id === id);
       if(!p) return;
       
@@ -581,6 +591,7 @@
     }
     
     async function eliminarPerfil(id) {
+      if(checkAppLock()) return;
       if(kioscoMode) {
         toast("Modo kiosco: no se puede eliminar");
         return;
@@ -618,6 +629,7 @@
     }
     
     function editarPerfil(id) {
+      if(checkAppLock()) return;
       if(kioscoMode) {
         toast("Modo kiosco: no se puede editar");
         return;
@@ -658,6 +670,7 @@
     }
     
     async function guardarPerfilEditado() {
+      if(checkAppLock()) return;
       const id = editandoId;
       let plataforma = document.getElementById("platIndividual").value;
       if(plataforma === "Otros") {
@@ -712,6 +725,7 @@
     }
     
     async function guardarPerfilIndividual() {
+      if(checkAppLock()) return;
       let plataforma = document.getElementById("platIndividual").value;
       if(plataforma === "Otros") {
         plataforma = document.getElementById("otraPlatIndividual").value.trim();
@@ -763,6 +777,7 @@
     }
     
     async function guardarCuentaCompleta() {
+      if(checkAppLock()) return;
       let plataforma = document.getElementById("platCompleta").value;
       if(plataforma === "Otros") {
         plataforma = document.getElementById("otraPlatCompleta").value.trim();
@@ -1635,6 +1650,7 @@
     });
     
     document.getElementById("ventaConfirmar")?.addEventListener("click", async () => {
+      if(checkAppLock()) return;
       if(pendingVentaId) {
         await venderPerfil(pendingVentaId, {
           plataforma: document.getElementById("ventaPlataforma").value,
