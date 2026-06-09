@@ -620,12 +620,22 @@
     }
     .loader-text { color: #f5af19; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; }
     .bloqueo-app-msg {
-      background:linear-gradient(135deg,rgba(239,68,68,0.9),rgba(220,38,38,0.9));
-      color:#fff; text-align:center; padding:1.2rem; margin:0 0 1rem 0;
-      border-radius:1rem; font-size:0.75rem; font-weight:600;
-      border: 1px solid rgba(239,68,68,0.3);
+      background: linear-gradient(135deg, rgba(15, 12, 41, 0.98), rgba(48, 43, 99, 0.98));
+      color: #fff;
+      padding: 2rem;
+      text-align: center;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5000;
+      backdrop-filter: blur(10px);
     }
-    .bloqueo-app-msg i { font-size:1.8rem; display:block; margin-bottom:0.5rem; }
+    .bloqueo-content { max-width: 400px; margin: 0 auto; }
     .venta-field-group { text-align:left; margin-bottom:0.5rem; }
     .venta-field-group label { display:block; font-size:0.6rem; font-weight:600; margin-bottom:3px; color:#f5af19; }
     .venta-field-group input, .venta-field-group select {
@@ -731,14 +741,14 @@
         <p style="font-size:0.6rem; opacity:0.7; margin-top:0.2rem;">Gestión Profesional de Streaming</p>
       </div>
 
-      <div id="loginPanel">
+      <form id="loginPanel">
         <div class="flex-column"><label>Email</label></div>
-        <div class="inputForm"><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 32 32" height="20"><g><path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path></g></svg><input type="email" id="loginEmail" class="input" placeholder="correo@ejemplo.com"></div>
+        <div class="inputForm"><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 32 32" height="20"><g><path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path></g></svg><input type="email" id="loginEmail" class="input" placeholder="correo@ejemplo.com" required></div>
         
         <div class="flex-column"><label>Contraseña</label></div>
         <div class="inputForm" style="position:relative;">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="-64 0 512 512" height="20"><path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path><path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path></svg>
-          <input type="password" id="loginPassword" class="input" placeholder="contraseña" style="flex:1;">
+          <input type="password" id="loginPassword" class="input" placeholder="contraseña" style="flex:1;" required>
           <button type="button" id="toggleLoginPassword" style="background:transparent; border:none; color:#f5af19; cursor:pointer; padding:0 12px; font-size:0.8rem;"><i class="fas fa-eye"></i></button>
         </div>
         
@@ -749,31 +759,31 @@
           <span class="span" id="forgotPasswordBtn">¿Olvidaste tu contraseña?</span>
         </div>
         
-        <button class="button-submit" id="btnLoginSubmit">Iniciar sesión</button>
+        <button type="submit" class="button-submit" id="btnLoginSubmit">Iniciar sesión</button>
         <p class="p">¿No tienes cuenta? <span class="span" id="showRegister">Regístrate aquí</span></p>
-      </div>
+      </form>
       
-      <div id="registerPanel" style="display: none;">
+      <form id="registerPanel" style="display: none;">
         <div class="flex-column"><label>Email</label></div>
-        <div class="inputForm"><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 32 32" height="20"><path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path></svg><input type="email" id="regEmail" class="input" placeholder="correo@ejemplo.com"></div>
+        <div class="inputForm"><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 32 32" height="20"><path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path></svg><input type="email" id="regEmail" class="input" placeholder="correo@ejemplo.com" required></div>
         
         <div class="flex-column"><label>Contraseña</label></div>
         <div class="inputForm" style="position:relative;">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="-64 0 512 512" height="20"><path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path><path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path></svg>
-          <input type="password" id="regPassword" class="input" placeholder="mínimo 6 caracteres" style="flex:1;">
+          <input type="password" id="regPassword" class="input" placeholder="mínimo 6 caracteres" style="flex:1;" required minlength="6">
           <button type="button" id="toggleRegPassword" style="background:transparent; border:none; color:#f5af19; cursor:pointer; padding:0 12px; font-size:0.8rem;"><i class="fas fa-eye"></i></button>
         </div>
         
         <div class="flex-column"><label>Confirmar contraseña</label></div>
         <div class="inputForm" style="position:relative;">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="-64 0 512 512" height="20"><path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path><path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path></svg>
-          <input type="password" id="regPasswordConfirm" class="input" placeholder="repite la contraseña" style="flex:1;">
+          <input type="password" id="regPasswordConfirm" class="input" placeholder="repite la contraseña" style="flex:1;" required minlength="6">
           <button type="button" id="toggleRegConfirmPassword" style="background:transparent; border:none; color:#f5af19; cursor:pointer; padding:0 12px; font-size:0.8rem;"><i class="fas fa-eye"></i></button>
         </div>
         
-        <button class="button-submit" id="btnRegisterSubmit">Registrarse</button>
+        <button type="submit" class="button-submit" id="btnRegisterSubmit">Registrarse</button>
         <p class="p">¿Ya tienes cuenta? <span class="span" id="showLogin">Inicia sesión</span></p>
-      </div>
+      </form>
       
       <div id="authError" style="color:#ff6b6b; text-align:center; margin-top:10px; font-size:0.7rem;"></div>
       
@@ -1114,9 +1124,9 @@
     let pendingVentaId = null;
     let unsubscribeFirestore = null;
     let filtroTimeout = null;
-    let appDesbloqueada = true;
-    let diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
-    let planEstado = "demo";
+    let appDesbloqueada = false;
+    let diasPruebaRestantes = 0;
+    let planEstado = "bloqueado";
     let versionLocal = 0;
     let autoSyncEnabled = true;
     
@@ -1340,49 +1350,69 @@
     
     // ============ SISTEMA DE SUSCRIPCIÓN Y TOKENS ============
     async function verificarSuscripcion(uid) {
-      if(!uid) return;
+      if(!uid) {
+        appDesbloqueada = false;
+        planEstado = "bloqueado";
+        return;
+      }
       try {
         const suscRef = db.collection("usuarios").doc(uid).collection("suscripcion").doc("estado");
         const snap = await suscRef.get();
         const ahora = new Date();
         
         if(!snap.exists) {
-          const fechaFinPrueba = new Date(ahora);
+          // Si no existe el doc, verificamos la fecha de creación del usuario
+          const creationTime = currentUser && currentUser.metadata && currentUser.metadata.creationTime
+            ? new Date(currentUser.metadata.creationTime)
+            : ahora;
+
+          const fechaFinPrueba = new Date(creationTime);
           fechaFinPrueba.setDate(fechaFinPrueba.getDate() + DIAS_PRUEBA_GRATIS);
-          await suscRef.set({
-            fechaPrimerIngreso: ahora.toISOString(),
+
+          const trialData = {
+            fechaPrimerIngreso: creationTime.toISOString(),
             estado: "prueba",
             fechaExpiracion: fechaFinPrueba.toISOString()
-          });
-          appDesbloqueada = true;
-          diasPruebaRestantes = DIAS_PRUEBA_GRATIS;
-          planEstado = "demo";
-          actualizarBadgePlan();
-          actualizarSemaforo();
-          return;
-        }
-        
-        const data = snap.data();
-        const fechaExpiracion = new Date(data.fechaExpiracion);
-        
-        if(data.estado === "prueba") {
-          if(ahora < fechaExpiracion) {
+          };
+
+          await suscRef.set(trialData);
+
+          if(ahora < fechaFinPrueba) {
             appDesbloqueada = true;
-            diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
+            diasPruebaRestantes = Math.ceil((fechaFinPrueba - ahora) / 86400000);
             planEstado = "demo";
           } else {
             appDesbloqueada = false;
             diasPruebaRestantes = 0;
             planEstado = "bloqueado";
           }
-        } else if(data.estado === "token") {
-          if(ahora < fechaExpiracion) {
-            appDesbloqueada = true;
-            diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
-            planEstado = "token";
+        } else {
+          const data = snap.data();
+          const fechaExpiracion = new Date(data.fechaExpiracion);
+
+          if(data.estado === "prueba") {
+            if(ahora < fechaExpiracion) {
+              appDesbloqueada = true;
+              diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
+              planEstado = "demo";
+            } else {
+              appDesbloqueada = false;
+              diasPruebaRestantes = 0;
+              planEstado = "bloqueado";
+            }
+          } else if(data.estado === "token") {
+            if(ahora < fechaExpiracion) {
+              appDesbloqueada = true;
+              diasPruebaRestantes = Math.ceil((fechaExpiracion - ahora) / 86400000);
+              planEstado = "token";
+            } else {
+              appDesbloqueada = false;
+              diasPruebaRestantes = 0;
+              planEstado = "bloqueado";
+            }
           } else {
+            // Estado desconocido
             appDesbloqueada = false;
-            diasPruebaRestantes = 0;
             planEstado = "bloqueado";
           }
         }
@@ -1393,9 +1423,10 @@
         actualizarPanelMiCuenta();
       } catch(e) {
         console.error("Error al verificar suscripción:", e);
-        appDesbloqueada = true;
-        planEstado = "demo";
+        appDesbloqueada = false;
+        planEstado = "bloqueado";
         actualizarBadgePlan();
+        aplicarBloqueoApp();
       }
     }
     
@@ -1486,18 +1517,29 @@
     }
     
     function aplicarBloqueoApp() {
+      const currentTab = document.querySelector(".nav-btn.active")?.dataset.nav;
       const bloqueoMsg = document.getElementById("bloqueoAppMsg");
-      if(planEstado === "bloqueado") {
+
+      if(planEstado === "bloqueado" && currentTab !== "ajustes" && currentTab !== "micuenta") {
         if(!bloqueoMsg) {
           const msg = document.createElement("div");
           msg.id = "bloqueoAppMsg";
           msg.className = "bloqueo-app-msg";
-          msg.innerHTML = '<i class="fas fa-lock"></i><strong>App bloqueada</strong><br>Tu período de prueba ha expirado o tu token ha vencido.<br>Ingresá un token en Ajustes para continuar.<br><small>⚠️ Tus datos NO se perderán al ingresar un nuevo token.</small>';
-          const mainContent = document.getElementById("mainContent");
-          if(mainContent) mainContent.insertBefore(msg, mainContent.firstChild);
-        }
-        if(kioscoMode) {
-          toast("Modo bloqueado: solo lectura. Ingresá un token para editar.");
+          msg.innerHTML = `
+            <div class="bloqueo-content">
+              <div style="width:80px; height:80px; background:rgba(241,39,17,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem auto; border:2px solid #f12711;">
+                <i class="fas fa-lock" style="font-size:2.5rem; color:#f12711;"></i>
+              </div>
+              <h2 style="margin:0 0 1rem 0; font-size:1.8rem; font-weight:800; background:linear-gradient(135deg,#fff,#f12711); -webkit-background-clip:text; background-clip:text; color:transparent;">Acceso Bloqueado</h2>
+              <p style="margin:0 0 2rem 0; font-size:1rem; line-height:1.6; opacity:0.9;">Tu suscripción ha expirado. Para seguir gestionando tus perfiles y ventas, por favor activa un nuevo token.</p>
+              <button onclick="cambiarTab('ajustes')" class="btn btn-primary" style="width:100%; padding:1rem; font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:1px;">
+                <i class="fas fa-key"></i> Ir a Ajustes / Activar Token
+              </button>
+              <p style="margin-top:1.5rem; font-size:0.8rem; opacity:0.7;"><i class="fas fa-info-circle"></i> Tus datos permanecen guardados y seguros.</p>
+            </div>
+          `;
+          const appContainer = document.getElementById("appContainer");
+          if(appContainer) appContainer.appendChild(msg);
         }
       } else {
         if(bloqueoMsg) bloqueoMsg.remove();
@@ -1506,6 +1548,7 @@
     
     // ============ CRUD DE PERFILES ============
     async function venderPerfil(id, datos) {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura. Ingresá un token en Ajustes."); return; }
       const p = perfiles.find(p => p.id === id);
       if(!p) return;
       
@@ -1548,6 +1591,7 @@
     }
     
     async function renovarPerfil(id) {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       const p = perfiles.find(p => p.id === id);
       if(p) {
         let base = p.fechaVencimiento ? parseFecha(p.fechaVencimiento) : new Date();
@@ -1562,6 +1606,7 @@
     }
     
     async function marcarLibre(id) {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       const p = perfiles.find(p => p.id === id);
       if(p && confirm("¿Marcar este perfil como libre?")) {
         p.estado = "libre";
@@ -1577,6 +1622,7 @@
     }
     
     async function eliminarPerfil(id) {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       if(kioscoMode) {
         toast("Modo kiosco: no se puede eliminar");
         return;
@@ -1591,6 +1637,7 @@
     }
     
     async function duplicarPerfil(id) {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       const orig = perfiles.find(p => p.id === id);
       if(orig) {
         const nombre = prompt("Nombre del nuevo perfil:", orig.perfilNombre + " (copia)");
@@ -1654,6 +1701,7 @@
     }
     
     async function guardarPerfilEditado() {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       const id = editandoId;
       let plataforma = document.getElementById("platIndividual").value;
       if(plataforma === "Otros") {
@@ -1708,6 +1756,7 @@
     }
     
     async function guardarPerfilIndividual() {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       let plataforma = document.getElementById("platIndividual").value;
       if(plataforma === "Otros") {
         plataforma = document.getElementById("otraPlatIndividual").value.trim();
@@ -1759,6 +1808,7 @@
     }
     
     async function guardarCuentaCompleta() {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       let plataforma = document.getElementById("platCompleta").value;
       if(plataforma === "Otros") {
         plataforma = document.getElementById("otraPlatCompleta").value.trim();
@@ -2058,6 +2108,7 @@
     }
     
     async function confirmarReasignar() {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       const nuevaFecha = document.getElementById("reasignarFecha").value;
       if(!nuevaFecha) {
         toast("Seleccioná una fecha");
@@ -2075,6 +2126,7 @@
     }
     
     async function cambiarPass(id) {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       const p = perfiles.find(p => p.id === id);
       if(p) {
         const nueva = prompt("Nueva contraseña (mínimo 6 caracteres):");
@@ -2184,6 +2236,7 @@
       if(tabId === "dashboard") actualizarDashboard();
       if(tabId === "historial") renderHistorial();
       if(tabId === "stats") { actualizarDashboard(); renderResumenes(); }
+      aplicarBloqueoApp();
     }
     
     function limpiarFiltros() {
@@ -2216,6 +2269,7 @@
     }
     
     async function resetearVentas() {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       if(confirm("¿Reiniciar todas las ventas? Los perfiles volverán a estado libre.")) {
         perfiles.forEach(p => {
           p.fechaVenta = null;
@@ -2248,6 +2302,7 @@
     }
     
     async function borrarTodosLosPerfiles() {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       if(confirm("⚠️ ¿BORRAR TODOS LOS PERFILES? Esta acción no se puede deshacer.")) {
         const confirmar = prompt("Escribí CONFIRMAR para borrar todo");
         if(confirmar === "CONFIRMAR") {
@@ -2297,6 +2352,7 @@
     }
     
     async function cargarMasiva() {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       const texto = document.getElementById("batchTexto").value;
       if(!texto.trim()) {
         toast("No hay datos para cargar");
@@ -2507,13 +2563,10 @@
       }
     });
     
-    document.getElementById("btnLoginSubmit")?.addEventListener("click", async () => {
+    document.getElementById("loginPanel")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
       const email = document.getElementById("loginEmail").value;
       const pass = document.getElementById("loginPassword").value;
-      if(!email || !pass) {
-        document.getElementById("authError").innerText = "Completá todos los campos";
-        return;
-      }
       const btn = document.getElementById("btnLoginSubmit");
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Entrando...';
@@ -2531,16 +2584,13 @@
       }
     });
     
-    document.getElementById("btnRegisterSubmit")?.addEventListener("click", async () => {
+    document.getElementById("registerPanel")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
       const email = document.getElementById("regEmail").value;
       const pass = document.getElementById("regPassword").value;
       const confirm = document.getElementById("regPasswordConfirm").value;
       if(pass !== confirm) {
         document.getElementById("authError").innerText = "Las contraseñas no coinciden";
-        return;
-      }
-      if(pass.length < 6) {
-        document.getElementById("authError").innerText = "La contraseña debe tener al menos 6 caracteres";
         return;
       }
       const btn = document.getElementById("btnRegisterSubmit");
@@ -2744,6 +2794,7 @@
     });
     
     document.getElementById("archivoImportar")?.addEventListener("change", async (e) => {
+      if(planEstado === "bloqueado") { toast("❌ Acceso bloqueado: Solo lectura."); return; }
       const file = e.target.files[0];
       if(!file) return;
       const reader = new FileReader();
@@ -2877,6 +2928,8 @@
         if(notificationsEnabled) mostrarAvisoVencimientos();
       } else {
         currentUser = null;
+        appDesbloqueada = false;
+        planEstado = "bloqueado";
         document.getElementById("loginWrapper").style.display = "flex";
         document.getElementById("appContainer").style.display = "none";
         document.body.style.overflow = "";
@@ -2887,6 +2940,6 @@
       }
     });
   </script>
-/</body>
+</body>
 </html>
 
