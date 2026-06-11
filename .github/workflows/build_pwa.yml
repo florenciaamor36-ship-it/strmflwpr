@@ -3,33 +3,22 @@ name: Build PWA
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
-    name: Build and Upload PWA
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.16.9'
-          channel: 'stable'
-      
-      - name: Get dependencies
-        run: flutter pub get
+      - run: flutter pub get
         working-directory: strmflwpr
-      
-      - name: Build Web
-        run: flutter build web --release --pwa-strategy=offline-first
+      - run: flutter build web --release --base-href "/strmflwpr/"
         working-directory: strmflwpr
-      
-      - name: Upload Web artifact
-        uses: actions/upload-artifact@v4
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          name: strmflwpr-pwa
-          path: strmflwpr/build/web
-          retention-days: 30
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: strmflwpr/build/web
+          publish_branch: gh-pages
