@@ -20,6 +20,101 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   
   <link rel="stylesheet" href="styles.css">
+
+  <!-- PWA Smart Tutorial -->
+  <style>
+    #pwa-tutorial-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      color: white;
+      backdrop-filter: blur(5px);
+    }
+    #pwa-tutorial-modal {
+      background: #1a1a1a;
+      border: 2px solid #f5af19;
+      border-radius: 24px;
+      padding: 30px;
+      max-width: 360px;
+      width: 88%;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(245, 175, 25, 0.3);
+      position: relative;
+      animation: pwaPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes pwaPop {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    #pwa-tutorial-modal h2 {
+      background: linear-gradient(135deg, #f5af19, #f12711);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    #pwa-tutorial-modal p {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 25px;
+    }
+    .pwa-step {
+      display: flex;
+      align-items: center;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    .pwa-step-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #f5af19, #f12711);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: white;
+      margin-right: 15px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(241, 39, 17, 0.3);
+    }
+    .pwa-step-text {
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    .pwa-step-text i {
+      color: #f5af19;
+      margin: 0 2px;
+    }
+    #pwa-close-btn {
+      background: linear-gradient(135deg, #f5af19, #f12711);
+      border: none;
+      color: white;
+      padding: 14px;
+      border-radius: 14px;
+      width: 100%;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #pwa-close-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(241, 39, 17, 0.4);
+    }
+  </style>
 </head>
 <body>
   <div id="loaderOverlay" class="loader-overlay">
@@ -351,6 +446,71 @@
   </div>
 
   <script src="app.js"></script>
+
+  <!-- PWA Install Tutorial Modal -->
+  <div id="pwa-tutorial-overlay">
+    <div id="pwa-tutorial-modal">
+      <h2>Instalar App</h2>
+      <p>Para una experiencia premium, instalá StreamFlow Pro en tu pantalla de inicio.</p>
+      
+      <div class="pwa-step">
+        <div class="pwa-step-icon">1</div>
+        <div class="pwa-step-text">Tocá el botón de opciones <i class="fas fa-ellipsis-v"></i> o compartir <i class="fas fa-share-square"></i> en tu navegador.</div>
+      </div>
+      
+      <div class="pwa-step">
+        <div class="pwa-step-icon">2</div>
+        <div class="pwa-step-text">Seleccioná <span style="color:#f5af19; font-weight:700;">"Instalar aplicación"</span> o "Agregar a inicio".</div>
+      </div>
+      
+      <div class="pwa-step">
+        <div class="pwa-step-icon">3</div>
+        <div class="pwa-step-text">¡Listo! Accedé al instante desde tu escritorio como una app real.</div>
+      </div>
+      
+      <button id="pwa-close-btn">Entendido</button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // Detect Standalone Mode
+      const isStandalone = () => {
+        return (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true);
+      };
+
+      // Show Tutorial if not installed
+      const initPwaTutorial = () => {
+        if (isStandalone()) return;
+
+        const overlay = document.getElementById('pwa-tutorial-overlay');
+        const closeBtn = document.getElementById('pwa-close-btn');
+
+        if (overlay && closeBtn) {
+          // Show after 2 seconds
+          setTimeout(() => {
+            overlay.style.display = 'flex';
+          }, 2000);
+
+          closeBtn.onclick = () => {
+            overlay.style.display = 'none';
+          };
+        }
+      };
+
+      // Initialize when page is ready
+      if (document.readyState === 'complete') {
+        initPwaTutorial();
+      } else {
+        window.addEventListener('load', initPwaTutorial);
+      }
+      
+      // Also check on beforeinstallprompt
+      window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('PWA Install Prompt available');
+      });
+    })();
+  </script>
 </body>
 </html>
 
