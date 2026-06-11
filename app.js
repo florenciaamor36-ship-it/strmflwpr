@@ -1857,6 +1857,46 @@
       document.getElementById("rememberMeCheckbox").checked = true;
     }
     
+    // ============ PWA TUTORIAL ============
+    const showPwaTutorial = () => {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      if (isStandalone) return;
+      if (sessionStorage.getItem('pwa_tutorial_shown')) return;
+
+      if (!document.getElementById('pwa-tutorial-overlay')) {
+        const overlay = document.createElement('div');
+        overlay.id = 'pwa-tutorial-overlay';
+        overlay.innerHTML = `
+          <div id="pwa-tutorial-modal">
+            <h2>Instalar App</h2>
+            <p>Para una experiencia premium, instalá StreamFlow Pro en tu pantalla de inicio.</p>
+            <div class="pwa-step">
+              <div class="pwa-step-icon">1</div>
+              <div class="pwa-step-text">Tocá el botón de opciones <i class="fas fa-ellipsis-v"></i> o compartir <i class="fas fa-share-square"></i> en tu navegador.</div>
+            </div>
+            <div class="pwa-step">
+              <div class="pwa-step-icon">2</div>
+              <div class="pwa-step-text">Seleccioná <span style="color:#f5af19; font-weight:700;">"Instalar aplicación"</span> o "Agregar a inicio".</div>
+            </div>
+            <div class="pwa-step">
+              <div class="pwa-step-icon">3</div>
+              <div class="pwa-step-text">¡Listo! Accedé al instante desde tu escritorio como una app real.</div>
+            </div>
+            <button id="pwa-close-btn">Entendido</button>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        document.getElementById('pwa-close-btn').onclick = () => {
+          overlay.style.display = 'none';
+          sessionStorage.setItem('pwa_tutorial_shown', 'true');
+        };
+      }
+      setTimeout(() => {
+        const overlay = document.getElementById('pwa-tutorial-overlay');
+        if(overlay) overlay.style.display = 'flex';
+      }, 3000);
+    };
+
     auth.onAuthStateChanged(async (user) => {
       if(user) {
         currentUser = user;
@@ -1871,6 +1911,7 @@
         iniciarListenerFirestore(user.uid);
         toast("Bienvenido " + user.email);
         if(notificationsEnabled) mostrarAvisoVencimientos();
+        showPwaTutorial();
       } else {
         currentUser = null;
         appDesbloqueada = false;
