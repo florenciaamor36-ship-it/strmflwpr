@@ -1868,7 +1868,7 @@
         overlay.id = 'pwa-tutorial-overlay';
         overlay.innerHTML = `
           <div id="pwa-tutorial-modal">
-            <h2>Instalar App</h2>
+            <h2>Instalar aplicación</h2>
             <p>Para una experiencia premium, instalá StreamFlow Pro en tu pantalla de inicio.</p>
             <div class="pwa-step">
               <div class="pwa-step-icon">1</div>
