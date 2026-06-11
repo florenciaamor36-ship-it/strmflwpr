@@ -1,24 +1,22 @@
 {
-  "name": "Stream Flow Pro",
+  "name": "Stream Flow",
   "short_name": "StreamFlow",
-  "description": "Gestión Profesional de Streaming",
-  "start_url": "./",
+  "description": "Streaming account manager for resellers",
+  "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0f0c29",
-  "theme_color": "#0f0c29",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     {
-      "src": "web/icons/Icon-192.png",
+      "src": "icons/Icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "web/icons/Icon-512.png",
+      "src": "icons/Icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
