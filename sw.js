@@ -1,10 +1,8 @@
-const CACHE_NAME = 'strmflwpr-pwa-v1';
+const CACHE_NAME = 'strmflwpr-v1';
 const ASSETS = [
   './',
-  './index.html',
-  './manifest.json',
-  './web/icons/Icon-192.png',
-  './web/icons/Icon-512.png'
+  'index.html',
+  'manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
