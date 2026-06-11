@@ -2,7 +2,9 @@ const CACHE_NAME = 'strmflwpr-v1';
 const ASSETS = [
   './',
   'index.html',
-  'manifest.json'
+  'manifest.json',
+  'styles.css',
+  'app.js'
 ];
 
 self.addEventListener('install', (event) => {
